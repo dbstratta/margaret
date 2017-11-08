@@ -35,7 +35,7 @@ apollo-server-core@^1.2.0:
     apollo-tracing "^0.1.0"
     graphql-extensions "^0.0.x"
 
-apollo-server-koa@^1.2.0:
+apollo-server-koa@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/apollo-server-koa/-/apollo-server-koa-1.2.0.tgz#6225accde83294ee37407962358d148e2705fb84"
   dependencies:
@@ -211,7 +211,7 @@ graphql-extensions@^0.0.x:
     core-js "^2.5.1"
     source-map-support "^0.5.0"
 
-graphql@^0.11.7:
+graphql@0.11.7:
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.11.7.tgz#e5abaa9cb7b7cccb84e9f0836bf4370d268750c6"
   dependencies:
@@ -314,7 +314,7 @@ iterall@1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/iterall/-/iterall-1.1.3.tgz#1cbbff96204056dde6656e2ed2e2226d0e6d72c9"
 
-kcors@^2.2.1:
+kcors@2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/kcors/-/kcors-2.2.1.tgz#7160a94f2eae633436d2cef8eadd0ce232386779"
 
@@ -322,7 +322,7 @@ keygrip@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/keygrip/-/keygrip-1.0.2.tgz#ad3297c557069dea8bcfe7a4fa491b75c5ddeb91"
 
-koa-bodyparser@^4.2.0:
+koa-bodyparser@4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/koa-bodyparser/-/koa-bodyparser-4.2.0.tgz#bce6e08bc65f8709b6d1faa9411c7f0d8938aa54"
   dependencies:
@@ -346,7 +346,7 @@ koa-convert@^1.2.0:
     co "^4.6.0"
     koa-compose "^3.0.0"
 
-koa-helmet@^3.2.0:
+koa-helmet@3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/koa-helmet/-/koa-helmet-3.2.0.tgz#5b5e43f48dea894891c2b29990eb075eacf40197"
   dependencies:
@@ -356,7 +356,7 @@ koa-is-json@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/koa-is-json/-/koa-is-json-1.0.0.tgz#273c07edcdcb8df6a2c1ab7d59ee76491451ec14"
 
-koa-logger@^3.1.0:
+koa-logger@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/koa-logger/-/koa-logger-3.1.0.tgz#81a353f41870119d56260e0e644f04e731810039"
   dependencies:
@@ -365,7 +365,7 @@ koa-logger@^3.1.0:
     humanize-number "0.0.2"
     passthrough-counter "^1.0.0"
 
-koa-router@^7.2.1:
+koa-router@7.2.1:
   version "7.2.1"
   resolved "https://registry.yarnpkg.com/koa-router/-/koa-router-7.2.1.tgz#b40a4ab3c6adb4b40895debd00a9c640304e3039"
   dependencies:
@@ -375,7 +375,7 @@ koa-router@^7.2.1:
     methods "^1.0.1"
     path-to-regexp "^1.1.1"
 
-koa@^2.4.1:
+koa@2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/koa/-/koa-2.4.1.tgz#d449cfb970a7e9da571f699eda40bb9e32eb1484"
   dependencies:
@@ -470,7 +470,7 @@ qs@^6.4.0:
   version "6.5.1"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.1.tgz#349cdf6eef89ec45c12d7d5eb3fc0c870343a6d8"
 
-ramda@^0.25.0:
+ramda@0.25.0:
   version "0.25.0"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
 
@@ -534,7 +534,7 @@ vary@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
 
-winston@^2.4.0:
+winston@2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/winston/-/winston-2.4.0.tgz#808050b93d52661ed9fb6c26b3f0c826708b0aee"
   dependencies:
