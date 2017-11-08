@@ -1,0 +1,13 @@
+node_modules
+build
+coverage
+
+docs
+.env
+.vscode
+.github
+*.sw*
+*.log*
+*.pyc
+.DS_Store
+.idea

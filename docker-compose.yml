@@ -1,0 +1,44 @@
+version: '3'
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    depends_on:
+      - node
+
+  api:
+    build: ./projects/margaret
+    depends_on:
+      - postgres
+    environment:
+      # These env variables are necessary to let Nginx reverse proxy us.
+      - VIRTUAL_HOST=api.margaret.com
+      - VIRTUAL_PORT=8080
+
+      # These env variables will be read from the host machine.
+      - NODE_ENV
+      - HOST
+      - PORT
+      - JWT_SECRET
+      - LOG_LEVEL
+
+  web:
+    build: ./projects/web
+    environment:
+      # These env variables are necessary to let Nginx reverse proxy us.
+      - VIRTUAL_HOST=margaret.com
+      - VIRTUAL_PORT=8090
+
+  postgres:
+    image: postgres:10.0
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+volumes:
+  postgres_data:

@@ -1,0 +1,35 @@
+version: '3'
+services:
+  api:
+    command: yarn run start:dev
+    # We expose the API server directly (without being reverse-proxied)
+    # in dev just in case.
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/usr/src/app
+      # We want the `node_modules` created in the image to persist
+      # in an unnamed volume and to not be mounted over by
+      # the host's `node_modules`.
+      - /usr/src/app/node_modules
+    environment:
+      - VIRTUAL_HOST=api.localhost
+      - VIRTUAL_PORT=8080
+    env_file: .env
+
+  web:
+    ports:
+      - "8090:8090"
+
+      # The webpack bundle analyzer server.
+      - "8888:8888"
+    volumes:
+      - .:/usr/src/app
+      # We want the `node_modules` created in the image to persist
+      # in an unnamed volume and to not be mounted over by
+      # the host's `node_modules`.
+      - /usr/src/app/node_modules
+    environment:
+      - VIRTUAL_HOST=localhost
+      - VIRTUAL_PORT=8090
+    env_file: .env

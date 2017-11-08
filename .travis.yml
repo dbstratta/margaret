@@ -1,0 +1,25 @@
+sudo: required
+
+language: node_js
+node_js:
+  - "node"
+
+services:
+  - docker
+
+stages:
+  - build
+  - test
+  - name: deploy
+    if: branch = master
+
+jobs:
+  include:
+    - stage: build
+      script: docker-compose build
+
+    - stage: test
+      script: docker-compose run api yarn test
+
+    - stage: deploy
+      script: skip
