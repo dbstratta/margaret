@@ -44,7 +44,7 @@
     "enzyme": "3.1.1",
     "react-test-renderer": "16.0.0",
     "redux-logger": "3.0.6",
-    "webpack-bundle-analyzer": "2.9.0"
+    "webpack-bundle-analyzer": "2.9.1"
   },
   "author": {
     "name": "Diego Stratta",
