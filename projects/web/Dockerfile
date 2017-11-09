@@ -1,4 +1,4 @@
-FROM node:9.1.0@sha256:89dcf2e2198a161086ed5df0e39bb81fd09b10283ebc0f9313f586466e88a0ba
+FROM node:9.1.0@sha256:75f50fb3fc9a18481b51f920fa7e2881f198992c6f651aac12e390247d436ea9
 
 LABEL name="margaret_web"
 LABEL version="1.0.0"
