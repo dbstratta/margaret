@@ -20,7 +20,7 @@
     "prop-types": "15.6.0",
     "ramda": "0.25.0",
     "react": "16.0.0",
-    "react-dom": "16.0.0",
+    "react-dom": "16.1.0",
     "react-ga": "2.3.5",
     "react-intl": "2.4.0",
     "react-redux": "5.0.6",
