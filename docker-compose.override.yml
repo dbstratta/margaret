@@ -25,9 +25,6 @@ services:
       - "8888:8888"
     volumes:
       - .:/usr/src/app
-      # We want the `node_modules` created in the image to persist
-      # in an unnamed volume and to not be mounted over by
-      # the host's `node_modules`.
       - /usr/src/app/node_modules
     environment:
       - VIRTUAL_HOST=localhost

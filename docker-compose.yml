@@ -10,7 +10,7 @@ services:
       - node
 
   api:
-    build: ./projects/margaret
+    build: ./projects/api
     depends_on:
       - postgres
     environment:

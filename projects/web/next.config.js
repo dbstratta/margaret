@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { concat } = require('ramda');
 
 const { ANALYZE_BUNDLE } = process.env;
@@ -9,6 +8,8 @@ module.exports = {
     const additionalPlugins = [new webpack.EnvironmentPlugin(process.env)];
 
     if (ANALYZE_BUNDLE) {
+      // eslint-disable-next-line global-require
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
       additionalPlugins.push(new BundleAnalyzerPlugin());
     }
 
