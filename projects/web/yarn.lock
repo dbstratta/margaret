@@ -47,11 +47,11 @@
     lodash "^4.17.4"
     pify "^3.0.0"
 
-"@storybook/cli@3.2.14":
-  version "3.2.14"
-  resolved "https://registry.yarnpkg.com/@storybook/cli/-/cli-3.2.14.tgz#dff39cd2e65c4a6eaae72f96dffc14e5e51e9e73"
+"@storybook/cli@3.2.15":
+  version "3.2.15"
+  resolved "https://registry.yarnpkg.com/@storybook/cli/-/cli-3.2.15.tgz#1b48732535c8ab96a8115cfcec2370098bc663cc"
   dependencies:
-    "@storybook/codemod" "^3.2.14"
+    "@storybook/codemod" "^3.2.15"
     chalk "^2.3.0"
     child-process-promise "^2.2.1"
     commander "^2.11.0"
@@ -63,9 +63,9 @@
     shelljs "^0.7.8"
     update-notifier "^2.3.0"
 
-"@storybook/codemod@^3.2.14":
-  version "3.2.14"
-  resolved "https://registry.yarnpkg.com/@storybook/codemod/-/codemod-3.2.14.tgz#00f85e35b484c52828156c313bfcff6b76a18bb9"
+"@storybook/codemod@^3.2.15":
+  version "3.2.15"
+  resolved "https://registry.yarnpkg.com/@storybook/codemod/-/codemod-3.2.15.tgz#5467f6ca4c4953d1748962ad890b605f3bf4b0cd"
   dependencies:
     jscodeshift "^0.3.30"
 
