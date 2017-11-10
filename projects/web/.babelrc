@@ -3,10 +3,12 @@
   "plugins": [
     [
       "styled-components",
-      { "ssr": true, "displayName": true, "preprocess": false },
-      "transform-decorators",
-      "polished"
-    ]
+      { "ssr": true, "displayName": true, "preprocess": false }
+    ],
+    "transform-decorators",
+    ["lodash", { "id": ["lodash", "recompose"] }],
+    "ramda",
+    "polished"
   ],
   "env": {
     "test": {
