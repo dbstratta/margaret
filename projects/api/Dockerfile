@@ -1,4 +1,4 @@
-FROM node:9.1.0@sha256:975dcd16d62d0155a9edd614cd89b1599661dd57777ed39b862f44e4a6a9d6f6
+FROM node:9.1.0@sha256:cd6b6e2f0e71a1845462c939a8c713b648ae1b3e13f512ab3fc5944ebe7c30e5
 
 LABEL name="margaret_api"
 LABEL version="1.0.0"
