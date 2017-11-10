@@ -28,7 +28,7 @@
     "redux-form": "7.1.2",
     "redux-immutable-state-invariant": "2.1.0",
     "redux-saga": "0.16.0",
-    "remote-redux-devtools": "^0.5.12",
+    "remote-redux-devtools": "0.5.12",
     "reselect": "3.0.1",
     "styled-components": "2.2.3",
     "styled-theming": "2.2.0",
