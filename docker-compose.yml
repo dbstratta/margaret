@@ -7,7 +7,7 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     depends_on:
-      - node
+      - api
 
   api:
     build: ./projects/api
