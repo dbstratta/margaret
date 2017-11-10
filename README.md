@@ -1,7 +1,5 @@
 # Margaret
 
-> Margaret is a publishing platform made with love and the latest technologies.
-
 [![Travis Build Status](https://travis-ci.org/strattadb/margaret.svg?branch=develop)](https://travis-ci.org/strattadb/margaret)
 
 ## Table of contents
