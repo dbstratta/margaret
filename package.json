@@ -9,7 +9,7 @@
   "author": "Diego Stratta <strattadb@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@playlyfe/gql": "^2.3.2",
+    "@playlyfe/gql": "2.3.2",
     "babel-eslint": "8.0.2",
     "codecov": "3.0.0",
     "eslint": "4.11.0",
