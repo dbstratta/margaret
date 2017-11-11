@@ -8,6 +8,7 @@
     "transform-decorators",
     ["lodash", { "id": ["lodash", "recompose"] }],
     "ramda",
+    "graphql-tag",
     "polished"
   ],
   "env": {

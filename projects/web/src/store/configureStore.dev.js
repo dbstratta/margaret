@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import { composeWithDevTools } from 'remote-redux-devtools';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import createImmutableStateInvariantMiddleware from 'redux-immutable-state-invariant';
 
 import rootReducer from '../rootReducer';
@@ -22,5 +22,8 @@ export default (initialState) => {
     module.hot.accept('../rootReducer', () => store.replaceReducer(rootReducer));
   }
 
-  return { ...store, runSaga: sagaMiddleware.run };
+  return {
+    ...store,
+    runSaga: sagaMiddleware.run,
+  };
 };

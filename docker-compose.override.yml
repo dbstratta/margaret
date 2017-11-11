@@ -18,6 +18,7 @@ services:
     env_file: .env
 
   web:
+    command: yarn start:dev
     ports:
       - "8090:8090"
 
