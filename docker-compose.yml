@@ -20,10 +20,10 @@ services:
 
       # These env variables will be read from the host machine.
       - NODE_ENV
-      - HOST
-      - PORT
-      - JWT_SECRET
-      - LOG_LEVEL
+      - API_HOST
+      - API_PORT
+      - API_JWT_SECRET
+      - API_LOG_LEVEL
 
   web:
     build: ./projects/web
@@ -31,6 +31,12 @@ services:
       # These env variables are necessary to let Nginx reverse proxy us.
       - VIRTUAL_HOST=margaret.com
       - VIRTUAL_PORT=8090
+
+      # These env variables will be read from the host machine.
+      - NODE_ENV
+      - WEB_PORT
+      - WEB_LOG_LEVEL
+
 
   postgres:
     image: postgres:10.0

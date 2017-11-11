@@ -6,5 +6,5 @@ If the current behavior is a bug, please provide the steps to reproduce.
 
 **What is the expected behavior?**
 
-Which versions of lovvedit, and which browser/OS are affected by this issue?
-Did this work in previous versions of lovvedit?
+Which versions of Margaret, and which browser/OS are affected by this issue?
+Did this work in previous versions of Margaret?

@@ -2,6 +2,9 @@
   "name": "margaret",
   "private": true,
   "version": "1.0.0",
+  "scripts": {
+    "start": "exit 0"
+  },
   "license": "MIT",
   "dependencies": {
     "apollo-server-koa": "1.2.0",

@@ -8,6 +8,7 @@ coverage
 build
 
 # Misc.
+.next
 .env
 *.pyc
 .DS_Store

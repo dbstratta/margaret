@@ -17,7 +17,7 @@ export default class Document extends NextDocument {
           <meta charSet="utf-8" />
           <meta httpEquiv="x-ua-compatible" content="ie=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-          <meta name="description" content="A publishing platform made with love" />
+          <meta name="description" content="A open-source publishing platform." />
 
           <title>Margaret</title>
           {this.props.styleTags}
