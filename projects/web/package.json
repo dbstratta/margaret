@@ -8,7 +8,9 @@
     "prestart": "yarn build",
     "build": "next build src",
     "start:dev": "node server",
-    "analyze": "cross-env ANALYZE_BUNDLE=1 yarn build"
+    "analyze": "cross-env ANALYZE_BUNDLE=1 yarn build",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "apollo-cache-inmemory": "^1.1.0",
@@ -53,7 +55,10 @@
     "redux-immutable-state-invariant": "2.1.0",
     "redux-logger": "3.0.6",
     "webpack": "3.8.1",
-    "webpack-bundle-analyzer": "2.9.1"
+    "webpack-bundle-analyzer": "2.9.1",
+    "@storybook/react": "^3.2.15",
+    "@storybook/addon-actions": "^3.2.15",
+    "@storybook/addon-links": "^3.2.15"
   },
   "author": {
     "name": "Diego Stratta",

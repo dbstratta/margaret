@@ -24,6 +24,9 @@ services:
 
       # The webpack bundle analyzer server.
       - "8888:8888"
+
+      # The storybook server.
+      - "6006:6006"
     volumes:
       - ./projects/web:/usr/src/app
       - /usr/src/app/node_modules
