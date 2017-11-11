@@ -1,7 +1,7 @@
 {
   "automerge": "minor",
   "semanticCommits": true,
-  "labels": ["upgrade", "renovate", "dependencies"],
+  "labels": ["renovate"],
   "assignees": ["@strattadb"],
   "reviewers": ["@strattadb"],
   "docker": { "enabled": true }
