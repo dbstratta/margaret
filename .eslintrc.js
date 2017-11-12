@@ -29,7 +29,10 @@ module.exports = {
   rules: {
     'react/jsx-filename-extension': ['warn', { extensions: ['.js', '.jsx'] }],
     'react/forbid-prop-types': 'off',
+
     'import/no-named-as-default': 'off',
     'import/no-extraneous-dependencies': 'off',
+
+    'jsx-a11y/anchor-is-valid': 'off',
   },
 };

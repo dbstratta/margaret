@@ -14,7 +14,7 @@ RUN yarn
 # Bundle app source.
 COPY . .
 
-USER node
+# USER node
 
 EXPOSE 8080
 CMD ["yarn", "start"]

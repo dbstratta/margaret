@@ -16,11 +16,17 @@ const server = express();
 
 server.use(helmet()).use(handle);
 
-app.prepare().then(() =>
-  server.listen(PORT, (err) => {
-    if (err) {
-      throw err;
-    }
+app
+  .prepare()
+  .then(() =>
+    server.listen(PORT, (err) => {
+      if (err) {
+        throw err;
+      }
 
-    logger.info(`web server listening on port ${PORT} on ${NODE_ENV} mode`);
-  }));
+      logger.info(`web server listening on port ${PORT} on ${NODE_ENV} mode`);
+    }))
+  .catch((e) => {
+    logger.error(e);
+    process.exit(1);
+  });
