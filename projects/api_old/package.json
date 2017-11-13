@@ -9,16 +9,16 @@
   "dependencies": {
     "apollo-server-koa": "1.2.0",
     "graphql": "0.11.7",
-    "graphql-tools": "^2.7.2",
+    "graphql-tools": "2.7.2",
     "kcors": "2.2.1",
     "koa": "2.4.1",
     "koa-bodyparser": "4.2.0",
     "koa-helmet": "3.3.0",
     "koa-logger": "3.1.0",
     "koa-router": "7.2.1",
-    "pg": "^7.4.0",
+    "pg": "7.4.0",
     "ramda": "0.25.0",
-    "subscriptions-transport-ws": "^0.9.1",
-    "winston": "^2.4.0"
+    "subscriptions-transport-ws": "0.9.1",
+    "winston": "2.4.0"
   }
 }
