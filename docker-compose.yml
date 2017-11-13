@@ -19,11 +19,7 @@ services:
       - VIRTUAL_PORT=8080
 
       # These env variables will be read from the host machine.
-      - NODE_ENV
-      - API_HOST
-      - API_PORT
-      - API_JWT_SECRET
-      - API_LOG_LEVEL
+      - MIX_ENV
 
   web:
     build: ./projects/web
