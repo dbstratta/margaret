@@ -9,12 +9,10 @@ WORKDIR /usr/src/app
 
 # Install dependencies.
 COPY package.json yarn.lock ./
-RUN yarn install --production
+RUN yarn
 
 # Bundle app source.
 COPY . .
-
-USER node
 
 EXPOSE 8090
 CMD ["yarn", "start"]

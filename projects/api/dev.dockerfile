@@ -1,4 +1,4 @@
-FROM elixir:1.5.2 as base
+FROM elixir:1.5.2
 
 LABEL name="margaret_api"
 LABEL version="1.0.0"
@@ -15,12 +15,8 @@ RUN mix archive.install https://github.com/phoenixframework/archives/raw/master/
 WORKDIR /usr/src/app
 
 # Install dependencies.
-COPY mix.exs mix.lock ./
-RUN mix deps.get --only prod
+# COPY mix.exs mix.lock ./
+# RUN mix deps.get
 
 # Bundle app source.
-COPY . .
-
-RUN mix compile
-
-CMD ["mix", "phoenix.server"]
+# COPY . .
