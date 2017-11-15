@@ -29,17 +29,6 @@ config :margaret, MargaretWeb.Endpoint,
 # configured to run both http and https servers on
 # different ports.
 
-# Watch static and templates for browser reloading.
-config :margaret, MargaretWeb.Endpoint,
-  live_reload: [
-    patterns: [
-      ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
-      ~r{priv/gettext/.*(po)$},
-      ~r{lib/margaret_web/views/.*(ex)$},
-      ~r{lib/margaret_web/templates/.*(eex)$}
-    ]
-  ]
-
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
@@ -53,5 +42,5 @@ config :margaret, Margaret.Repo,
   username: "postgres",
   password: "postgres",
   database: "margaret_dev",
-  hostname: "postgres",
+  hostname: "localhost",
   pool_size: 10

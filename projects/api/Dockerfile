@@ -23,4 +23,4 @@ COPY . .
 
 RUN mix compile
 
-CMD ["mix", "phoenix.server"]
+CMD ["mix", "phx.server"]

@@ -2,7 +2,7 @@ version: '3'
 services:
   api:
     build:
-      context: .
+      context: ./projects/api
       dockerfile: dev.dockerfile
     command: tail -f /dev/null
     ports:
@@ -16,7 +16,7 @@ services:
 
   web:
     build:
-      context: .
+      context: ./projects/web
       dockerfile: dev.dockerfile
     command: yarn start:dev
     ports:

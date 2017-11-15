@@ -14,8 +14,6 @@ defmodule MargaretWeb.Endpoint do
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
-    socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
-    plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
   end
 
@@ -36,7 +34,7 @@ defmodule MargaretWeb.Endpoint do
   plug Plug.Session,
     store: :cookie,
     key: "_margaret_key",
-    signing_salt: "sT8nl8+r"
+    signing_salt: "o1hkMceL"
 
   plug MargaretWeb.Router
 

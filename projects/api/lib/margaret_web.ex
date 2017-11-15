@@ -34,9 +34,6 @@ defmodule MargaretWeb do
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
 
-      # Use all HTML functionality (forms, tags, etc)
-      use Phoenix.HTML
-
       import MargaretWeb.Router.Helpers
       import MargaretWeb.ErrorHelpers
       import MargaretWeb.Gettext

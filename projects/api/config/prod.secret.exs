@@ -9,7 +9,7 @@ use Mix.Config
 # kept out of version control and might be hard to recover
 # or recreate for your teammates (or yourself later on).
 config :margaret, MargaretWeb.Endpoint,
-  secret_key_base: "PFoVWwwmZ6aQXZMgf4OAOnIpmjEXAX+o3hE9i9QdXDefJKQ6AHPHdGEiK50RWCvA"
+  secret_key_base: "0DR1Qqpwgvdij/4g9W7OOToU1sbSMe2KXasZyiQJ7qkJONkLiIaBYjX8CbfSz+tQ"
 
 # Configure your database
 config :margaret, Margaret.Repo,

@@ -4,6 +4,9 @@ LABEL name="margaret_api"
 LABEL version="1.0.0"
 LABEL maintainer="strattadb@gmail.com"
 
+# Install `inotify-tools` to enable Phoenix's live reloading.
+RUN apt-get update && apt-get -y install inotify-tools
+
 # Install the hex package manager.
 RUN mix local.hex --force
 
@@ -15,8 +18,10 @@ RUN mix archive.install https://github.com/phoenixframework/archives/raw/master/
 WORKDIR /usr/src/app
 
 # Install dependencies.
-# COPY mix.exs mix.lock ./
-# RUN mix deps.get
+COPY mix.exs mix.lock ./
+RUN mix deps.get
 
 # Bundle app source.
-# COPY . .
+COPY . .
+
+CMD ["mix", "phx.server"]

@@ -12,8 +12,8 @@ config :margaret,
 # Configures the endpoint
 config :margaret, MargaretWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "3t777/TYoLyOkF8po7YuWbovPovsRRe1FxyJPesSJKq3ythT80c7aaVmOgxmYde9",
-  render_errors: [view: MargaretWeb.ErrorView, accepts: ~w(html json)],
+  secret_key_base: "5FHUpeKAme+nsDLYD9OvooYr6AKyzQppZegTzAG1xI8m1Ljko+11ztUdOR3IFC0u",
+  render_errors: [view: MargaretWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Margaret.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
