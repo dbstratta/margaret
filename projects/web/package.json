@@ -15,7 +15,7 @@
   "dependencies": {
     "apollo-cache-inmemory": "1.1.0",
     "apollo-client": "2.0.2",
-    "apollo-link-http": "1.1.0",
+    "apollo-link-http": "1.2.0",
     "cross-env": "5.1.1",
     "express": "4.16.2",
     "graphql": "0.11.7",
