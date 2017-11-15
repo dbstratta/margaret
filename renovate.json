@@ -3,6 +3,5 @@
   "semanticCommits": true,
   "labels": ["renovate"],
   "assignees": ["@strattadb"],
-  "reviewers": ["@strattadb"],
-  "docker": { "enabled": true }
+  "reviewers": ["@strattadb"]
 }
