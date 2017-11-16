@@ -51,38 +51,44 @@
     lodash "^4.17.4"
     pify "^3.0.0"
 
-"@storybook/addon-actions@3.2.15", "@storybook/addon-actions@^3.2.15":
-  version "3.2.15"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-3.2.15.tgz#a54228d86baeb637adbbbdd11ff0c040d9862952"
+"@storybook/addon-actions@3.2.16", "@storybook/addon-actions@^3.2.15":
+  version "3.2.16"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-3.2.16.tgz#dc53d48dc8035b426a02628687c6cb0601b933b9"
   dependencies:
-    "@storybook/addons" "^3.2.15"
+    "@storybook/addons" "^3.2.16"
     deep-equal "^1.0.1"
     json-stringify-safe "^5.0.1"
     prop-types "^15.6.0"
     react-inspector "^2.2.1"
     uuid "^3.1.0"
 
-"@storybook/addon-links@3.2.15", "@storybook/addon-links@^3.2.15":
+"@storybook/addon-links@3.2.15":
   version "3.2.15"
   resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-3.2.15.tgz#87a0dc9bad7b208aca7142863a237b5135a47a34"
   dependencies:
     "@storybook/addons" "^3.2.15"
 
-"@storybook/addons@^3.2.15":
-  version "3.2.15"
-  resolved "https://registry.yarnpkg.com/@storybook/addons/-/addons-3.2.15.tgz#120fc3e34454b9e6c779f25b945d354511168abc"
+"@storybook/addon-links@^3.2.15":
+  version "3.2.16"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-3.2.16.tgz#58b807f7fbcdadb405c6379e69a22c48025c9558"
+  dependencies:
+    "@storybook/addons" "^3.2.16"
+
+"@storybook/addons@^3.2.15", "@storybook/addons@^3.2.16":
+  version "3.2.16"
+  resolved "https://registry.yarnpkg.com/@storybook/addons/-/addons-3.2.16.tgz#cbad5d9e8222aba3d5a5d06af98a095322f62cb5"
 
 "@storybook/channel-postmessage@^3.2.15":
-  version "3.2.15"
-  resolved "https://registry.yarnpkg.com/@storybook/channel-postmessage/-/channel-postmessage-3.2.15.tgz#34ef971cd231a4c034c293693bb5b78c83a1b7cb"
+  version "3.2.16"
+  resolved "https://registry.yarnpkg.com/@storybook/channel-postmessage/-/channel-postmessage-3.2.16.tgz#036b2c1c412e2806badc1c1f7bcbb19b069fedde"
   dependencies:
-    "@storybook/channels" "^3.2.15"
+    "@storybook/channels" "^3.2.16"
     global "^4.3.2"
     json-stringify-safe "^5.0.1"
 
-"@storybook/channels@^3.2.15":
-  version "3.2.15"
-  resolved "https://registry.yarnpkg.com/@storybook/channels/-/channels-3.2.15.tgz#c76277d9050e0a0027a9e06edff662db55f391d6"
+"@storybook/channels@^3.2.16":
+  version "3.2.16"
+  resolved "https://registry.yarnpkg.com/@storybook/channels/-/channels-3.2.16.tgz#07d8686328c0bb885aa8b69254fcf0745d22a620"
 
 "@storybook/cli@3.2.15":
   version "3.2.15"
@@ -101,18 +107,26 @@
     update-notifier "^2.3.0"
 
 "@storybook/codemod@^3.2.15":
-  version "3.2.15"
-  resolved "https://registry.yarnpkg.com/@storybook/codemod/-/codemod-3.2.15.tgz#5467f6ca4c4953d1748962ad890b605f3bf4b0cd"
+  version "3.2.16"
+  resolved "https://registry.yarnpkg.com/@storybook/codemod/-/codemod-3.2.16.tgz#02206369c6b04acbad039ebddb79abffa4938af1"
   dependencies:
     jscodeshift "^0.3.30"
 
-"@storybook/components@^3.2.15":
-  version "3.2.15"
-  resolved "https://registry.yarnpkg.com/@storybook/components/-/components-3.2.15.tgz#238e8faf0f5668534dea98868327760b24139460"
+"@storybook/components@^3.2.16":
+  version "3.2.16"
+  resolved "https://registry.yarnpkg.com/@storybook/components/-/components-3.2.16.tgz#381c4ce414f139fb03b059f1f0265c6246457e7b"
   dependencies:
     glamor "^2.20.40"
     glamorous "^4.11.0"
     prop-types "^15.6.0"
+
+"@storybook/mantra-core@^1.7.0":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@storybook/mantra-core/-/mantra-core-1.7.2.tgz#e10c7faca29769e97131e0e0308ef7cfb655b70c"
+  dependencies:
+    "@storybook/react-komposer" "^2.0.1"
+    "@storybook/react-simple-di" "^1.2.1"
+    babel-runtime "6.x.x"
 
 "@storybook/react-fuzzy@^0.4.3":
   version "0.4.3"
@@ -122,6 +136,29 @@
     classnames "^2.2.5"
     fuse.js "^3.0.1"
     prop-types "^15.5.9"
+
+"@storybook/react-komposer@^2.0.0", "@storybook/react-komposer@^2.0.1":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@storybook/react-komposer/-/react-komposer-2.0.3.tgz#f9e12a9586b2ce95c24c137eabb8b71527ddb369"
+  dependencies:
+    "@storybook/react-stubber" "^1.0.0"
+    babel-runtime "^6.11.6"
+    hoist-non-react-statics "^1.2.0"
+    lodash.pick "^4.4.0"
+    shallowequal "^0.2.2"
+
+"@storybook/react-simple-di@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@storybook/react-simple-di/-/react-simple-di-1.2.1.tgz#fe4b29a32459e168da3aae8e6fcd8631861210c9"
+  dependencies:
+    babel-runtime "6.x.x"
+    hoist-non-react-statics "1.x.x"
+
+"@storybook/react-stubber@^1.0.0":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@storybook/react-stubber/-/react-stubber-1.0.1.tgz#8c312c2658b9eeafce470e1c39e4193f0b5bf9b1"
+  dependencies:
+    babel-runtime "^6.5.0"
 
 "@storybook/react@3.2.15":
   version "3.2.15"
@@ -180,12 +217,14 @@
     webpack-hot-middleware "^2.20.0"
 
 "@storybook/ui@^3.2.15":
-  version "3.2.15"
-  resolved "https://registry.yarnpkg.com/@storybook/ui/-/ui-3.2.15.tgz#a73d24aa67877df4f69f497a0d7a67cfb34f3f39"
+  version "3.2.16"
+  resolved "https://registry.yarnpkg.com/@storybook/ui/-/ui-3.2.16.tgz#b7df979c2f5770e54cf84300cc09b7072c2fef16"
   dependencies:
     "@hypnosphi/fuse.js" "^3.0.9"
-    "@storybook/components" "^3.2.15"
+    "@storybook/components" "^3.2.16"
+    "@storybook/mantra-core" "^1.7.0"
     "@storybook/react-fuzzy" "^0.4.3"
+    "@storybook/react-komposer" "^2.0.0"
     babel-runtime "^6.26.0"
     deep-equal "^1.0.1"
     events "^1.1.1"
@@ -195,15 +234,13 @@
     lodash.debounce "^4.0.8"
     lodash.pick "^4.4.0"
     lodash.sortby "^4.7.0"
-    mantra-core "^1.7.0"
     podda "^1.2.2"
     prop-types "^15.6.0"
     qs "^6.5.1"
     react-icons "^2.2.7"
     react-inspector "^2.2.1"
-    react-komposer "^2.0.0"
     react-modal "^3.1.2"
-    react-split-pane "^0.1.68"
+    react-split-pane "^0.1.71"
     react-treebeard "^2.0.3"
     redux "^3.7.2"
 
@@ -216,8 +253,8 @@
   resolved "https://registry.yarnpkg.com/@types/inline-style-prefixer/-/inline-style-prefixer-3.0.1.tgz#8541e636b029124b747952e9a28848286d2b5bf6"
 
 "@types/node@*":
-  version "8.0.52"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.52.tgz#8e7f47747868e7687f2cd4922966e2d6af78d22d"
+  version "8.0.53"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.53.tgz#396b35af826fa66aad472c8cb7b8d5e277f4e6d8"
 
 "@types/react@^16.0.18":
   version "16.0.23"
@@ -1968,11 +2005,11 @@ browserify-sign@^4.0.0:
     inherits "^2.0.1"
     parse-asn1 "^5.0.0"
 
-browserify-zlib@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/browserify-zlib/-/browserify-zlib-0.1.4.tgz#bb35f8a519f600e0fa6b8485241c979d0141fb2d"
+browserify-zlib@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/browserify-zlib/-/browserify-zlib-0.2.0.tgz#2869459d9aa3be245fe8fe2ca1f46e2e7f54d73f"
   dependencies:
-    pako "~0.2.0"
+    pako "~1.0.5"
 
 browserslist@^1.3.6, browserslist@^1.5.2, browserslist@^1.7.6:
   version "1.7.7"
@@ -4100,9 +4137,9 @@ http-status@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/http-status/-/http-status-1.0.1.tgz#dc43001a8bfc50ac87d485a892f7578964bc94a2"
 
-https-browserify@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-0.0.1.tgz#3f91365cabe60b77ed0ebba24b454e3e09d95a82"
+https-browserify@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
 
 https-proxy-agent@^1.0.0:
   version "1.0.0"
@@ -4236,7 +4273,7 @@ intl-messageformat-parser@^1.2.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/intl-messageformat-parser/-/intl-messageformat-parser-1.4.0.tgz#b43d45a97468cadbe44331d74bb1e8dea44fc075"
 
-invariant@2.x.x, invariant@^2.0.0, invariant@^2.1.0, invariant@^2.2.1, invariant@^2.2.2:
+invariant@^2.0.0, invariant@^2.1.0, invariant@^2.2.1, invariant@^2.2.2:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.2.tgz#9e1f56ac0acdb6bf303306f338be3b204ae60360"
   dependencies:
@@ -4884,14 +4921,6 @@ make-dir@^1.0.0:
   dependencies:
     pify "^3.0.0"
 
-mantra-core@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/mantra-core/-/mantra-core-1.7.0.tgz#a8c83e8cee83ef6a7383131519fe8031ad546386"
-  dependencies:
-    babel-runtime "6.x.x"
-    react-komposer "^1.9.0"
-    react-simple-di "^1.2.0"
-
 map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
@@ -5069,10 +5098,6 @@ mkdirp-then@1.2.0:
   dependencies:
     minimist "0.0.8"
 
-mobx@^2.3.4:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-2.7.0.tgz#cf3d82d18c0ca7f458d8f2a240817b3dc7e54a01"
-
 modify-values@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.0.tgz#e2b6cdeb9ce19f99317a53722f3dbf5df5eaaab2"
@@ -5229,28 +5254,28 @@ node-fs@~0.1.7:
   resolved "https://registry.yarnpkg.com/node-fs/-/node-fs-0.1.7.tgz#32323cccb46c9fbf0fc11812d45021cc31d325bb"
 
 node-libs-browser@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/node-libs-browser/-/node-libs-browser-2.0.0.tgz#a3a59ec97024985b46e958379646f96c4b616646"
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/node-libs-browser/-/node-libs-browser-2.1.0.tgz#5f94263d404f6e44767d726901fff05478d600df"
   dependencies:
     assert "^1.1.1"
-    browserify-zlib "^0.1.4"
+    browserify-zlib "^0.2.0"
     buffer "^4.3.0"
     console-browserify "^1.1.0"
     constants-browserify "^1.0.0"
     crypto-browserify "^3.11.0"
     domain-browser "^1.1.1"
     events "^1.0.0"
-    https-browserify "0.0.1"
-    os-browserify "^0.2.0"
+    https-browserify "^1.0.0"
+    os-browserify "^0.3.0"
     path-browserify "0.0.0"
-    process "^0.11.0"
+    process "^0.11.10"
     punycode "^1.2.4"
     querystring-es3 "^0.2.0"
-    readable-stream "^2.0.5"
+    readable-stream "^2.3.3"
     stream-browserify "^2.0.1"
-    stream-http "^2.3.1"
-    string_decoder "^0.10.25"
-    timers-browserify "^2.0.2"
+    stream-http "^2.7.2"
+    string_decoder "^1.0.0"
+    timers-browserify "^2.0.4"
     tty-browserify "0.0.0"
     url "^0.11.0"
     util "^0.10.3"
@@ -5499,9 +5524,9 @@ optimist@^0.6.1:
     minimist "~0.0.1"
     wordwrap "~0.0.2"
 
-os-browserify@^0.2.0:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/os-browserify/-/os-browserify-0.2.1.tgz#63fc4ccee5d2d7763d26bbf8601078e6c2e0044f"
+os-browserify@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/os-browserify/-/os-browserify-0.3.0.tgz#854373c7f5c2315914fc9bfc6bd8238fdda1ec27"
 
 os-homedir@^1.0.0, os-homedir@^1.0.1:
   version "1.0.2"
@@ -5583,9 +5608,9 @@ package-json@^4.0.0:
     registry-url "^3.0.3"
     semver "^5.1.0"
 
-pako@~0.2.0:
-  version "0.2.9"
-  resolved "https://registry.yarnpkg.com/pako/-/pako-0.2.9.tgz#f3f7522f4ef782348da8161bad9ecfd51bf83a75"
+pako@~1.0.5:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.6.tgz#0101211baa70c4bca4a0f63f2206e97b7dfaf258"
 
 parse-asn1@^5.0.0:
   version "5.1.0"
@@ -6068,7 +6093,7 @@ process-nextick-args@~1.0.6:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3"
 
-process@^0.11.0, process@^0.11.1:
+process@^0.11.1, process@^0.11.10:
   version "0.11.10"
   resolved "https://registry.yarnpkg.com/process/-/process-0.11.10.tgz#7332300e840161bda3e69a1d1d91a7d4bc16f182"
 
@@ -6328,26 +6353,6 @@ react-inspector@^2.2.1:
     babel-runtime "^6.26.0"
     is-dom "^1.0.9"
 
-react-komposer@^1.9.0:
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/react-komposer/-/react-komposer-1.13.1.tgz#4b8ac4bcc71323bd7413dcab95c831197f50eed0"
-  dependencies:
-    babel-runtime "6.x.x"
-    hoist-non-react-statics "1.x.x"
-    invariant "2.x.x"
-    mobx "^2.3.4"
-    shallowequal "0.2.x"
-
-react-komposer@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-komposer/-/react-komposer-2.0.0.tgz#b964738014a9b4aee494a83c0b5b833d66072a90"
-  dependencies:
-    babel-runtime "^6.11.6"
-    hoist-non-react-statics "^1.2.0"
-    lodash.pick "^4.4.0"
-    react-stubber "^1.0.0"
-    shallowequal "^0.2.2"
-
 react-modal@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.1.2.tgz#6e1fd656315d6fc62a1edda2b5aecc9752ac6bca"
@@ -6372,14 +6377,7 @@ react-redux@5.0.6:
     loose-envify "^1.1.0"
     prop-types "^15.5.10"
 
-react-simple-di@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/react-simple-di/-/react-simple-di-1.2.0.tgz#dde0e5bf689f391ef2ab02c9043b213fe239c6d0"
-  dependencies:
-    babel-runtime "6.x.x"
-    hoist-non-react-statics "1.x.x"
-
-react-split-pane@^0.1.68:
+react-split-pane@^0.1.71:
   version "0.1.71"
   resolved "https://registry.yarnpkg.com/react-split-pane/-/react-split-pane-0.1.71.tgz#19b1b30638655e655f9f5fe57b1ae7cc6c151829"
   dependencies:
@@ -6388,12 +6386,6 @@ react-split-pane@^0.1.68:
     inline-style-prefixer "^3.0.6"
     prop-types "^15.5.10"
     react-style-proptype "^3.0.0"
-
-react-stubber@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-stubber/-/react-stubber-1.0.0.tgz#41ee2cac72d4d4fd70a63896da98e13739b84628"
-  dependencies:
-    babel-runtime "^6.5.0"
 
 react-style-proptype@^3.0.0:
   version "3.1.0"
@@ -6469,7 +6461,7 @@ read-pkg@^2.0.0:
     normalize-package-data "^2.3.2"
     path-type "^2.0.0"
 
-readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.5, readable-stream@^2.0.6, readable-stream@^2.1.4, readable-stream@^2.1.5, readable-stream@^2.2.2, readable-stream@^2.2.6:
+readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.6, readable-stream@^2.1.4, readable-stream@^2.1.5, readable-stream@^2.2.2, readable-stream@^2.2.6, readable-stream@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.3.tgz#368f2512d79f9d46fdfc71349ae7878bbc1eb95c"
   dependencies:
@@ -7079,7 +7071,7 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-shallowequal@0.2.x, shallowequal@^0.2.2:
+shallowequal@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/shallowequal/-/shallowequal-0.2.2.tgz#1e32fd5bcab6ad688a4812cb0cc04efc75c7014e"
   dependencies:
@@ -7272,7 +7264,7 @@ stream-consume@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/stream-consume/-/stream-consume-0.1.0.tgz#a41ead1a6d6081ceb79f65b061901b6d8f3d1d0f"
 
-stream-http@^2.3.1:
+stream-http@^2.7.2:
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/stream-http/-/stream-http-2.7.2.tgz#40a050ec8dc3b53b33d9909415c02c0bf1abfbad"
   dependencies:
@@ -7327,15 +7319,15 @@ string.prototype.padstart@^3.0.0:
     es-abstract "^1.4.3"
     function-bind "^1.0.2"
 
-string_decoder@^0.10.25, string_decoder@~0.10.x:
-  version "0.10.31"
-  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
-
-string_decoder@~1.0.3:
+string_decoder@^1.0.0, string_decoder@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-1.0.3.tgz#0fc67d7c141825de94282dd536bec6b9bce860ab"
   dependencies:
     safe-buffer "~5.1.0"
+
+string_decoder@~0.10.x:
+  version "0.10.31"
+  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
 
 stringmap@~0.2.2:
   version "0.2.2"
@@ -7547,7 +7539,7 @@ timed-out@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-4.0.1.tgz#f32eacac5a175bea25d7fab565ab3ed8741ef56f"
 
-timers-browserify@^2.0.2:
+timers-browserify@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/timers-browserify/-/timers-browserify-2.0.4.tgz#96ca53f4b794a5e7c0e1bd7cc88a372298fa01e6"
   dependencies:
