@@ -84,11 +84,11 @@
   version "3.2.16"
   resolved "https://registry.yarnpkg.com/@storybook/channels/-/channels-3.2.16.tgz#07d8686328c0bb885aa8b69254fcf0745d22a620"
 
-"@storybook/cli@3.2.15":
-  version "3.2.15"
-  resolved "https://registry.yarnpkg.com/@storybook/cli/-/cli-3.2.15.tgz#1b48732535c8ab96a8115cfcec2370098bc663cc"
+"@storybook/cli@3.2.16":
+  version "3.2.16"
+  resolved "https://registry.yarnpkg.com/@storybook/cli/-/cli-3.2.16.tgz#e1331ed3327767330f3cb47c5793c2a01153a8a5"
   dependencies:
-    "@storybook/codemod" "^3.2.15"
+    "@storybook/codemod" "^3.2.16"
     chalk "^2.3.0"
     child-process-promise "^2.2.1"
     commander "^2.11.0"
@@ -100,7 +100,7 @@
     shelljs "^0.7.8"
     update-notifier "^2.3.0"
 
-"@storybook/codemod@^3.2.15":
+"@storybook/codemod@^3.2.16":
   version "3.2.16"
   resolved "https://registry.yarnpkg.com/@storybook/codemod/-/codemod-3.2.16.tgz#02206369c6b04acbad039ebddb79abffa4938af1"
   dependencies:
