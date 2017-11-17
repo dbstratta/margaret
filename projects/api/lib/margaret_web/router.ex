@@ -5,10 +5,10 @@ defmodule MargaretWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", MargaretWeb do
+  scope "/" do
     pipe_through :api
 
-    forward "graphql", Absinthe.Plug,
+    forward "/graphql", Absinthe.Plug,
       schema: MargaretWeb.Schema
 
     forward "/graphiql", Absinthe.Plug.GraphiQL,

@@ -10,6 +10,7 @@ RUN apt-get update && apt-get -y install inotify-tools
 # Install the hex package manager.
 RUN mix local.hex --force
 
+# We need Erlang's build tool too.
 RUN mix local.rebar --force
 
 RUN mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new.ez --force
