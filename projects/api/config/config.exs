@@ -19,7 +19,7 @@ config :margaret, MargaretWeb.Endpoint,
 
 # Configures Guardian
 config :guardian, MargaretWeb.Guardian,
-  issuer: "Margaret"
+  issuer: "Margaret",
   secret_key: "Cs+SatzTr/4GlMDYRn+lHQCu+iP7b0hIhr71xDT62J3G+gDb5wlma/UMuxJWOdea"
 
 # Configures Elixir's Logger

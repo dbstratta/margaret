@@ -5,8 +5,15 @@ defmodule MargaretWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :graphql do
+    plug :accepts, ["json"]
+    plug Guardian.Plug.VerifyCookie
+    plug Guardian.Plug.LoadResource, allow_blank: true
+    plug MargaretWeb.Context
+  end
+
   scope "/" do
-    pipe_through :api
+    pipe_through :graphql
 
     forward "/graphql", Absinthe.Plug,
       schema: MargaretWeb.Schema
