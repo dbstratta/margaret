@@ -17,6 +17,11 @@ config :margaret, MargaretWeb.Endpoint,
   pubsub: [name: Margaret.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+# Configures Guardian
+config :guardian, MargaretWeb.Guardian,
+  issuer: "Margaret"
+  secret_key: "Cs+SatzTr/4GlMDYRn+lHQCu+iP7b0hIhr71xDT62J3G+gDb5wlma/UMuxJWOdea"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
