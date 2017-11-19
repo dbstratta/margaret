@@ -17,6 +17,7 @@ defmodule MargaretWeb.Guardian do
     else
       :error -> {:error, :invalid_id}
       {:error, _} -> {:error, :no_result}
+    end
   end
   def resource_from_claims(_) do
     {:error, :invalid_claims}
