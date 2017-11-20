@@ -3,7 +3,7 @@ defmodule MargaretWeb.Guardian do
 
   alias Margaret.Accounts.User
 
-  def subject_for_token(%User = user, _claims) do
+  def subject_for_token(%User{} = user, _claims) do
     {:ok, "User:" <> to_string(user.id)}
   end
   def subject_for_token(_, _) do

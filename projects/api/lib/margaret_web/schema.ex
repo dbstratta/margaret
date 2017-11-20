@@ -2,26 +2,17 @@ defmodule MargaretWeb.Schema do
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
 
+  import_types MargaretWeb.Schema.NodeTypes
   import_types MargaretWeb.Schema.AccountTypes
   import_types MargaretWeb.Schema.StoryTypes
 
   alias MargaretWeb.Resolvers
 
-  node interface do
-    resolve_type fn
-      _, _ ->
-        nil
-    end
-  end
-
   @desc "The root query type."
   query do
     @desc "Lookup a node by its global id."
     node field do
-      resolve fn
-        %{type: :user, id: id}, resolution ->
-          Resolvers.Accounts.resolve_user_by_id(%{user_id: id}, resolution)
-      end
+      resolve &Resolvers.Nodes.resolve_node/2
     end
 
     @desc "Get the authenticated user."
@@ -43,6 +34,7 @@ defmodule MargaretWeb.Schema do
     end
   end
 
+  @desc "The root mutation type."
   mutation do
     @desc "Creates a new user."
     payload field :create_user do
