@@ -22,7 +22,9 @@ stages:
 jobs:
   include:
     - stage: build
-      script: docker-compose build
+      script:
+        - touch .env
+        - docker-compose build
 
     - stage: test
       script: exit 0

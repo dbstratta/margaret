@@ -10,4 +10,11 @@ defmodule MargaretWeb.Schema.NodeTypes do
         nil
     end
   end
+
+  object :node_queries do
+    @desc "Lookup a node by its global id."
+    node field do
+      resolve &Resolvers.Nodes.resolve_node/2
+    end
+  end
 end

@@ -18,6 +18,11 @@ const createApolloClient = (initialState = {}) =>
     ssrMode: !process.browser,
     link: new HttpLink({
       uri: URI,
+      credentials: true,
+      headers: {
+        // We put this custom header to prevent CSRF attacks.
+        'X-Requested-With': 'XMLHttpRequest',
+      },
     }),
     cache: new InMemoryCache().restore(initialState),
   });

@@ -1,6 +1,4 @@
 defmodule MargaretWeb.Context do
-  @behaviour Plug
-
   import Plug.Conn
 
   def init(opts), do: opts
