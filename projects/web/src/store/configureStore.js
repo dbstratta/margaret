@@ -1,16 +1,15 @@
 import { createStore, applyMiddleware } from 'redux';
-import createSagaMiddleware, { END } from 'redux-saga';
+import { createEpicMiddleware } from 'redux-observable';
+import { routerMiddleware as createRouterMiddleware } from 'react-router-redux';
 
 import rootReducer from '../rootReducer';
-import rootSaga from '../rootSaga';
+import rootEpic from '../rootEpic';
 
-const sagaMiddleware = createSagaMiddleware();
+export default function configureStore({ initialState, history }) {
+  const epicMiddlware = createEpicMiddleware(rootEpic);
+  const routerMiddleware = createRouterMiddleware(history);
 
-export default (initialState) => {
-  const store = createStore(rootReducer, initialState, applyMiddleware(sagaMiddleware));
+  const middleware = applyMiddleware(epicMiddlware, routerMiddleware);
 
-  store.sagaTask = sagaMiddleware.run(rootSaga);
-  store.close = () => store.dispatch(END);
-
-  return store;
-};
+  return createStore(rootReducer, initialState, middleware);
+}
