@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import { curry } from 'ramda';
+import { curry, map, __ as _ } from 'ramda';
 
 const baseSize = 0.2;
 const sizes = {
@@ -32,34 +32,47 @@ const spacingTopBottom = target => size => spacing(target, { top: size, bottom: 
 const spacingRightLeft = target => size => spacing(target, { right: size, left: size });
 const spacingSide = side => target => size => spacing(target, { [side]: size });
 
-const spacingTop = spacingSide('top');
-const spacingRight = spacingSide('right');
-const spacingBottom = spacingSide('bottom');
-const spacingLeft = spacingSide('left');
+const sides = ['top', 'right', 'bottom', 'left'];
+const [spacingTop, spacingRight, spacingBottom, spacingLeft] = map(spacingSide, sides);
 
-const spacingCreator = target => fn => fn(target);
-const marginCreator = spacingCreator('margin');
-const paddingCreator = spacingCreator('padding');
+const spacingHelpers = [
+  spacing,
+  spacingAll,
+  spacingTopBottom,
+  spacingRightLeft,
+  spacingTop,
+  spacingRight,
+  spacingBottom,
+  spacingLeft,
+];
+
+const [marginCreator, paddingCreator] = map(target => fn => fn(target), ['margin', 'padding']);
+
+const helperCreator = map(_, spacingHelpers);
 
 // Margin helpers
-const margin = marginCreator(spacing);
-const marginAll = marginCreator(spacingAll);
-const marginTopBottom = marginCreator(spacingTopBottom);
-const marginRightLeft = marginCreator(spacingRightLeft);
-const marginTop = marginCreator(spacingTop);
-const marginRight = marginCreator(spacingRight);
-const marginBottom = marginCreator(spacingBottom);
-const marginLeft = marginCreator(spacingLeft);
+const [
+  margin,
+  marginAll,
+  marginTopBottom,
+  marginRightLeft,
+  marginTop,
+  marginRight,
+  marginBottom,
+  marginLeft,
+] = helperCreator(marginCreator);
 
 // Padding helpers
-const padding = paddingCreator(spacing);
-const paddingAll = paddingCreator(spacingAll);
-const paddingTopBottom = paddingCreator(spacingTopBottom);
-const paddingRightLeft = paddingCreator(spacingRightLeft);
-const paddingTop = paddingCreator(spacingTop);
-const paddingRight = paddingCreator(spacingRight);
-const paddingBottom = paddingCreator(spacingBottom);
-const paddingLeft = paddingCreator(spacingLeft);
+const [
+  padding,
+  paddingAll,
+  paddingTopBottom,
+  paddingRightLeft,
+  paddingTop,
+  paddingRight,
+  paddingBottom,
+  paddingLeft,
+] = helperCreator(paddingCreator);
 
 export default {
   sizes,
