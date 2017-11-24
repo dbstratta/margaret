@@ -49,6 +49,7 @@ const spacingHelpers = [
 const [marginCreator, paddingCreator] = map(target => fn => fn(target), ['margin', 'padding']);
 
 const helperCreator = map(_, spacingHelpers);
+const [marginHelper, paddingHelper] = map(helperCreator, [marginCreator, paddingCreator]);
 
 // Margin helpers
 const [
@@ -60,7 +61,7 @@ const [
   marginRight,
   marginBottom,
   marginLeft,
-] = helperCreator(marginCreator);
+] = marginHelper;
 
 // Padding helpers
 const [
@@ -72,7 +73,7 @@ const [
   paddingRight,
   paddingBottom,
   paddingLeft,
-] = helperCreator(paddingCreator);
+] = paddingHelper;
 
 export default {
   sizes,
