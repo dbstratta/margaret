@@ -1,5 +1,12 @@
 import React from 'react';
+import Aux from 'react-aux';
 
-const Index = () => <div>index</div>;
+import TopicBar from './TopicBar';
+
+const Index = () => (
+  <Aux>
+    <TopicBar />
+  </Aux>
+);
 
 export default Index;

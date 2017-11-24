@@ -6,8 +6,7 @@ defmodule MargaretWeb.Router do
   end
 
   pipeline :graphql do
-    plug MargaretWeb.Plugs.PreventCSRF
-    plug Guardian.Plug.VerifyCookie
+    plug Guardian.Plug.VerifyHeader
     plug Guardian.Plug.LoadResource, allow_blank: true
     plug MargaretWeb.Context
   end
@@ -24,11 +23,6 @@ defmodule MargaretWeb.Router do
 
     forward "/graphiql", Absinthe.Plug.GraphiQL,
       schema: MargaretWeb.Schema,
-      interface: :playground,
-      default_headers: {__MODULE__, :graphiql_headers}
-  end
-
-  def graphiql_headers do
-    %{"X-Requested-With" => "XMLHttpRequest"}
+      interface: :playground
   end
 end

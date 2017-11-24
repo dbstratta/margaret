@@ -1,8 +1,11 @@
 import 'rxjs';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import createHistory from 'history/createBrowserHistory';
+
+import './globalStyles';
 
 import Root from './components/Root';
 import registerServiceWorker from './registerServiceWorker';

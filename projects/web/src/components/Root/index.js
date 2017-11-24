@@ -6,12 +6,13 @@ import { ConnectedRouter } from 'react-router-redux';
 import { ThemeProvider } from 'styled-components';
 
 import App from '../App';
+import theme from '../../theme';
 
 const Root = ({ client, store, history }) => (
   <ApolloProvider client={client}>
     <Provider store={store}>
       <ConnectedRouter history={history}>
-        <ThemeProvider theme={{}}>
+        <ThemeProvider theme={theme}>
           <App />
         </ThemeProvider>
       </ConnectedRouter>
