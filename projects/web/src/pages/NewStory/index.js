@@ -1,5 +1,13 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-const NewStory = () => <div>new story</div>;
+import { Editor, EditorState } from 'draft-js';
 
-export default NewStory;
+export default class MyEditor extends Component {
+  state = { editorState: EditorState.createEmpty() };
+
+  handleChange = editorState => this.setState({ editorState });
+
+  render() {
+    return <Editor editorState={this.state.editorState} onChange={this.handleChange} />;
+  }
+}

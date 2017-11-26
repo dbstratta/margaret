@@ -21,3 +21,6 @@ max_line_length = 79
 
 [*.{json,yml}]
 indent_size = 2
+
+[nginx.conf]
+indent_size = 2
