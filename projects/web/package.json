@@ -38,7 +38,7 @@
     "recompose": "0.26.0",
     "redux": "3.7.2",
     "redux-actions": "2.2.1",
-    "redux-form": "7.1.2",
+    "redux-form": "7.2.0",
     "redux-observable": "0.17.0",
     "reselect": "3.0.1",
     "rxjs": "5.5.2",
