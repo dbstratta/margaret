@@ -1,3 +1,4 @@
 {
-  "elixir.projectPath": "/projects/api"
+  "elixir.projectPath": "/projects/api",
+  "jest.rootPath": "/projects/web"
 }

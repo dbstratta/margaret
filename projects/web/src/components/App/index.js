@@ -7,7 +7,7 @@ import Story from '../../pages/Story';
 import Profile from '../../pages/Profile';
 import Publication from '../../pages/Publication';
 
-const App = () => (
+export const App = () => (
   <Switch>
     <Route exact path="/" component={Index} />
     <Route path="/new" component={NewStory} />
