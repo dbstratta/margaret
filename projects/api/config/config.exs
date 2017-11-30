@@ -17,6 +17,15 @@ config :margaret, MargaretWeb.Endpoint,
   pubsub: [name: Margaret.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+config :ueberauth, Ueberauth,
+  providers: [
+    google: {Ueberauth.Strategy.Google, []},
+  ]
+
+config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+  client_id: System.get_env("GOOGLE_CLIENT_ID"),
+  client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
+
 # Configures Guardian
 config :guardian, MargaretWeb.Guardian,
   issuer: "Margaret",

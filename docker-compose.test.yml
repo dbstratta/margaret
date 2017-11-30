@@ -9,6 +9,8 @@ services:
       - VIRTUAL_HOST=api.localhost
       - VIRTUAL_PORT=4000
 
+      - CI
+
   web:
     build:
       context: ./projects/web
@@ -16,3 +18,5 @@ services:
     environment:
       - VIRTUAL_HOST=localhost
       - VIRTUAL_PORT=3000
+
+      - CI
