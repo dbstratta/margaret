@@ -30,8 +30,8 @@ services:
 
       # These env variables will be read from the host machine.
       - NODE_ENV
-      - WEB_PORT
-      - WEB_LOG_LEVEL
+      - WEB__PORT
+      - WEB__LOG_LEVEL
 
 
   postgres:

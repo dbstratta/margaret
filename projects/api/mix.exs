@@ -42,6 +42,7 @@ defmodule Margaret.Mixfile do
       {:cowboy, "~> 1.0"},
       {:guardian, "~> 1.0"},
       {:ueberauth, "~> 0.5.0"},
+      {:ueberauth_github, "~> 0.6.0"},
       {:ueberauth_google, "~> 0.7.0"},
       {:absinthe, "~> 1.4"},
       {:absinthe_plug, "~> 1.4"},
