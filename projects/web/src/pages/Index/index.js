@@ -1,14 +1,13 @@
-import React from 'react';
-import Aux from 'react-aux';
+import React, { Fragment } from 'react';
 
 import TopBar from '../../components/TopBar';
 import TopicBar from './TopicBar';
 
 const Index = () => (
-  <Aux>
+  <Fragment>
     <TopBar />
     <TopicBar />
-  </Aux>
+  </Fragment>
 );
 
 export default Index;

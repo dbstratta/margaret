@@ -1,0 +1,18 @@
+version: '3'
+services:
+  api:
+    build:
+      context: ./projects/api
+      dockerfile: dev.dockerfile
+    command: tail -f /dev/null
+    environment:
+      - VIRTUAL_HOST=api.localhost
+      - VIRTUAL_PORT=4000
+
+  web:
+    build:
+      context: ./projects/web
+      dockerfile: dev.dockerfile
+    environment:
+      - VIRTUAL_HOST=localhost
+      - VIRTUAL_PORT=3000
