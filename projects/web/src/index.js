@@ -12,6 +12,12 @@ import registerServiceWorker from './registerServiceWorker';
 import configureApollo from './configureApollo';
 import configureStore from './store';
 
+if (process.env.WEB__WHY_DID_YOU_UPDATE) {
+  // eslint-disable-next-line global-require
+  const { whyDidYouUpdate } = require('why-did-you-update');
+  whyDidYouUpdate(React);
+}
+
 const history = createHistory();
 
 const client = configureApollo();

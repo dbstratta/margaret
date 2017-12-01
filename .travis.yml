@@ -23,13 +23,12 @@ jobs:
   include:
     - stage: build
       script:
-        - touch .env
         - docker-compose build
 
     - stage: test
       script:
         - yarn test
-        - docker-compose run --rm web yarn test
+        - docker-compose run --rm web yarn test:ci
 
     - stage: deploy
       script: skip

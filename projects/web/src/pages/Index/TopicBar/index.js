@@ -5,7 +5,6 @@ import styled from 'styled-components';
 const StyledNav = styled.nav`
   position: sticky;
   top: 0;
-
   ${props => props.theme.spacing.paddingTopBottom('sm')};
 `;
 
@@ -16,7 +15,9 @@ const StyledUl = styled.ul`
   margin: 0;
 `;
 
-const StyledLi = styled.li``;
+const StyledLi = styled.li`
+  display: inline;
+`;
 
 const TopicBar = () => (
   <StyledNav>

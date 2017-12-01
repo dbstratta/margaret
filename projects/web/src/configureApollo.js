@@ -1,6 +1,7 @@
 import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloLink, concat } from 'apollo-link';
+// eslint-disable-next-line
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 const { REACT_APP_API_URL: API_URL } = process.env;

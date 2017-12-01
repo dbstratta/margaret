@@ -29,4 +29,5 @@ services:
     environment:
       - VIRTUAL_HOST=localhost
       - VIRTUAL_PORT=3000
+      - NODE_ENV=development
     env_file: .env
