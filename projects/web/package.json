@@ -68,7 +68,7 @@
     "jest": "21.2.1",
     "jest-enzyme": "4.0.1",
     "jest-styled-components": "4.9.0",
-    "prettier": "^1.8.2",
+    "prettier": "1.8.2",
     "react-app-rewire-hot-loader": "1.0.0",
     "react-app-rewire-polished": "1.0.3",
     "react-app-rewire-styled-components": "3.0.0",
@@ -82,6 +82,6 @@
     "stylelint-config-standard": "18.0.0",
     "stylelint-config-styled-components": "0.1.1",
     "stylelint-processor-styled-components": "1.1.1",
-    "why-did-you-update": "^0.1.0"
+    "why-did-you-update": "0.1.0"
   }
 }
