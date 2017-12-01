@@ -11,8 +11,11 @@ defmodule MargaretWeb.Router do
     plug MargaretWeb.Context
   end
 
-  scope "/oauth" do
+  scope "/auth", MargaretWeb do
     pipe_through :api
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
   end
 
   scope "/" do
