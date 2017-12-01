@@ -27,7 +27,6 @@
     "prettier": "1.8.2",
     "prettier-eslint": "8.2.2",
     "prettier-eslint-cli": "4.4.0",
-    "prettier-stylelint": "^0.4.2",
     "puppeteer": "0.13.0",
     "stylelint": "8.3.1",
     "stylelint-config-standard": "18.0.0",
