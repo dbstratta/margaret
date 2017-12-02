@@ -44,6 +44,7 @@ defmodule Margaret.Mixfile do
       {:ueberauth, "~> 0.5.0"},
       {:ueberauth_github, "~> 0.6.0"},
       {:ueberauth_google, "~> 0.7.0"},
+      {:ueberauth_facebook, "~> 0.7.0"},
       {:absinthe, "~> 1.4"},
       {:absinthe_plug, "~> 1.4"},
       {:absinthe_ecto, ">= 0.1.3"},

@@ -31,6 +31,10 @@ config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_id: System.get_env("API__GOOGLE_CLIENT_ID"),
   client_secret: System.get_env("API__GOOGLE_CLIENT_SECRET")
 
+config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+  client_id: System.get_env("API__FACEBOOK_CLIENT_ID"),
+  client_secret: System.get_env("API__FACEBOOK_CLIENT_SECRET")
+
 # Configures Guardian
 config :guardian, MargaretWeb.Guardian,
   issuer: "Margaret",

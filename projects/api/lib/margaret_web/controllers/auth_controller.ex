@@ -5,6 +5,8 @@ defmodule MargaretWeb.AuthController do
 
   plug Ueberauth
 
+  def request(_conn, _params), do: nil
+
   def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
     nil
   end

@@ -9,16 +9,17 @@ const StyledLink = styled(Link)`
   background-color: hsla(221, 44%, 41%, 1);
 `;
 
-const getUrl = redirectUri =>
+const getFacebookUrl = () =>
   `https://www.facebook.com/v2.11/dialog/oauth?client_id=${FACEBOOK_CLIENT_ID}&redirect_uri=${
-    redirectUri
+    window.location.href
   }`;
 
-const FacebookLoginButton = ({ redirectUri, children }) => (
-  <StyledLink to={getUrl(redirectUri)}>{children}</StyledLink>
+export const FacebookLoginButton = ({ children }) => (
+  <StyledLink to={getFacebookUrl()}>{children}</StyledLink>
 );
 
 FacebookLoginButton.propTypes = {
-  redirectUri: PropTypes.string.isRequired,
   children: PropTypes.any.isRequired,
 };
+
+export default FacebookLoginButton;

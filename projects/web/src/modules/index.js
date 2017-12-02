@@ -1,2 +1,4 @@
+import * as auth from './auth';
+
 // eslint-disable-next-line import/prefer-default-export
-export { default as withAuth } from './withAuth';
+export { auth };
