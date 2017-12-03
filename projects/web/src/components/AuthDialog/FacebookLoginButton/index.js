@@ -9,13 +9,13 @@ const StyledLink = styled(Link)`
   background-color: hsla(221, 44%, 41%, 1);
 `;
 
-const getFacebookUrl = () =>
+const getFacebookOauthUrl = () =>
   `https://www.facebook.com/v2.11/dialog/oauth?client_id=${FACEBOOK_CLIENT_ID}&redirect_uri=${
     window.location.href
   }`;
 
 export const FacebookLoginButton = ({ children }) => (
-  <StyledLink to={getFacebookUrl()}>{children}</StyledLink>
+  <StyledLink to={getFacebookOauthUrl()}>{children}</StyledLink>
 );
 
 FacebookLoginButton.propTypes = {

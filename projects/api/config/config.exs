@@ -21,19 +21,20 @@ config :ueberauth, Ueberauth,
   providers: [
     github: {Ueberauth.Strategy.Github, []},
     google: {Ueberauth.Strategy.Google, []},
+    facebook: {Ueberauth.Strategy.Facebook, []},
   ]
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-  client_id: System.get_env("API__GITHUB_CLIENT_ID"),
-  client_secret: System.get_env("API__GITHUB_CLIENT_SECRET")
+  client_id: System.get_env("GITHUB_CLIENT_ID"),
+  client_secret: System.get_env("GITHUB_CLIENT_SECRET")
 
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
-  client_id: System.get_env("API__GOOGLE_CLIENT_ID"),
-  client_secret: System.get_env("API__GOOGLE_CLIENT_SECRET")
+  client_id: System.get_env("GOOGLE_CLIENT_ID"),
+  client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
 
-config :ueberauth, Ueberauth.Strategy.Google.OAuth,
-  client_id: System.get_env("API__FACEBOOK_CLIENT_ID"),
-  client_secret: System.get_env("API__FACEBOOK_CLIENT_SECRET")
+config :ueberauth, Ueberauth.Strategy.Facebook.OAuth,
+  client_id: System.get_env("FACEBOOK_CLIENT_ID"),
+  client_secret: System.get_env("FACEBOOK_CLIENT_SECRET")
 
 # Configures Guardian
 config :guardian, MargaretWeb.Guardian,

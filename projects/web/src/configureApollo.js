@@ -4,7 +4,9 @@ import { ApolloLink, concat } from 'apollo-link';
 // eslint-disable-next-line
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
-const { REACT_APP_API_URL: API_URL } = process.env;
+import { auth } from './utils';
+
+const { REACT_APP__API_URL: API_URL } = process.env;
 
 export default function configureApollo() {
   const httpLink = new HttpLink({
@@ -14,7 +16,7 @@ export default function configureApollo() {
   const authMiddleware = new ApolloLink((operation, forward) => {
     operation.setContext({
       headers: {
-        authorization: 'TBD',
+        authorization: auth.getToken(),
       },
     });
 
