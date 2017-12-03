@@ -36,6 +36,8 @@ defmodule MargaretWeb.Endpoint do
     key: "_margaret_key",
     signing_salt: "o1hkMceL"
 
+  plug CORSPlug
+
   plug MargaretWeb.Router
 
   @doc """

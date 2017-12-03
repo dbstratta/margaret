@@ -17,6 +17,9 @@ config :margaret, MargaretWeb.Endpoint,
   pubsub: [name: Margaret.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+config :cors_plug,
+  methods: ["GET", "POST"]
+
 config :ueberauth, Ueberauth,
   providers: [
     github: {Ueberauth.Strategy.Github, []},
