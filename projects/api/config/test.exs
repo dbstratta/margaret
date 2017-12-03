@@ -15,5 +15,5 @@ config :margaret, Margaret.Repo,
   username: "postgres",
   password: "postgres",
   database: "margaret_test",
-  hostname: "localhost",
+  hostname: "postgres",
   pool: Ecto.Adapters.SQL.Sandbox
