@@ -25,7 +25,4 @@ RUN mix deps.get
 # Bundle app source.
 COPY . .
 
-# Create (if not already created) and migrate DB.
-RUN mix ecto.setup
-
 CMD ["mix", "phx.server"]
