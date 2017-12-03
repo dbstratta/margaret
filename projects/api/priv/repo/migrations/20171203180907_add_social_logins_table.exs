@@ -9,5 +9,7 @@ defmodule Margaret.Repo.Migrations.AddSocialLoginsTable do
 
       timestamps()
     end
+
+    create unique_index(:social_logins, [:uid, :provider])
   end
 end
