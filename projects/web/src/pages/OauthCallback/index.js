@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { branch, renderComponent } from 'recompose';
+import { branch, renderComponent, renderNothing } from 'recompose';
 import { Redirect } from 'react-router-dom';
 import { compose } from 'ramda';
 
@@ -12,8 +12,8 @@ OauthCallback.propTypes = {
   redirectUrl: PropTypes.string.isRequired,
 };
 
-const withLoading = branch(({ success }) => success, renderComponent(OauthCallback));
+const redirectIfError = branch(({ error }) => error, renderNothing, renderComponent(OauthCallback));
 
-const enhance = compose(withAuth, withLoading);
+const enhance = compose(withAuth, redirectIfError);
 
 export default enhance(OauthCallback);

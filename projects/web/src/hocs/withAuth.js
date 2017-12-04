@@ -1,40 +1,46 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
 
-import { auth } from '../modules';
+import { auth } from '../api';
+import { auth as authUtils } from '../utils';
 
-const mapStateToProps = state => ({ success: auth.selectors.getOauthCallbackSuccess(state) });
-const mapDispatchToProps = { sendSocialLoginCode: auth.actions.sendSocialLoginCode };
-
-export default function withAuth(WrappedComponent) {
-  @withRouter
-  @connect(mapStateToProps, mapDispatchToProps)
+export default WrappedComponent =>
   class Auth extends PureComponent {
-    static propTypes = {
-      location: PropTypes.object.isRequired,
-      success: PropTypes.bool.isRequired,
-      sendSocialLoginCode: PropTypes.func.isRequired,
+    state = {
+      success: false,
+      loading: false,
+      error: null,
     };
 
-    componentDidMount() {
-      const { query } = this.state;
+    /* eslint-disable react/no-did-mount-set-state */
+    async componentDidMount() {
+      const { query } = this;
       const code = query.get('code');
       const provider = query.get('provider');
 
       if (code) {
-        this.props.sendSocialLoginCode(provider, code);
+        try {
+          this.setState({ loading: true });
+          const token = await auth.sendSocialLoginCode(provider, code);
+          authUtils.setToken(token);
+          this.setState({ success: true, loading: false });
+        } catch (error) {
+          this.setState({ success: false, error, loading: false });
+        }
       }
     }
+    /* eslint-enable react/no-did-mount-set-state */
 
-    query = new URLSearchParams(this.props.location.search);
+    query = new URLSearchParams(window.location.search);
     redirectUrl = this.query.get('redirectUrl');
 
     render() {
-      return <WrappedComponent success={this.props.success} redirectUrl={this.redirectUrl} />;
+      return (
+        <WrappedComponent
+          success={this.state.success}
+          loading={this.state.loading}
+          error={this.state.error}
+          redirectUrl={this.redirectUrl}
+        />
+      );
     }
-  }
-
-  return Auth;
-}
+  };
