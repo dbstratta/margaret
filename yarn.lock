@@ -362,7 +362,7 @@ babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
     esutils "^2.0.2"
     js-tokens "^3.0.2"
 
-babel-core@^6.0.0, babel-core@^6.26.0:
+babel-core@6.26.0, babel-core@^6.0.0, babel-core@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-core/-/babel-core-6.26.0.tgz#af32f78b31a6fcef119c87b0fd8d9753f03a0bb8"
   dependencies:
@@ -3616,10 +3616,11 @@ prettier-eslint-cli@4.4.1:
     rxjs "^5.3.0"
     yargs "10.0.3"
 
-prettier-eslint@8.2.2:
-  version "8.2.2"
-  resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-8.2.2.tgz#b03c8794f844e863036163061ae14c2049bcff1a"
+prettier-eslint@8.2.3:
+  version "8.2.3"
+  resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-8.2.3.tgz#1e95788792fcac2f9219223795f9d95ce81fdf8e"
   dependencies:
+    babel-core "6.26.0"
     common-tags "^1.4.0"
     dlv "^1.1.0"
     eslint "^4.5.0"
@@ -3627,7 +3628,7 @@ prettier-eslint@8.2.2:
     lodash.merge "^4.6.0"
     loglevel-colored-level-prefix "^1.0.0"
     prettier "^1.7.1"
-    pretty-format "^20.0.3"
+    pretty-format "^21.2.1"
     require-relative "^0.8.7"
     typescript "^2.5.1"
     typescript-eslint-parser "^8.0.0"
