@@ -1,8 +1,18 @@
 defmodule Margaret.Accounts.User do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Margaret.Accounts.{User, SocialLogin}
+  alias __MODULE__, as: User
+  alias Margaret.Accounts.SocialLogin
+
+  @typedoc "The User type"
+  @type t :: %User{
+          username: String.t,
+          email: String.t,
+          social_logins: [SocialLogin.t]
+        }
 
   schema "users" do
     field :username, :string
@@ -17,5 +27,8 @@ defmodule Margaret.Accounts.User do
     user
     |> cast(attrs, [:username, :email])
     |> validate_required([:username, :email])
+    |> validate_length(:username, min: 2, max: 64)
+    |> validate_format(:email, ~r/@/)
+    |> validate_length(:email, min: 3, max: 254)
   end
 end

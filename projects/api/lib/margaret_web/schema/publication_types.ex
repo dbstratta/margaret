@@ -9,8 +9,7 @@ defmodule MargaretWeb.Schema.PublicationTypes do
   object :publication_queries do
     @desc "Lookup a publication by its name."
     field :publication, :publication do
-      arg :name, :string
-      arg :id, :id
+      arg :name, non_null(:string)
 
       resolve &Resolvers.Publications.resolve_publication_by_name/2
     end

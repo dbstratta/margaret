@@ -1,4 +1,8 @@
 defmodule MargaretWeb.Schema.AccountTypes do
+  @moduledoc """
+  The Account GraphQL types.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
@@ -14,6 +18,8 @@ defmodule MargaretWeb.Schema.AccountTypes do
 
     @desc "The biography of the user."
     field :bio, :string
+
+    # @desc "The stories of the user."
     # connection field :stories, node_type: :story do
     #   resolve &Resolvers.Stories.resolve_user_posts/3
     # end
@@ -27,8 +33,9 @@ defmodule MargaretWeb.Schema.AccountTypes do
 
     @desc "Lookup a user by its username."
     field :user, :user do
-      arg :username, :string
-      arg :id, :id
+      @desc "The username of the user."
+      arg :username, non_null(:string)
+
       resolve &Resolvers.Accounts.resolve_user/2
     end
   end
