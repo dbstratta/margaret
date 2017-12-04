@@ -3666,9 +3666,9 @@ filled-array@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/filled-array/-/filled-array-1.1.0.tgz#c3c4f6c663b923459a9aa29912d2d031f1507f84"
 
-final-form@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/final-form/-/final-form-1.2.0.tgz#53970697669e9473858623b42a0c3caa6a949d66"
+final-form@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/final-form/-/final-form-1.2.1.tgz#b004e87be64a97272298d1cc16561d3d9f6c2213"
 
 finalhandler@1.1.0:
   version "1.1.0"
@@ -7260,8 +7260,8 @@ react-media@^1.6.1:
     prop-types "^15.5.10"
 
 react-modal@^3.1.4:
-  version "3.1.6"
-  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.1.6.tgz#82e63f1ec86b80e242518250d066ee37fa035f8a"
+  version "3.1.7"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.1.7.tgz#21feb937c95cd722bf2d375cada751fdc8189c0e"
   dependencies:
     exenv "^1.2.0"
     prop-types "^15.5.10"
@@ -9188,8 +9188,8 @@ webpack@3.8.1:
     yargs "^8.0.2"
 
 webpack@^3.6.0, webpack@^3.8.1:
-  version "3.9.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.9.1.tgz#9a60aa544ed5d4d454c069e3f521aa007e02643c"
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.10.0.tgz#5291b875078cf2abf42bdd23afe3f8f96c17d725"
   dependencies:
     acorn "^5.0.0"
     acorn-dynamic-import "^2.0.0"
