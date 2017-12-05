@@ -8,6 +8,8 @@ defmodule MargaretWeb.Schema.AccountTypes do
 
   alias MargaretWeb.Resolvers
 
+  connection node_type: :user
+
   @desc "A user is an individual's account on Margaret that can make new content."
   node object :user do
     @desc "The username of the user."
@@ -19,10 +21,13 @@ defmodule MargaretWeb.Schema.AccountTypes do
     @desc "The biography of the user."
     field :bio, :string
 
-    # @desc "The stories of the user."
-    # connection field :stories, node_type: :story do
-    #   resolve &Resolvers.Stories.resolve_user_posts/3
-    # end
+    @desc "The stories of the user."
+    connection field :stories, node_type: :story do
+      resolve &Resolvers.Stories.resolve_user_posts/3
+    end
+
+    @desc "Identifies the date and time when the object was created."
+    field :created_at , non_null(:datetime)
   end
 
   object :account_queries do

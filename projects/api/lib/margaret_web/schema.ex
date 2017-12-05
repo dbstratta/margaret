@@ -1,11 +1,18 @@
 defmodule MargaretWeb.Schema do
+  @moduledoc """
+  The GraphQL schema.
+  """
+
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
+
+  import_types Absinthe.Type.Custom
 
   import_types MargaretWeb.Schema.NodeTypes
   import_types MargaretWeb.Schema.AccountTypes
   import_types MargaretWeb.Schema.StoryTypes
   import_types MargaretWeb.Schema.PublicationTypes
+  import_types MargaretWeb.Schema.StarrableTypes
 
   alias MargaretWeb.Resolvers
 
@@ -20,5 +27,6 @@ defmodule MargaretWeb.Schema do
   @desc "The root mutation type."
   mutation do
     import_fields :account_mutations
+    import_fields :story_mutations
   end
 end

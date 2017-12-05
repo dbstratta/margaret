@@ -20,7 +20,10 @@ defmodule MargaretWeb.Resolvers.Accounts do
     # TODO
   end
 
-  def create_user(%{}) do
+  @doc """
+  Resolves a user creation.
+  """
+  def resolve_create_user(%{}) do
     # TODO
   end
 end

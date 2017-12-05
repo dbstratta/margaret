@@ -1,4 +1,8 @@
 defmodule MargaretWeb.Schema.NodeTypes do
+  @moduledoc """
+  The Node GraphQL interface.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 

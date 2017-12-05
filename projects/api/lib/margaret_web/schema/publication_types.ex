@@ -1,4 +1,8 @@
 defmodule MargaretWeb.Schema.PublicationTypes do
+  @moduledoc """
+  The Publication GraphQL types.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
