@@ -44,7 +44,7 @@
     "redux-actions": "2.2.1",
     "redux-observable": "0.17.0",
     "reselect": "3.0.1",
-    "rxjs": "5.5.3",
+    "rxjs": "5.5.4",
     "styled-components": "2.2.4"
   },
   "devDependencies": {
