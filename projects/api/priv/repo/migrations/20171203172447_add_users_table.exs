@@ -1,6 +1,9 @@
 defmodule Margaret.Repo.Migrations.AddUsersTable do
+  @moduledoc false
+
   use Ecto.Migration
 
+  @doc false
   def change do
     create table(:users) do
       add :username, :string, size: 64, null: false
@@ -8,5 +11,7 @@ defmodule Margaret.Repo.Migrations.AddUsersTable do
 
       timestamps()
     end
+
+    create unique_index(:users, [:username])
   end
 end

@@ -19,4 +19,28 @@ defmodule MargaretWeb.Schema.StarrableTypes do
         nil
     end
   end
+
+  object :starrable_mutations do
+    @desc "Stars a starrable."
+    payload field :star do
+      input do
+        field :starrable_id, non_null(:id)
+      end
+
+      output do
+        field :starrable, non_null(:starrable)
+      end
+    end
+
+    @desc "Unstars a starrable."
+    payload field :unstar do
+      input do
+        field :starrable_id, non_null(:id)
+      end
+
+      output do
+        field :starrable, non_null(:starrable)
+      end
+    end
+  end
 end

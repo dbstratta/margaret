@@ -46,11 +46,15 @@ defmodule MargaretWeb.Schema.StoryTypes do
     payload field :create_story do
       input do
         field :title, non_null(:string)
+        field :body, non_null(:string)
         field :summary, :string
       end
+
       output do
         field :story, non_null(:story)
       end
+
+      resolve &Resolvers.Stories.resolve_create_story/2
     end
 
     @desc "Updates a story."
@@ -59,6 +63,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :title, :string
         field :summary, :string
       end
+
       output do
         field :story, non_null(:story)
       end

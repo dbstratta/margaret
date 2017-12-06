@@ -51,6 +51,7 @@ defmodule MargaretWeb.Schema.AccountTypes do
       input do
         field :username, non_null(:string)
       end
+
       output do
         field :user, non_null(:user)
       end

@@ -11,7 +11,6 @@ defmodule Margaret.Accounts.SocialLogin do
   @type t :: %SocialLogin{
           uid: String.t,
           provider: String.t,
-          user: User,
         }
 
   schema "social_logins" do

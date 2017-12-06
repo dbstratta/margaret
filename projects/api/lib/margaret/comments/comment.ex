@@ -10,18 +10,12 @@ defmodule Margaret.Comments.Comment do
   @typedoc "The Comment type"
   @type t :: %Comment{}
 
-  schema "comments" do
+  schema "abstract table: comments" do
+    field :assoc_id, :integer
     field :body, :string
     belongs_to :author, User
+    has_many :comments, {"comment_comments", Comment}, foreign_key: :assoc_id
 
     timestamps()
-  end
-
-  @doc false
-  def changeset(%Comment{} = comment, attrs) do
-    comment
-    |> cast(attrs, [:body, :author_id])
-    |> validate_required([:body, :author_id])
-    |> foreign_key_constraint(:author_id)
   end
 end

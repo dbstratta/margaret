@@ -1,4 +1,4 @@
-defmodule MargaretWeb.Utils.ErrorMessages do
+defmodule MargaretWeb.Helpers.GraphQLErrors do
   def unauthorized do
     {:error, "Unauthorized"}
   end

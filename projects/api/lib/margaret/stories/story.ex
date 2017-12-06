@@ -7,6 +7,7 @@ defmodule Margaret.Stories.Story do
   alias __MODULE__, as: Story
   alias Margaret.Accounts.User
   alias Margaret.Stars.{Star, StoryStar}
+  alias Margaret.Comments.Comment
 
   @typedoc "The Story type"
   @type t :: %Story{}
@@ -16,7 +17,9 @@ defmodule Margaret.Stories.Story do
     field :body, :string
     belongs_to :author, User
     field :summary, :string
-    many_to_many :stars, Star, join_through: StoryStar
+    field :slug, :string
+    has_many :stars, StoryStar
+    has_many :comments, {"story_comments", Comment}, foreign_key: :assoc_id
 
     timestamps()
   end

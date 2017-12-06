@@ -4,9 +4,24 @@ defmodule Margaret.Accounts do
   """
 
   import Ecto.Query
-  alias Margaret.Repo
 
+  alias Margaret.Repo
   alias Margaret.Accounts.{User, SocialLogin}
+
+  @doc """
+  Gets a single user.
+
+  ## Examples
+
+      iex> get_user(123)
+      %User{}
+
+      iex> get_user(456)
+      nil
+
+  """
+  @spec get_user(String.t) :: User.t
+  def get_user(id), do: Repo.get(User, id)
 
   @doc """
   Gets a single user.
@@ -30,12 +45,32 @@ defmodule Margaret.Accounts do
 
   ## Examples
 
-      iex> get_user_by_username!("user123")
+      iex> get_user_by_username("user123")
       %User{}
+
+      iex> get_user_by_username("user456")
+      nil
 
   """
   @spec get_user_by_username(String.t) :: User.t
   def get_user_by_username(username), do: Repo.get_by(User, username: username)
+
+  @doc """
+  Gets a user by its username.
+
+  Raises `Ecto.NoResultsError` if the User does not exist.
+
+  ## Examples
+
+      iex> get_user_by_username!("user123")
+      %User{}
+
+      iex> get_user_by_username!("user456")
+      ** (Ecto.NoResultsError)
+
+  """
+  @spec get_user_by_username!(String.t) :: User.t
+  def get_user_by_username!(username), do: Repo.get_by!(User, username: username)
 
   @doc """
   Gets a user by its social login.
@@ -59,6 +94,7 @@ defmodule Margaret.Accounts do
   @doc """
   Creates a new user.
   """
+  @spec create_user(%{optional(any) => any}) :: Ecto.Changeset
   def create_user(attrs) do
     %User{}
     |> User.changeset(attrs)
