@@ -15,6 +15,7 @@ defmodule Margaret.Stories.Story do
     field :title, :string
     field :body, :string
     belongs_to :author, User
+    field :summary, :string
     many_to_many :stars, Star, join_through: StoryStar
 
     timestamps()
@@ -23,7 +24,7 @@ defmodule Margaret.Stories.Story do
   @doc false
   def changeset(%Story{} = story, attrs) do
     story
-    |> cast(attrs, [:title, :body, :user_id])
+    |> cast(attrs, [:title, :body, :user_id, :summary])
     |> validate_required([:title, :body])
     |> foreign_key_constraint(:user_id)
   end

@@ -11,7 +11,8 @@ defmodule Margaret.Comments.Comment do
   @type t :: %Comment{}
 
   schema "comments" do
-    belongs_to :user, User
+    field :body, :string
+    belongs_to :author, User
 
     timestamps()
   end
@@ -19,8 +20,8 @@ defmodule Margaret.Comments.Comment do
   @doc false
   def changeset(%Comment{} = comment, attrs) do
     comment
-    |> cast(attrs, [:user_id])
-    |> validate_required([:user_id])
-    |> foreign_key_constraint(:user_id)
+    |> cast(attrs, [:body, :author_id])
+    |> validate_required([:body, :author_id])
+    |> foreign_key_constraint(:author_id)
   end
 end

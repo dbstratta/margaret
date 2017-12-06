@@ -35,7 +35,7 @@ services:
 
 
   postgres:
-    image: postgres:10.0
+    image: postgres:10.1
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     deploy:
