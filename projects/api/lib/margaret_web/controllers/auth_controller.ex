@@ -1,7 +1,12 @@
 defmodule MargaretWeb.AuthController do
+  @moduledoc """
+  The Authentication controller.
+  """
+
   use MargaretWeb, :controller
 
-  alias Margaret.Accounts.User
+  alias Margaret.Accounts
+  alias Accounts.User
 
   plug Ueberauth
 
@@ -16,22 +21,20 @@ defmodule MargaretWeb.AuthController do
   end
 
   defp do_callback(%{assigns: %{ueberauth_auth: %{uid: uid}}} = conn, :facebook) do
-    sign_up_or_sign_in_user(conn, :facebook, uid)
+    sign_in_user(conn, :facebook, uid)
   end
 
-  defp sign_up_or_sign_in_user(conn, provider, uid) do
+  defp sign_in_user(conn, provider, uid) do
     try do
-      sign_in_user(conn)
+      user = Accounts.get_user_by_social_login!(provider, uid)
+      {:ok, token, _} = MargaretWeb.Guardian.encode_and_sign(user)
+      token
     catch
-      _ -> sign_up_user(conn)
+      _ -> sign_up_user(conn, provider, uid)
     end
   end
 
-  defp sign_up_user(conn) do
-
-  end
-
-  defp sign_in_user(conn) do
+  defp sign_up_user(conn, provider, uid) do
 
   end
 end

@@ -5,13 +5,11 @@ defmodule Margaret.Repo.Migrations.AddStoryStarsTable do
 
   @doc false
   def change do
-    create table(:story_stars) do
+    create table(:story_stars, primary_key: false) do
       add :story_id, references(:stories), null: false
-      add :user_id, references(:users), null: false
-
-      timestamps()
+      add :star_id, references(:stars), null: false
     end
 
-    create unique_index(:story_starts, [:story_id, :user_id])
+    create unique_index(:story_stars, [:story_id, :star_id])
   end
 end

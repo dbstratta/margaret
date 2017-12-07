@@ -15,7 +15,7 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     field :publication, :publication do
       arg :name, non_null(:string)
 
-      resolve &Resolvers.Publications.resolve_publication_by_name/2
+      resolve &Resolvers.Publications.resolve_publication/2
     end
   end
 end

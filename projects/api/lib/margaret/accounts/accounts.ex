@@ -88,16 +88,41 @@ defmodule Margaret.Accounts do
   """
   @spec get_user_by_social_login!(atom, String.t) :: User.t
   def get_user_by_social_login!(provider, uid) do
-    Repo.get_by!(SocialLogin, [provider: provider, uid: uid])
+    SocialLogin
+    |> Repo.get_by!([provider: provider, uid: uid])
+    |> Repo.preload(:user)
+    |> Map.get(:user)
   end
 
   @doc """
   Creates a new user.
+
+  ## Examples
+
+    iex> create_user(attrs)
+    {:ok, %User{}}
+
   """
-  @spec create_user(%{optional(any) => any}) :: Ecto.Changeset
+  @spec create_user(%{optional(any) => any}) :: {atom, Ecto.Changeset}
   def create_user(attrs) do
     %User{}
     |> User.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Creates a social login.
+
+  ## Examples
+
+    iex> create_social_login(attrs)
+    {:ok, %SocialLogin{}}
+
+  """
+  @spec create_social_login(%{optional(any) => any}) :: {atom, Ecto.Changeset}
+  def create_social_login(attrs) do
+    %SocialLogin{}
+    |> SocialLogin.changeset(attrs)
     |> Repo.insert()
   end
 end

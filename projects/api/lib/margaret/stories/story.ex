@@ -6,7 +6,7 @@ defmodule Margaret.Stories.Story do
 
   alias __MODULE__, as: Story
   alias Margaret.Accounts.User
-  alias Margaret.Stars.{Star, StoryStar}
+  alias Margaret.Stars.Star
   alias Margaret.Comments.Comment
 
   @typedoc "The Story type"
@@ -18,8 +18,14 @@ defmodule Margaret.Stories.Story do
     belongs_to :author, User
     field :summary, :string
     field :slug, :string
-    has_many :stars, StoryStar
-    has_many :comments, {"story_comments", Comment}, foreign_key: :assoc_id
+    many_to_many :stars, Star,
+      join_through: "story_stars",
+      on_delete: :delete_all,
+      unique: true
+    many_to_many :comments, Comment,
+      join_through: "story_comments",
+      on_delete: :delete_all,
+      unique: true
 
     timestamps()
   end
@@ -27,8 +33,8 @@ defmodule Margaret.Stories.Story do
   @doc false
   def changeset(%Story{} = story, attrs) do
     story
-    |> cast(attrs, [:title, :body, :user_id, :summary])
+    |> cast(attrs, [:title, :body, :author_id, :summary])
     |> validate_required([:title, :body])
-    |> foreign_key_constraint(:user_id)
+    |> foreign_key_constraint(:author_id)
   end
 end
