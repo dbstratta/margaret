@@ -1,6 +1,6 @@
 defmodule MargaretWeb.Guardian do
   @moduledoc """
-  Guardian module.
+  Guardian implementation module.
   """
 
   use Guardian, otp_app: :margaret

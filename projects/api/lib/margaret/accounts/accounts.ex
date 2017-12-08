@@ -73,6 +73,38 @@ defmodule Margaret.Accounts do
   def get_user_by_username!(username), do: Repo.get_by!(User, username: username)
 
   @doc """
+  Gets a user by its email.
+
+  ## Examples
+
+      iex> get_user_by_email("user@example.com")
+      %User{}
+
+      iex> get_user_by_email("user@example.com")
+      nil
+
+  """
+  @spec get_user_by_email(String.t) :: User.t
+  def get_user_by_email(email), do: Repo.get_by(User, email: email)
+
+  @doc """
+  Gets a user by its email.
+
+  Raises `Ecto.NoResultsError` if the User does not exist.
+
+  ## Examples
+
+      iex> get_user_by_email!("user@example.com")
+      %User{}
+
+      iex> get_user_by_email!("user@example.com")
+      ** (Ecto.NoResultsError)
+
+  """
+  @spec get_user_by_email!(String.t) :: User.t
+  def get_user_by_email!(email), do: Repo.get_by!(User, email: email)
+
+  @doc """
   Gets a user by its social login.
 
   Raises `Ecto.NoResultsError` if the User does not exist.
@@ -124,5 +156,21 @@ defmodule Margaret.Accounts do
     %SocialLogin{}
     |> SocialLogin.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Creates a social login.
+
+  ## Examples
+
+    iex> create_social_login(attrs)
+    {:ok, %SocialLogin{}}
+
+  """
+  @spec create_social_login!(%{optional(any) => any}) :: {atom, Ecto.Changeset}
+  def create_social_login!(attrs) do
+    %SocialLogin{}
+    |> SocialLogin.changeset(attrs)
+    |> Repo.insert!()
   end
 end

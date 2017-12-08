@@ -30,5 +30,7 @@ defmodule Margaret.Accounts.User do
     |> validate_length(:username, min: 2, max: 64)
     |> validate_format(:email, ~r/@/)
     |> validate_length(:email, min: 3, max: 254)
+    |> unique_constraint(:username)
+    |> unique_constraint(:email)
   end
 end

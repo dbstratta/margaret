@@ -50,6 +50,7 @@ defmodule Margaret.Mixfile do
       {:absinthe_plug, "~> 1.4.1"},
       {:absinthe_relay, "~> 1.4.2"},
       {:cors_plug, "~> 1.4.0"},
+      {:uuid, "~> 1.1.8"},
       {:credo, "~> 0.8.10", only: [:dev, :test], runtime: false},
     ]
   end
