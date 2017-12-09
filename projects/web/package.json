@@ -27,7 +27,7 @@
     "prop-types": "15.6.0",
     "ramda": "0.25.0",
     "react": "16.2.0",
-    "react-apollo": "2.0.3",
+    "react-apollo": "2.0.4",
     "react-dom": "16.2.0",
     "react-final-form": "1.2.0",
     "react-fns": "1.2.0",
