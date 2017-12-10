@@ -17,15 +17,9 @@ defmodule Margaret.Stories.Story do
     field :body, :string
     belongs_to :author, User
     field :summary, :string
-    field :slug, :string
-    many_to_many :stars, Star,
-      join_through: "story_stars",
-      on_delete: :delete_all,
-      unique: true
-    many_to_many :comments, Comment,
-      join_through: "story_comments",
-      on_delete: :delete_all,
-      unique: true
+    field :slug, Slug.Type
+    has_many :stars, Star
+    has_many :comments, Comment
 
     timestamps()
   end
@@ -36,6 +30,20 @@ defmodule Margaret.Stories.Story do
     |> cast(attrs, [:title, :body, :author_id, :summary, :slug])
     |> validate_required([:title, :body, :slug])
     |> foreign_key_constraint(:author_id)
-    |> unique_constraint(:slug)
+    |> Slug.maybe_generate_slug()
+    |> Slug.unique_constraint()
+  end
+
+  defmodule Slug do
+    @moduledoc """
+    Implementation module of EctoAutoslugField.
+    """
+
+    use EctoAutoslugField.Slug, from: :title, to: :slug
+
+    def build_slug(sources, _changeset) do
+      sources
+      |> super()
+    end
   end
 end

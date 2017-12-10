@@ -127,12 +127,15 @@ defmodule Margaret.Accounts do
   end
 
   @doc """
-  Creates a new user.
+  Creates a user.
 
   ## Examples
 
     iex> create_user(attrs)
     {:ok, %User{}}
+
+    iex> create_user(%{field: bad_value})
+    {:error, %Ecto.Changeset{}}
 
   """
   @spec create_user(%{optional(any) => any}) :: {atom, Ecto.Changeset}
@@ -149,6 +152,9 @@ defmodule Margaret.Accounts do
 
     iex> create_social_login(attrs)
     {:ok, %SocialLogin{}}
+
+    iex> create_social_login(%{field: bad_value})
+    {:error, %Ecto.Changeset{}}
 
   """
   @spec create_social_login(%{optional(any) => any}) :: {atom, Ecto.Changeset}

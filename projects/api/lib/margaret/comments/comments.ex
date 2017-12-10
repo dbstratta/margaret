@@ -1,6 +1,6 @@
 defmodule Margaret.Comments do
   @moduledoc """
-  The Stars context.
+  The Comments context.
   """
 
   import Ecto.Query

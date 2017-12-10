@@ -5,7 +5,10 @@ defmodule Margaret.Stars.Star do
   import Ecto.Changeset
 
   alias __MODULE__, as: Star
-  alias Margaret.Accounts.User
+  alias Margaret.{Accounts, Stories, Comments}
+  alias Accounts.User
+  alias Stories.Story
+  alias Comments.Comment
 
   @typedoc "The Star type"
   @type t :: %Star{}
@@ -13,14 +16,19 @@ defmodule Margaret.Stars.Star do
   schema "stars" do
     belongs_to :user, User
 
+    belongs_to :story, Story
+    belongs_to :comment, Comment
+
     timestamps()
   end
 
   @doc false
   def changeset(%Star{} = star, attrs) do
     star
-    |> cast(attrs, [:story_id])
+    |> cast(attrs, [:user_id, :story_id, :comment_id])
     |> validate_required([:user_id])
     |> foreign_key_constraint(:user_id)
+    |> foreign_key_constraint(:story_id)
+    |> foreign_key_constraint(:comment_id)
   end
 end

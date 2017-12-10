@@ -37,9 +37,9 @@ defmodule Margaret.Mixfile do
       {:phoenix_pubsub, "~> 1.0.2"},
       {:phoenix_ecto, "~> 3.3.0"},
       {:ecto, "~> 2.2.7", override: true},
-      {:ecto_enum, "~> 1.0.2"},
+      {:ecto_enum, "~> 1.1.0"},
       {:postgrex, "~> 0.13.3"},
-      {:gettext, "~> 0.11"},
+      {:gettext, "~> 0.14.0"},
       {:cowboy, "~> 1.0"},
       {:guardian, "~> 1.0"},
       {:ueberauth, "~> 0.5.0"},
@@ -49,8 +49,9 @@ defmodule Margaret.Mixfile do
       {:absinthe, "~> 1.4.5"},
       {:absinthe_plug, "~> 1.4.1"},
       {:absinthe_relay, "~> 1.4.2"},
-      {:cors_plug, "~> 1.4.0"},
+      {:cors_plug, "~> 1.5.0"},
       {:uuid, "~> 1.1.8"},
+      {:ecto_autoslug_field, "~> 0.4.0"},
       {:credo, "~> 0.8.10", only: [:dev, :test], runtime: false},
     ]
   end

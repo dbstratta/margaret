@@ -55,7 +55,7 @@ defmodule MargaretWeb.Resolvers.Stories do
     {:error, Helpers.GraphQLErrors.unauthorized()}
   end
 
-  def resolve_delete_story(%{id: global_id}, %{context: %{user: user}}}) do
+  def resolve_delete_story(%{id: global_id}, %{context: %{user: user}}) do
     {:error, :not_implemented}
   end
 end

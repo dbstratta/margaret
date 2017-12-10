@@ -7,4 +7,10 @@ defmodule Margaret.Stars do
   alias Margaret.Repo
 
   alias Margaret.Stars.{Star, StoryStar}
+
+  def create_star(attrs) do
+    %Star{}
+    |> Star.changeset(attrs)
+    |> Repo.insert()
+  end
 end

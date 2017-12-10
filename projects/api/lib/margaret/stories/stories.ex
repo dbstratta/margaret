@@ -3,8 +3,6 @@ defmodule Margaret.Stories do
   The Stories context.
   """
 
-  import Ecto.Query
-
   alias Margaret.Repo
   alias Margaret.Stories.Story
 
@@ -49,6 +47,10 @@ defmodule Margaret.Stories do
     |> Repo.insert()
   end
 
-  def delete_story() do
+  @doc """
+  Deletes a story.
+  """
+  def delete_story(id) do
+    Repo.delete(%Story{id: id})
   end
 end

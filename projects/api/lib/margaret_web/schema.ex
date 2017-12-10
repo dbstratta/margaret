@@ -14,8 +14,6 @@ defmodule MargaretWeb.Schema do
   import_types MargaretWeb.Schema.PublicationTypes
   import_types MargaretWeb.Schema.StarrableTypes
 
-  alias MargaretWeb.Resolvers
-
   @desc "The root query type."
   query do
     import_fields :node_queries

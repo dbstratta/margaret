@@ -5,8 +5,6 @@ defmodule MargaretWeb.AuthController do
 
   use MargaretWeb, :controller
 
-  import Ecto, only: [build_assoc: 3]
-
   alias Margaret.Accounts
   alias Accounts.User
 
@@ -27,11 +25,6 @@ defmodule MargaretWeb.AuthController do
     json(conn, %{token: get_token(conn, to_string(provider), to_string(uid))})
   end
 
-  @doc """
-  Generates an auth token for a user from its social credentials.
-  If the user doesn't exist in our system, they'll be created
-  before generating the token.
-  """
   @spec get_token(%Plug.Conn{} | String.t, String.t, String.t) :: Guardian.Token.token
   defp get_token(%Plug.Conn{} = conn, provider, uid) do
     %{"email" => email} = conn.assigns.ueberauth_auth.extra.raw_info.user
@@ -54,10 +47,6 @@ defmodule MargaretWeb.AuthController do
     token
   end
 
-  @doc """
-  Checks if an user exists, if it does, return that user.
-  If not, create one and return it.
-  """
   @spec get_or_create_user(String.t) :: {:ok, User.t}
   defp get_or_create_user(email) do
     {:ok, user} =

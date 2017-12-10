@@ -5,19 +5,20 @@ defmodule Margaret.Comments.Comment do
   import Ecto.Changeset
 
   alias __MODULE__, as: Comment
-  alias Margaret.Accounts.User
-  alias Margaret.Stars.Star
+  alias Margaret.{Accounts, Stories, Stars}
+  alias Accounts.User
+  alias Stories.Story
+  alias Stars.Star
 
   @typedoc "The Comment type"
   @type t :: %Comment{}
 
   schema "comments" do
-    belongs_to :author, User
     field :body, :string
-    many_to_many :stars, Star,
-      join_through: "comment_stars",
-      on_delete: :delete_all,
-      unique: true
+    belongs_to :author, User
+    has_many :stars, Star
+
+    belongs_to :story, Story
 
     timestamps()
   end
@@ -25,8 +26,9 @@ defmodule Margaret.Comments.Comment do
   @doc false
   def changeset(%Comment{} = comment, attrs) do
     comment
-    |> cast(attrs, [:author_id, :body])
+    |> cast(attrs, [:author_id, :body, :story_id])
     |> validate_required([:author_id, :body])
     |> foreign_key_constraint(:author_id)
+    |> foreign_key_constraint(:story_id)
   end
 end

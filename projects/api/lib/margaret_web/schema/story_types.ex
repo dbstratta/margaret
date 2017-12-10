@@ -31,7 +31,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
 
     @desc ""
     connection field :stargazers, node_type: :user do
-      resolve &Resolvers.Stories.resolve_user_posts/3
+      resolve fn -> nil end
     end
 
     interfaces [:starrable]
@@ -72,6 +72,17 @@ defmodule MargaretWeb.Schema.StoryTypes do
       input do
         field :title, :string
         field :summary, :string
+      end
+
+      output do
+        field :story, non_null(:story)
+      end
+    end
+
+    @desc "Deletes a story."
+    payload field :delete_story do
+      input do
+        field :id, non_null(:id)
       end
 
       output do
