@@ -1,7 +1,22 @@
 defmodule MargaretWeb.Resolvers.Nodes do
-  alias Margaret.Accounts
+  @moduledoc """
+  The Node GraphQL resolvers.
+  """
 
-  def resolve_node(%{type: :user, id: user_id}, _) do
-    Accounts.get_user(user_id)
-  end
+  alias Margaret.{Accounts, Stories}
+  alias Accounts.User
+  alias Stories.Story
+  alias MargaretWeb.Resolvers
+
+  @doc """
+  Resolves the type of the resolved object.
+  """
+  def resolve_type(%User{}, _), do: :user
+  def resolve_type(%Story{}, _), do: :story
+
+  @doc """
+  Resolves the node from its type and global ID.
+  """
+  def resolve_node(%{type: :user, id: id}, _), do: {:ok, Accounts.get_user(id)}
+  def resolve_node(%{type: :story, id: id}, _), do: {:ok, Stories.get_story(id)}
 end

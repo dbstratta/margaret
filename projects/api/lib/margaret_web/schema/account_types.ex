@@ -23,7 +23,11 @@ defmodule MargaretWeb.Schema.AccountTypes do
 
     @desc "The stories of the user."
     connection field :stories, node_type: :story do
-      resolve &Resolvers.Stories.resolve_user_posts/3
+      resolve &Resolvers.Stories.resolve_stories/3
+    end
+
+    connection field :followers, node_type: :user do
+      resolve &Resolvers.Accounts.resolve_followers/3
     end
 
     @desc "Identifies the date and time when the object was created."
@@ -42,6 +46,11 @@ defmodule MargaretWeb.Schema.AccountTypes do
       arg :username, non_null(:string)
 
       resolve &Resolvers.Accounts.resolve_user/2
+    end
+
+    @desc "Get the user list."
+    connection field :users, node_type: :user do
+      resolve &Resolvers.Accounts.resolve_users/2
     end
   end
 

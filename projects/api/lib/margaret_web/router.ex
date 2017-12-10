@@ -6,8 +6,7 @@ defmodule MargaretWeb.Router do
   end
 
   pipeline :graphql do
-    plug Guardian.Plug.VerifyHeader
-    plug Guardian.Plug.LoadResource, allow_blank: true
+    plug MargaretWeb.AuthPipeline
     plug MargaretWeb.Context
   end
 

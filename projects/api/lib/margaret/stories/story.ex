@@ -33,8 +33,9 @@ defmodule Margaret.Stories.Story do
   @doc false
   def changeset(%Story{} = story, attrs) do
     story
-    |> cast(attrs, [:title, :body, :author_id, :summary])
-    |> validate_required([:title, :body])
+    |> cast(attrs, [:title, :body, :author_id, :summary, :slug])
+    |> validate_required([:title, :body, :slug])
     |> foreign_key_constraint(:author_id)
+    |> unique_constraint(:slug)
   end
 end

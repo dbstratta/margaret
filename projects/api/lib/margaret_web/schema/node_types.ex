@@ -9,10 +9,7 @@ defmodule MargaretWeb.Schema.NodeTypes do
   alias MargaretWeb.Resolvers
 
   node interface do
-    resolve_type fn
-      _, _ ->
-        nil
-    end
+    resolve_type &Resolvers.Nodes.resolve_type/2
   end
 
   object :node_queries do

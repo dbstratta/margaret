@@ -20,7 +20,7 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user(String.t) :: User.t
+  @spec get_user(String.t) :: User.t | nil
   def get_user(id), do: Repo.get(User, id)
 
   @doc """

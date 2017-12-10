@@ -24,8 +24,9 @@ defmodule Margaret.Accounts.SocialLogin do
   @doc false
   def changeset(%SocialLogin{} = social_login, attrs) do
     social_login
-    |> cast(attrs, [:uid, :provider])
-    |> validate_required([:uid, :provider])
+    |> cast(attrs, [:uid, :provider, :user_id])
+    |> validate_required([:uid, :provider, :user_id])
     |> unique_constraint(:uid, name: :social_logins_uid_provider_index)
+    |> foreign_key_constraint(:user_id)
   end
 end

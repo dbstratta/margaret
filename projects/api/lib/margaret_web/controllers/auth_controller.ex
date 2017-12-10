@@ -24,7 +24,6 @@ defmodule MargaretWeb.AuthController do
   end
 
   def callback(%{assigns: %{ueberauth_auth: %{provider: provider, uid: uid}}} = conn, _params) do
-    IO.inspect conn.assigns.ueberauth_auth.extra.raw_info.user, label: "Info: "
     json(conn, %{token: get_token(conn, to_string(provider), to_string(uid))})
   end
 
@@ -49,23 +48,23 @@ defmodule MargaretWeb.AuthController do
   defp get_token(email, provider, uid) when is_binary(email) do
     user = get_or_create_user(email)
 
-    create_social_login(user, provider, uid)
+    Accounts.create_social_login!(%{provider: provider, uid: uid, user_id: user.id})
 
     {:ok, token, _} = MargaretWeb.Guardian.encode_and_sign(user)
     token
   end
 
-  defp create_social_login(%User{} = user, provider, uid) do
-    user
-    |> build_assoc(:social_logins, %{provider: provider, uid: uid})
-    |> Accounts.create_social_login!()
-  end
-
+  @doc """
+  Checks if an user exists, if it does, return that user.
+  If not, create one and return it.
+  """
+  @spec get_or_create_user(String.t) :: {:ok, User.t}
   defp get_or_create_user(email) do
-    {:ok, user} = case Accounts.get_user_by_email(email) do
-      nil -> Accounts.create_user(%{username: UUID.uuid4(), email: email})
-      user -> {:ok, user}
-    end
+    {:ok, user} =
+      case Accounts.get_user_by_email(email) do
+        nil -> Accounts.create_user(%{username: UUID.uuid4(), email: email})
+        user -> {:ok, user}
+      end
 
     user
   end

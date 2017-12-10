@@ -6,11 +6,16 @@ defmodule MargaretWeb.Schema.StoryTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
+  alias MargaretWeb.Resolvers
+
   connection node_type: :story
 
   node object :story do
     @desc "The title of the story."
     field :title, non_null(:string)
+
+    @desc "The body of the story."
+    field :body, non_null(:string)
 
     @desc "The author of the story."
     field :author, non_null(:string)
@@ -19,7 +24,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
     field :slug, non_null(:string)
 
     @desc "The summary of the story."
-    field :summary, non_null(:string)
+    field :summary, :string
 
     @desc "Identifies the date and time when the object was created."
     field :created_at , non_null(:datetime)
@@ -38,6 +43,11 @@ defmodule MargaretWeb.Schema.StoryTypes do
       arg :slug, non_null(:string)
 
       resolve &Resolvers.Stories.resolve_story/2
+    end
+
+    @desc "Lookup stories"
+    connection field :stories, node_type: :story do
+      resolve &Resolvers.Stories.resolve_stories/2
     end
   end
 

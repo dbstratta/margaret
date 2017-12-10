@@ -40,7 +40,7 @@ config :ueberauth, Ueberauth.Strategy.Facebook.OAuth,
   client_secret: System.get_env("FACEBOOK_CLIENT_SECRET")
 
 # Configures Guardian
-config :guardian, MargaretWeb.Guardian,
+config :margaret, MargaretWeb.Guardian,
   issuer: "Margaret",
   secret_key: "Cs+SatzTr/4GlMDYRn+lHQCu+iP7b0hIhr71xDT62J3G+gDb5wlma/UMuxJWOdea"
 

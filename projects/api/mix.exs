@@ -20,7 +20,7 @@ defmodule Margaret.Mixfile do
   def application do
     [
       mod: {Margaret.Application, []},
-      extra_applications: [:logger, :runtime_tools],
+      extra_applications: [:crypto, :logger, :runtime_tools],
     ]
   end
 
