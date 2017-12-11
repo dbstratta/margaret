@@ -4312,14 +4312,14 @@ stylelint-config-styled-components@0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/stylelint-config-styled-components/-/stylelint-config-styled-components-0.1.1.tgz#b408388d7c687833ab4be4c4e6522d97d2827ede"
 
-stylelint-processor-styled-components@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/stylelint-processor-styled-components/-/stylelint-processor-styled-components-1.2.0.tgz#cb21ba75eaf5172c20e0ee2a8afba4ff7bcf0ec9"
+stylelint-processor-styled-components@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/stylelint-processor-styled-components/-/stylelint-processor-styled-components-1.2.1.tgz#3b137b10199ad62ea21f38a90d9a7a8eab65356c"
   dependencies:
     babel-traverse "^6.16.0"
     babylon "^6.12.0"
     postcss "^6.0.14"
-    typescript-eslint-parser "^9.0.0"
+    typescript-eslint-parser "^10.0.0"
 
 stylelint@8.3.1:
   version "8.3.1"
@@ -4542,16 +4542,16 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript-eslint-parser@^8.0.0:
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/typescript-eslint-parser/-/typescript-eslint-parser-8.0.1.tgz#e8cac537d996e16c3dbb0d7c4d509799e67afe0c"
+typescript-eslint-parser@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/typescript-eslint-parser/-/typescript-eslint-parser-10.0.0.tgz#82b550253659c311c2e4a4d18311b94dd08a36d7"
   dependencies:
     lodash.unescape "4.0.1"
     semver "5.4.1"
 
-typescript-eslint-parser@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/typescript-eslint-parser/-/typescript-eslint-parser-9.0.0.tgz#6a9e9c4bafbebc7e6df53c631bc7036597227d18"
+typescript-eslint-parser@^8.0.0:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/typescript-eslint-parser/-/typescript-eslint-parser-8.0.1.tgz#e8cac537d996e16c3dbb0d7c4d509799e67afe0c"
   dependencies:
     lodash.unescape "4.0.1"
     semver "5.4.1"
