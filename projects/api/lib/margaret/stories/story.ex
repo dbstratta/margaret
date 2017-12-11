@@ -1,6 +1,24 @@
 defmodule Margaret.Stories.Story do
   @moduledoc false
 
+  defmodule Slug do
+    @moduledoc """
+    Implementation module of EctoAutoslugField.
+    """
+
+    use EctoAutoslugField.Slug, from: :title, to: :slug
+
+    def generate_hash() do
+      "hash3000"
+    end
+
+    def build_slug(sources, changeset) do
+      sources
+      |> super(changeset)
+      |> Kernel.<>("-#{generate_hash()}")
+    end
+  end
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -27,23 +45,11 @@ defmodule Margaret.Stories.Story do
   @doc false
   def changeset(%Story{} = story, attrs) do
     story
-    |> cast(attrs, [:title, :body, :author_id, :summary, :slug])
-    |> validate_required([:title, :body, :slug])
+    |> cast(attrs, [:title, :body, :author_id, :summary])
+    |> validate_required([:title, :body, :author_id])
     |> foreign_key_constraint(:author_id)
     |> Slug.maybe_generate_slug()
     |> Slug.unique_constraint()
   end
 
-  defmodule Slug do
-    @moduledoc """
-    Implementation module of EctoAutoslugField.
-    """
-
-    use EctoAutoslugField.Slug, from: :title, to: :slug
-
-    def build_slug(sources, _changeset) do
-      sources
-      |> super()
-    end
-  end
 end

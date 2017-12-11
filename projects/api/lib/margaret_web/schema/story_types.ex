@@ -29,23 +29,28 @@ defmodule MargaretWeb.Schema.StoryTypes do
     @desc "Identifies the date and time when the object was created."
     field :created_at , non_null(:datetime)
 
-    @desc ""
+    @desc "The stargazers of the story."
     connection field :stargazers, node_type: :user do
-      resolve fn -> nil end
+      resolve &Resolvers.Starrable.resolve_stargazers/3
+    end
+
+    @desc "The star count of the story."
+    field :star_count, non_null(:integer) do
+      resolve &Resolvers.Starrable.resolve_star_count/3
     end
 
     interfaces [:starrable]
   end
 
   object :story_queries do
-    @desc "Lookup a story by its slug"
+    @desc "Lookup a story by its slug."
     field :story, :story do
       arg :slug, non_null(:string)
 
       resolve &Resolvers.Stories.resolve_story/2
     end
 
-    @desc "Lookup stories"
+    @desc "Lookup stories."
     connection field :stories, node_type: :story do
       resolve &Resolvers.Stories.resolve_stories/2
     end

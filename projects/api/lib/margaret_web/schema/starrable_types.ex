@@ -14,10 +14,10 @@ defmodule MargaretWeb.Schema.StarrableTypes do
     @desc "The stargazers of the starrable."
     field :stargazers, :user_connection
 
-    resolve_type fn
-      _, _ ->
-        nil
-    end
+    @desc "The star count of the starrable."
+    field :star_count, non_null(:integer)
+
+    resolve_type &Resolvers.Nodes.resolve_type/2
   end
 
   object :starrable_mutations do
@@ -30,6 +30,9 @@ defmodule MargaretWeb.Schema.StarrableTypes do
       output do
         field :starrable, non_null(:starrable)
       end
+
+      middleware Absinthe.Relay.Node.ParseIDs, starrable_id: [:story, :comment]
+      resolve &Resolvers.Starrable.resolve_star/2
     end
 
     @desc "Unstars a starrable."
@@ -41,6 +44,9 @@ defmodule MargaretWeb.Schema.StarrableTypes do
       output do
         field :starrable, non_null(:starrable)
       end
+
+      middleware Absinthe.Relay.Node.ParseIDs, starrable_id: [:story, :comment]
+      resolve &Resolvers.Starrable.resolve_unstar/2
     end
   end
 end

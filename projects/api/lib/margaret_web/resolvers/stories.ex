@@ -37,14 +37,13 @@ defmodule MargaretWeb.Resolvers.Stories do
   """
   def resolve_create_story(_, %{context: %{user: nil}}), do: Helpers.GraphQLErrors.unauthorized()
 
-  def resolve_create_story(%{title: title} = args, %{context: %{user: user}}) do
+  def resolve_create_story(%{title: title} = args, %{context: %{user: %{id: user_id}}}) do
     args
-    |> Map.put(:author_id, user.id)
-    |> Map.put(:slug, Helpers.Slugs.new(title))
+    |> Map.put(:author_id, user_id)
     |> Stories.create_story()
     |> case do
       {:ok, story} -> {:ok, %{story: story}}
-      {:error, changeset} -> {:error, :something_went_wrong}
+      {:error, changeset} -> Helpers.GraphQLErrors.something_went_wrong()
     end
   end
 
@@ -52,10 +51,10 @@ defmodule MargaretWeb.Resolvers.Stories do
   Resolves a story deletion.
   """
   def resolve_delete_story(_, %{context: %{user: nil}}) do
-    {:error, Helpers.GraphQLErrors.unauthorized()}
+    Helpers.GraphQLErrors.unauthorized()
   end
 
   def resolve_delete_story(%{id: global_id}, %{context: %{user: user}}) do
-    {:error, :not_implemented}
+    Helpers.GraphQLErrors.not_implemented()
   end
 end

@@ -10,7 +10,8 @@ defmodule Margaret.Repo.Migrations.AddStoriesTable do
       add :body, :text, null: false
       add :author_id, references(:users), null: false
       add :summary, :string, size: 256
-      add :slug, :string, size: 64, null: false
+      add :slug, :string, null: false
+      add :publication_id, references(:publications)
 
       timestamps()
     end

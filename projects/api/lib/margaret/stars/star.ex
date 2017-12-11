@@ -30,5 +30,8 @@ defmodule Margaret.Stars.Star do
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:story_id)
     |> foreign_key_constraint(:comment_id)
+    |> unique_constraint(:user, name: :stars_user_id_story_id_index)
+    |> unique_constraint(:user, name: :stars_user_id_comment_id_index)
+    |> check_constraint(:user, name: :only_one_not_null_starrable)
   end
 end

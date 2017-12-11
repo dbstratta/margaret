@@ -13,6 +13,7 @@ defmodule MargaretWeb.Resolvers.Nodes do
   """
   def resolve_type(%User{}, _), do: :user
   def resolve_type(%Story{}, _), do: :story
+  def resolve_type(_, _), do: nil
 
   @doc """
   Resolves the node from its type and global ID.
