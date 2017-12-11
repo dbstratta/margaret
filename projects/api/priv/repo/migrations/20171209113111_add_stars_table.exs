@@ -6,10 +6,10 @@ defmodule Margaret.Repo.Migrations.AddStarsTable do
   @doc false
   def change do
     create table(:stars) do
-      add :user_id, references(:users), null: false
+      add :user_id, references(:users, on_delete: :delete_all), null: false
 
-      add :story_id, references(:stories)
-      add :comment_id, references(:comments)
+      add :story_id, references(:stories, on_delete: :delete_all)
+      add :comment_id, references(:comments, on_delete: :delete_all)
 
       timestamps()
     end

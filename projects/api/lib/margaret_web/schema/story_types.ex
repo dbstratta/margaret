@@ -18,7 +18,9 @@ defmodule MargaretWeb.Schema.StoryTypes do
     field :body, non_null(:string)
 
     @desc "The author of the story."
-    field :author, non_null(:string)
+    field :author, non_null(:user) do
+      resolve &Resolvers.Accounts.resolve_user/3
+    end
 
     @desc "The slug of the story."
     field :slug, non_null(:string)
@@ -87,12 +89,15 @@ defmodule MargaretWeb.Schema.StoryTypes do
     @desc "Deletes a story."
     payload field :delete_story do
       input do
-        field :id, non_null(:id)
+        field :story_id, non_null(:id)
       end
 
       output do
         field :story, non_null(:story)
       end
+
+      middleware Absinthe.Relay.Node.ParseIDs, story_id: :story
+      resolve &Resolvers.Stories.resolve_delete_story/2
     end
   end
 end

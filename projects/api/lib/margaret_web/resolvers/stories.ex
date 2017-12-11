@@ -50,11 +50,17 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves a story deletion.
   """
-  def resolve_delete_story(_, %{context: %{user: nil}}) do
-    Helpers.GraphQLErrors.unauthorized()
-  end
+  def resolve_delete_story(_, %{context: %{user: nil}}), do: Helpers.GraphQLErrors.unauthorized()
 
-  def resolve_delete_story(%{id: global_id}, %{context: %{user: user}}) do
-    Helpers.GraphQLErrors.not_implemented()
+  def resolve_delete_story(%{story_id: id}, %{context: %{user: %{id: user_id}}}) do
+    with %Story{id: story_id, author_id: author_id} <- Stories.get_story(id),
+         true <- author_id === user_id,
+         {:ok, story} <- Stories.delete_story(story_id) do
+      {:ok, %{story: story}}
+    else
+      nil -> Helpers.GraphQLErrors.error_creator("Story with id #{id} doesn't exist")
+      false -> Helpers.GraphQLErrors.unauthorized()
+      {:error, _} -> Helpers.GraphQLErrors.something_went_wrong()
+    end
   end
 end

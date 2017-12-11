@@ -7,7 +7,8 @@ defmodule MargaretWeb.Resolvers.Accounts do
   alias Absinthe.Relay
 
   alias MargaretWeb.Helpers
-  alias Margaret.{Repo, Accounts}
+  alias Margaret.{Repo, Accounts, Stories}
+  alias Stories.Story
   alias Accounts.User
 
   @doc """
@@ -20,7 +21,11 @@ defmodule MargaretWeb.Resolvers.Accounts do
   Resolves a user by its username.
   """
   def resolve_user(%{username: username}, _) do
-    {:ok, Accounts.get_user_by_usrname(username)}
+    {:ok, Accounts.get_user_by_username(username)}
+  end
+
+  def resolve_user(%Story{author_id: author_id}, _, _) do
+    {:ok, Accounts.get_user(author_id)}
   end
 
   @doc """

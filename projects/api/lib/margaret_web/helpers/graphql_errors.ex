@@ -22,6 +22,14 @@ defmodule MargaretWeb.Helpers.GraphQLErrors do
   end
 
   @doc """
+  Return the `Resource not found` error.
+  """
+  @spec unauthorized :: error
+  def unauthorized do
+    error_creator("Unauthorized")
+  end
+
+  @doc """
   Return the `Something went wrong` error.
   """
   @spec something_went_wrong :: error
