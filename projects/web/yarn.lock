@@ -7201,9 +7201,9 @@ react-error-overlay@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-3.0.0.tgz#c2bc8f4d91f1375b3dad6d75265d51cd5eeaf655"
 
-react-final-form@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/react-final-form/-/react-final-form-1.2.0.tgz#9990eae6708c1da3807a23fea7c1c654778fee6b"
+react-final-form@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/react-final-form/-/react-final-form-1.2.1.tgz#37254b0b9866dc0f26b772fd4e2373f4ccc13c32"
 
 react-fns@1.2.0:
   version "1.2.0"
