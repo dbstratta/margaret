@@ -39,7 +39,7 @@ defmodule Margaret.Stories.Story do
     field :summary, :string
     field :slug, Slug.Type
     field :published, :boolean
-    field :published_at, :datetime
+    field :published_at, :naive_datetime
     has_many :stars, Star
     has_many :comments, Comment
     belongs_to :publication, Publication

@@ -5,7 +5,9 @@ defmodule Margaret.Publications.Publication do
   import Ecto.Changeset
 
   alias __MODULE__, as: Publication
-  alias Margaret.Accounts.User
+  alias Margaret.{Accounts, Publications}
+  alias Accounts.User
+  alias Publications.PublicationMembership
 
   @typedoc "The Publication type"
   @type t :: %Publication{}
@@ -13,8 +15,9 @@ defmodule Margaret.Publications.Publication do
   schema "publications" do
     field :name, :string
     belongs_to :owner, User
-    many_to_many :editors, User
-    has_many :followers, User
+    many_to_many :members, User,
+      join_through: PublicationMemberhip,
+      unique: true
 
     timestamps()
   end
@@ -22,9 +25,8 @@ defmodule Margaret.Publications.Publication do
   @doc false
   def changeset(%Publication{} = publication, attrs) do
     publication
-    |> cast(attrs, [:name, :owner_id])
-    |> validate_required([:name, :owner_id])
+    |> cast(attrs, [:name])
+    |> validate_required([:name])
     |> validate_length(:name, min: 2, max: 64)
-    |> foreign_key_constraint(:owner_id)
   end
 end

@@ -5,9 +5,10 @@ defmodule Margaret.Accounts.User do
   import Ecto.Changeset
 
   alias __MODULE__, as: User
-  alias Margaret.{Accounts, Stories}
+  alias Margaret.{Accounts, Stories, Publications}
   alias Accounts.SocialLogin
   alias Stories.Story
+  alias Publications.{Publication, PublicationMembership}
 
   @typedoc "The User type"
   @type t :: %User{}
@@ -17,6 +18,8 @@ defmodule Margaret.Accounts.User do
     field :email, :string
     has_many :social_logins, SocialLogin
     has_many :stories, Story, foreign_key: :author_id
+    many_to_many :publications, Publication,
+      join_through: PublicationMembership
 
     timestamps()
   end
