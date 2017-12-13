@@ -362,7 +362,7 @@ babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
     esutils "^2.0.2"
     js-tokens "^3.0.2"
 
-babel-core@6.26.0, babel-core@^6.0.0, babel-core@^6.26.0:
+babel-core@^6.0.0, babel-core@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-core/-/babel-core-6.26.0.tgz#af32f78b31a6fcef119c87b0fd8d9753f03a0bb8"
   dependencies:
@@ -3616,11 +3616,10 @@ prettier-eslint-cli@4.4.3:
     rxjs "^5.3.0"
     yargs "10.0.3"
 
-prettier-eslint@8.3.0:
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-8.3.0.tgz#3d0a53897b5e41165e4127189dd4da7b561ce9aa"
+prettier-eslint@8.3.1:
+  version "8.3.1"
+  resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-8.3.1.tgz#406f702b5a0790c3ced11942d54e5ff22d9bc984"
   dependencies:
-    babel-core "6.26.0"
     common-tags "^1.4.0"
     dlv "^1.1.0"
     eslint "^4.5.0"
