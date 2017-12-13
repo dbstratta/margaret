@@ -40,4 +40,11 @@ defmodule MargaretWeb.Resolvers.Accounts do
   """
   def resolve_create_user(args, _) do
   end
+
+  @doc """
+  Resolves if the user is the viewer.
+  """
+  def resolve_is_viewer(%User{} = user, _args, %{context: %{user: viewer}}) do
+    user.id === viewer.id
+  end
 end

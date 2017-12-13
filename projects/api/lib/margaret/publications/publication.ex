@@ -14,7 +14,8 @@ defmodule Margaret.Publications.Publication do
 
   schema "publications" do
     field :name, :string
-    belongs_to :owner, User
+    field :display_name, :string
+
     many_to_many :members, User,
       join_through: PublicationMemberhip,
       unique: true

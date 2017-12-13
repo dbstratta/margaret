@@ -10,37 +10,67 @@ defmodule MargaretWeb.Schema.AccountTypes do
 
   connection node_type: :user
 
-  @desc "A user is an individual's account on Margaret that can make new content."
+  @desc """
+  A user is an individual's account on Margaret that can make new content.
+  """
   node object :user do
-    @desc "The username of the user."
+    @desc """
+    The username of the user.
+    """
     field :username, non_null(:string)
 
-    @desc "The email of the user."
+    @desc """
+    The email of the user.
+    """
     field :email, non_null(:string)
 
-    @desc "The biography of the user."
+    @desc """
+    The biography of the user.
+    """
     field :bio, :string
 
-    @desc "The stories of the user."
+    @desc """
+    The stories of the user.
+    """
     connection field :stories, node_type: :story do
       resolve &Resolvers.Stories.resolve_stories/3
     end
 
+    @desc """
+    The follower connection of the user.
+    """
     connection field :followers, node_type: :user do
       resolve &Resolvers.Accounts.resolve_followers/3
     end
 
-    @desc "Identifies the date and time when the object was created."
-    field :created_at , non_null(:datetime)
+    @desc """
+    The notification connection of the user.
+    """
+    connection field :notifications, node_type: :notification do
+      resolve &Resolvers.Accounts.resolve_notifications/3
+    end
+
+    field :is_viewer, :boolean do
+      resolve &Resolvers.Accounts.resolve_is_viewer/3
+    end
+
+    @desc """
+    Identifies the date and time when the object was created.
+    """
+    field :created_at, non_null(:datetime)
   end
 
   object :account_queries do
-    @desc "Get the authenticated user."
-    field :me, :user do
-      resolve &Resolvers.Accounts.resolve_me/2
+    @desc """
+    Get the authenticated user.
+    """
+    field :viewer, :user do
+      resolve &Resolvers.Accounts.resolve_viewer/2
     end
 
-    @desc "Lookup a user by its username."
+    @desc """
+    Lookup a user by its username.
+    """
     field :user, :user do
       @desc "The username of the user."
       arg :username, non_null(:string)
@@ -48,14 +78,18 @@ defmodule MargaretWeb.Schema.AccountTypes do
       resolve &Resolvers.Accounts.resolve_user/2
     end
 
-    @desc "Get the user list."
+    @desc """
+    Get the user list.
+    """
     connection field :users, node_type: :user do
       resolve &Resolvers.Accounts.resolve_users/2
     end
   end
 
   object :account_mutations do
-    @desc "Creates a new user."
+    @desc """
+    Creates a new user.
+    """
     payload field :create_user do
       input do
         field :username, non_null(:string)

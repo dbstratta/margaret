@@ -9,9 +9,7 @@ defmodule MargaretWeb.Resolvers.Notifications do
   alias MargaretWeb.Helpers
   alias Margaret.Repo
 
-  def resolve_notifications(_, %{context: %{user: nil}}), do: Helpers.GraphQLErrors.unauthorized()
-
-  def resolve_notifications(_, %{context: %{user: user}}) do
+  def resolve_read_notification(_, _) do
     Helpers.GraphQLErrors.not_implemented()
   end
 end

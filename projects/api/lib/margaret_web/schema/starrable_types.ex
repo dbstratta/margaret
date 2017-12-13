@@ -17,6 +17,9 @@ defmodule MargaretWeb.Schema.StarrableTypes do
     @desc "The star count of the starrable."
     field :star_count, non_null(:integer)
 
+    @desc "Check if the current viewer can delete this object."
+    field :viewer_can_star, non_null(:boolean)
+
     resolve_type &Resolvers.Nodes.resolve_type/2
   end
 

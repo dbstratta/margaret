@@ -38,7 +38,11 @@ defmodule MargaretWeb.Schema.StoryTypes do
 
     @desc "The star count of the story."
     field :star_count, non_null(:integer) do
-      resolve &Resolvers.Starrable.resolve_star_count/3
+      resolve &Resolvers.Story.resolve_star_count/3
+    end
+
+    field :viewer_can_star, non_null(:boolean) do
+      resolve &Resolvers.Story.resolve_viewer_can_star/3
     end
 
     interfaces [:starrable]
