@@ -1,4 +1,4 @@
-FROM elixir:1.5.2@sha256:c26d7675e92ad8974cf0071a22d24c35295ea75f9c0181881ac72b0259017a07 as base
+FROM elixir:1.5.2@sha256:55d4685721be28ff70b9ece08caa8c60cbdc03b92c7fe98a31f7e85c2d1a4c80 as base
 
 LABEL name="margaret_api"
 LABEL version="1.0.0"
