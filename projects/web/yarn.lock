@@ -7205,9 +7205,9 @@ react-final-form@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-final-form/-/react-final-form-1.2.1.tgz#37254b0b9866dc0f26b772fd4e2373f4ccc13c32"
 
-react-fns@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/react-fns/-/react-fns-1.2.0.tgz#21bb475652754a22521c7872d53e7bc032815877"
+react-fns@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/react-fns/-/react-fns-1.3.0.tgz#3faa9061edfe97581de24a0498ba346d17551d1b"
   dependencies:
     qs "^6.5.1"
     react-media "^1.6.1"
@@ -7282,8 +7282,8 @@ react-media@^1.6.1:
     prop-types "^15.5.10"
 
 react-modal@^3.1.4:
-  version "3.1.7"
-  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.1.7.tgz#21feb937c95cd722bf2d375cada751fdc8189c0e"
+  version "3.1.8"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.1.8.tgz#7d6b1958f44828babd2a1ce826c28fa40d026b0f"
   dependencies:
     exenv "^1.2.0"
     prop-types "^15.5.10"
