@@ -3593,9 +3593,9 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
-prettier-eslint-cli@4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/prettier-eslint-cli/-/prettier-eslint-cli-4.6.0.tgz#28454fadb813249ad5c6d1c293dc8d462842e1ff"
+prettier-eslint-cli@4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/prettier-eslint-cli/-/prettier-eslint-cli-4.6.1.tgz#2b5dc6dc71d902dd73b9e3b784e5c55198f10bb7"
   dependencies:
     arrify "^1.0.1"
     babel-runtime "^6.23.0"
