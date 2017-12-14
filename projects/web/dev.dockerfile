@@ -1,4 +1,4 @@
-FROM node:9.2.0
+FROM node:9.3.0
 
 LABEL name="margaret_web"
 LABEL version="1.0.0"

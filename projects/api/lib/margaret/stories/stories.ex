@@ -41,6 +41,9 @@ defmodule Margaret.Stories do
   @spec get_story_by_slug(String.t) :: Story.t | nil
   def get_story_by_slug(slug), do: Repo.get_by(Story, slug: slug)
 
+  @doc """
+  Creates a story.
+  """
   def create_story(attrs) do
     %Story{}
     |> Story.changeset(attrs)

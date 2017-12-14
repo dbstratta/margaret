@@ -18,8 +18,6 @@ defmodule Margaret.Accounts.User do
     field :email, :string
     has_many :social_logins, SocialLogin
     has_many :stories, Story, foreign_key: :author_id
-    many_to_many :publications, Publication,
-      join_through: PublicationMembership
 
     timestamps()
   end

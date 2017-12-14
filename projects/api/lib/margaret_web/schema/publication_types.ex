@@ -35,8 +35,7 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     field :invitee, non_null(:user)
     field :inviter, non_null(:user)
 
-    field :accepted, non_null(:boolean)
-    field :pending, non_null(:boolean)
+    field :status, non_null(:string)
   end
 
   object :publication_queries do
@@ -51,6 +50,22 @@ defmodule MargaretWeb.Schema.PublicationTypes do
   end
 
   object :publication_mutations do
+    @desc """
+    Creates a publication.
+    """
+    payload field :create_publication do
+      input do
+        field :name, non_null(:string)
+        field :display_name, non_null(:id)
+      end
+
+      output do
+        field :publication, non_null(:publication)
+      end
+
+      resolve &Resolvers.Publications.resolve_create_publication/2
+    end
+
     @desc """
     Sends an invitation to join the publication.
     """
@@ -69,20 +84,33 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     end
 
     @desc """
-    Sends an invitation to join the publication.
     """
     payload field :accept_publication_membership_invitation do
       input do
-        field :username, non_null(:string)
-        field :publication_id, non_null(:id)
+        field :invitation_id, non_null(:id)
       end
 
       output do
         field :invitation, non_null(:publication_membership_invitation)
       end
 
-      middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
-      resolve &Resolvers.Publications.resolve_send_publication_membership_invitation/2
+      middleware Absinthe.Relay.Node.ParseIDs, invitation_id: :publication_membership_invitation
+      resolve &Resolvers.Publications.resolve_accept_publication_membership_invitation/2
+    end
+
+    @desc """
+    """
+    payload field :reject_publication_membership_invitation do
+      input do
+        field :invitation_id, non_null(:id)
+      end
+
+      output do
+        field :invitation, non_null(:publication_membership_invitation)
+      end
+
+      middleware Absinthe.Relay.Node.ParseIDs, invitation_id: :publication_membership_invitation
+      resolve &Resolvers.Publications.resolve_reject_publication_membership_invitation/2
     end
   end
 end

@@ -38,5 +38,6 @@ defmodule MargaretWeb.Schema do
     import_fields :account_mutations
     import_fields :story_mutations
     import_fields :starrable_mutations
+    import_fields :publication_mutations
   end
 end

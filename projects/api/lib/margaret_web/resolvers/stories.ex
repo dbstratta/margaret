@@ -37,7 +37,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   """
   def resolve_create_story(_, %{context: %{user: nil}}), do: Helpers.GraphQLErrors.unauthorized()
 
-  def resolve_create_story(%{title: title} = args, %{context: %{user: %{id: user_id}}}) do
+  def resolve_create_story(args, %{context: %{user: %{id: user_id}}}) do
     args
     |> Map.put(:author_id, user_id)
     |> Stories.create_story()

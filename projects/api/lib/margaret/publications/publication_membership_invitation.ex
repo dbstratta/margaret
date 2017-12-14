@@ -13,21 +13,22 @@ defmodule Margaret.Publications.PublicationMembershipInvitation do
   @typedoc "The Publication type"
   @type t :: %PublicationMembershipInvitation{}
 
-  defenum PublicationMembershipRole,
-    :publication_membership_role,
-    [:owner, :admin, :writer]
+  defenum PublicationMembershipInvitationStatus,
+    :publication_membership_invitation_status,
+    [:accepted, :pending, :rejected]
 
-  schema "publication_memberships" do
-    field :role, PublicationMembershipRole
-    belongs_to :member, User
+  schema "publication_membership_invitations" do
+    belongs_to :invitee, User
+    belongs_to :inviter, User
     belongs_to :publication, Publication
+    field :status, PublicationMembershipInvitationStatus
 
     timestamps()
   end
 
   @doc false
-  def changeset(%PublicationMembership{} = publication_membership, attrs) do
-    publication_membership
+  def changeset(%PublicationMembershipInvitation{} = publication_membership_invitation, attrs) do
+    publication_membership_invitation
     |> cast(attrs, [:role, :member_id, :publication_id])
     |> validate_required([:role, :member_id, :publication_id])
     |> foreign_key_constraint(:member_id)

@@ -36,7 +36,12 @@ defmodule Margaret.Publications do
   """
   def get_publication_by_name(name), do: Repo.get_by(Publication, name: name)
 
+  @doc """
+  Creates a publication.
+  """
   def create_publication(attrs) do
-
+    %Publication{}
+    |> Publication.changeset(attrs)
+    |> Repo.insert()
   end
 end
