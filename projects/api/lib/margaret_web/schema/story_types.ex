@@ -28,6 +28,10 @@ defmodule MargaretWeb.Schema.StoryTypes do
     @desc "The summary of the story."
     field :summary, :string
 
+    field :publication, :publication do
+      resolve &Resolvers.Stories.resolve_publication/3
+    end
+
     @desc "Identifies the date and time when the object was created."
     field :created_at , non_null(:datetime)
 
@@ -38,11 +42,11 @@ defmodule MargaretWeb.Schema.StoryTypes do
 
     @desc "The star count of the story."
     field :star_count, non_null(:integer) do
-      resolve &Resolvers.Story.resolve_star_count/3
+      resolve &Resolvers.Stories.resolve_star_count/3
     end
 
     field :viewer_can_star, non_null(:boolean) do
-      resolve &Resolvers.Story.resolve_viewer_can_star/3
+      resolve &Resolvers.Stories.resolve_viewer_can_star/3
     end
 
     interfaces [:starrable]

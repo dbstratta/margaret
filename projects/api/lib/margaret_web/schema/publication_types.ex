@@ -6,6 +6,8 @@ defmodule MargaretWeb.Schema.PublicationTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
+  alias MargaretWeb.Resolvers
+
   connection node_type: :publication
   connection node_type: :publication_membership_invitation
 
@@ -14,14 +16,30 @@ defmodule MargaretWeb.Schema.PublicationTypes do
   Its writers can publish stories under the publication name.
   """
   node object :publication do
+    @desc "The name of the publication."
     field :name, non_null(:string)
 
+    @desc "The display name of the publication."
+    field :display_name, non_null(:string)
+
+    @desc "The members of the publication."
     connection field :members, node_type: :user do
       resolve &Resolvers.Publications.resolve_members/3
     end
 
+    @desc "The membership invitations of the publication."
     connection field :membership_invitations, node_type: :publication_membership_invitation do
       resolve &Resolvers.Publications.resolve_membership_invitations/3
+    end
+
+    @desc "Viewer is a member of the publication."
+    field :viewer_is_a_member, non_null(:boolean) do
+      resolve &Resolvers.Publications.resolve_viewer_is_a_member/3
+    end
+
+    @desc "Viewer can administer the publication."
+    field :viewer_can_administer, non_null(:boolean) do
+      resolve &Resolvers.Publications.resolve_viewer_can_administer/3
     end
   end
 
@@ -71,7 +89,9 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     """
     payload field :send_invitation_publication_membership do
       input do
-        field :username, non_null(:string)
+        @desc "The username of the invitee."
+        field :invitee, non_null(:string)
+        @desc "The id of the publication."
         field :publication_id, non_null(:id)
       end
 

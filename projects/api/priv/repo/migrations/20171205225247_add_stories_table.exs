@@ -12,6 +12,7 @@ defmodule Margaret.Repo.Migrations.AddStoriesTable do
       add :summary, :string, size: 256
       add :slug, :string, null: false
       add :publication_id, references(:publications)
+      add :published_at, :naive_datetime, default: nil
 
       timestamps()
     end

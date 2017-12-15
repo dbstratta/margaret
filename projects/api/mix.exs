@@ -52,7 +52,6 @@ defmodule Margaret.Mixfile do
       {:cors_plug, "~> 1.5.0"},
       {:uuid, "~> 1.1.8"},
       {:ecto_autoslug_field, "~> 0.4.0"},
-      {:kronky, "~> 0.4.0"},
       {:credo, "~> 0.8.10", only: [:dev, :test], runtime: false},
     ]
   end

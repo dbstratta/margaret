@@ -14,8 +14,8 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves the currently logged in user.
   """
-  def resolve_me(_, %{context: %{user: me}}), do: {:ok, me}
-  def resolve_me(_, _), do: Helpers.GraphQLErrors.unauthorized()
+  def resolve_viewer(_, %{context: %{user: me}}), do: {:ok, me}
+  def resolve_viewer(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
   @doc """
   Resolves a user by its username.

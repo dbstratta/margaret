@@ -14,21 +14,40 @@ defmodule MargaretWeb.Resolvers.Publications do
 
   end
 
+  @doc """
+  Resolves if the user is a member of the publication.
+  """
+  def resolve_viewer_is_a_member(_, _, %{context: %{user: nil}}), do: {:ok, false}
+
+  def resolve_viewer_is_a_member(%{id: publication_id}, _, %{context: %{user: user}}) do
+    {:ok, Publications.is_publication_member?(publication_id, user.id)}
+  end
+
+  @doc """
+  Resolves if the user can administer the publication.
+  """
+  def resolve_viewer_can_administer(_, _, %{context: %{user: nil}}), do: {:ok, false}
+
+  def resolve_viewer_can_administer(%{id: publication_id}, _, %{context: %{user: user}}) do
+    {:ok, Publications.is_publication_admin?(publication_id, user.id)}
+  end
+
   def resolve_create_publication(_, %{context: %{user: nil}}) do
     Helpers.GraphQLErrors.unauthorized()
   end
 
   def resolve_create_publication(args, %{context: %{user: user}}) do
-    args
-    |> Map.put(:owner_id, user.id)
-    |> Publications.create_publication()
-    |> case do
-      {:ok, publication} -> {:ok, %{publication: publication}}
-      {:error, changeset} -> Helpers.GraphQLErrors.something_went_wrong()
+    with {:ok, publication} <- Publications.create_publication(args),
+         {:ok, publication_membership} <- Publications.create_publication_membership(
+           %{role: :owner, member_id: user.id, publication_id: publication.id}) do
+      {:ok, publication}
+    else
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
 
-  def resolve_send_publication_membership_invitation(_, _) do
+  def resolve_send_publication_membership_invitation(args, _) do
+    %{publication_id: %{id: publication_id}, invitee: invitee} = args
 
   end
 

@@ -26,8 +26,9 @@ defmodule Margaret.Publications.Publication do
   @doc false
   def changeset(%Publication{} = publication, attrs) do
     publication
-    |> cast(attrs, [:name])
-    |> validate_required([:name])
+    |> cast(attrs, [:name, :display_name])
+    |> validate_required([:name, :display_name])
     |> validate_length(:name, min: 2, max: 64)
+    |> unique_constraint(:name)
   end
 end

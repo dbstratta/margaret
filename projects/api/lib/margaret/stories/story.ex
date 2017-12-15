@@ -1,23 +1,33 @@
+defmodule Margaret.Stories.Story.TitleSlug do
+  @moduledoc """
+  Implementation module of EctoAutoslugField.
+  """
+
+  use EctoAutoslugField.Slug, from: :title, to: :slug
+
+  @doc """
+  Generates a hash from a uuid4.
+  """
+  def generate_hash() do
+    :sha512
+    |> :crypto.hash(UUID.uuid4())
+    |> Base.encode32()
+    |> String.slice(0..12)
+    |> String.downcase()
+  end
+
+  @doc """
+  Builds the slug before inserting it into the DB.
+  """
+  def build_slug(sources, changeset) do
+    sources
+    |> super(changeset)
+    |> Kernel.<>("--#{generate_hash()}")
+  end
+end
+
 defmodule Margaret.Stories.Story do
   @moduledoc false
-
-  defmodule Slug do
-    @moduledoc """
-    Implementation module of EctoAutoslugField.
-    """
-
-    use EctoAutoslugField.Slug, from: :title, to: :slug
-
-    def generate_hash() do
-      "hash3000"
-    end
-
-    def build_slug(sources, changeset) do
-      sources
-      |> super(changeset)
-      |> Kernel.<>("-#{generate_hash()}")
-    end
-  end
 
   use Ecto.Schema
   import Ecto.Changeset
@@ -28,6 +38,7 @@ defmodule Margaret.Stories.Story do
   alias Stars.Star
   alias Comments.Comment
   alias Publications.Publication
+  alias Story.TitleSlug
 
   @typedoc "The Story type"
   @type t :: %Story{}
@@ -37,8 +48,7 @@ defmodule Margaret.Stories.Story do
     field :body, :string
     belongs_to :author, User
     field :summary, :string
-    field :slug, Slug.Type
-    field :published, :boolean
+    field :slug, TitleSlug.Type
     field :published_at, :naive_datetime
     has_many :stars, Star
     has_many :comments, Comment
@@ -50,12 +60,11 @@ defmodule Margaret.Stories.Story do
   @doc false
   def changeset(%Story{} = story, attrs) do
     story
-    |> cast(attrs, [:title, :body, :author_id, :publication_id, :published, :summary])
+    |> cast(attrs, [:title, :body, :author_id, :publication_id, :published_at, :summary])
     |> validate_required([:title, :body, :author_id])
     |> foreign_key_constraint(:author_id)
     |> foreign_key_constraint(:publication_id)
-    |> Slug.maybe_generate_slug()
-    |> Slug.unique_constraint()
+    |> TitleSlug.maybe_generate_slug()
+    |> TitleSlug.unique_constraint()
   end
-
 end
