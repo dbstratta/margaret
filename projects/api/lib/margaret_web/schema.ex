@@ -11,6 +11,7 @@ defmodule MargaretWeb.Schema do
     AccountTypes,
     StoryTypes,
     PublicationTypes,
+    PublicationMembershipInvitationTypes,
     NotificationTypes,
     StarrableTypes,
   }
@@ -21,6 +22,7 @@ defmodule MargaretWeb.Schema do
   import_types AccountTypes
   import_types StoryTypes
   import_types PublicationTypes
+  import_types PublicationMembershipInvitationTypes
   import_types NotificationTypes
   import_types StarrableTypes
 
@@ -39,5 +41,6 @@ defmodule MargaretWeb.Schema do
     import_fields :story_mutations
     import_fields :starrable_mutations
     import_fields :publication_mutations
+    import_fields :publication_membership_invitation_mutations
   end
 end

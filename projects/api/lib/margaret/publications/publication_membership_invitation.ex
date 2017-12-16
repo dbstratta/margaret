@@ -29,10 +29,10 @@ defmodule Margaret.Publications.PublicationMembershipInvitation do
   @doc false
   def changeset(%PublicationMembershipInvitation{} = publication_membership_invitation, attrs) do
     publication_membership_invitation
-    |> cast(attrs, [:role, :member_id, :publication_id])
-    |> validate_required([:role, :member_id, :publication_id])
-    |> foreign_key_constraint(:member_id)
+    |> cast(attrs, [:invitee_id, :inviter_id, :publication_id])
+    |> validate_required([:invitee_id, :inviter_id, :publication_id])
+    |> foreign_key_constraint(:invitee_id)
+    |> foreign_key_constraint(:inviter_id)
     |> foreign_key_constraint(:publication_id)
-    |> unique_constraint(:member_id)
   end
 end
