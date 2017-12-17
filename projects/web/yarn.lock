@@ -4093,9 +4093,9 @@ graphql-tag@2.6.0, graphql-tag@^2.2.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.6.0.tgz#0fb1b9f6d6651263c47a3420e827910e6fed3952"
 
-graphql@0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.12.0.tgz#a62576995f67f7a94a02f3e57e91d752bae70055"
+graphql@0.12.3:
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.12.3.tgz#11668458bbe28261c0dcb6e265f515ba79f6ce07"
   dependencies:
     iterall "1.1.3"
 
