@@ -1,11 +1,14 @@
-defmodule Margaret.Repo.Migrations.AddPublicationMembershipInvitationTable do
+defmodule Margaret.Repo.Migrations.AddPublicationInvitationTable do
   use Ecto.Migration
 
   def change do
-    create table(:publication_membership_invitations) do
+    Margaret.Publications.PublicationInvitation.PublicationInvitationStatus.create_type()
+
+    create table(:publication_invitations) do
       add :inviter_id, references(:users, on_delete: :delete_all), null: false
       add :invitee_id, references(:users, on_delete: :nilify_all), null: false
       add :publication_id, references(:publications, on_delete: :delete_all), null: false
+      add :status, :publication_invitation_status, null: false
 
       timestamps()
     end

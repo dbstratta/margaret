@@ -3,11 +3,21 @@ defmodule MargaretWeb.Resolvers.Publications do
   The Publication GraphQL resolvers.
   """
 
+  import Ecto.Query
+  alias Absinthe.Relay
+
   alias MargaretWeb.Helpers
-  alias Margaret.Publications
+  alias Margaret.{Repo, Accounts, Stories, Publications}
+  alias Accounts.User
+  alias Stories.Story
+  alias Publications.PublicationMembership
 
   def resolve_publication(%{name: name}, _) do
     {:ok, Publications.get_publication_by_name(name)}
+  end
+
+  def resolve_owner(%{id: publication_id}, _, _) do
+    {:ok, Publications.get_publication_owner(publication_id)}
   end
 
   def resolve_member(%{id: publication_id}, %{member_id: %{id: member_id}}, _) do
@@ -18,8 +28,23 @@ defmodule MargaretWeb.Resolvers.Publications do
     }
   end
 
-  def resolve_members(_, _, _) do
+  def resolve_members(%{id: publication_id}, args, _) do
+    query = from u in User,
+      join: pm in PublicationMembership, on: pm.member_id == u.id,
+      where: pm.publication_id == ^publication_id,
+      select: u
 
+    Relay.Connection.from_query(query, &Repo.all/1, args)
+  end
+
+  def resolve_member_role(_, _, _) do
+    {:ok, "Not implemented yet"}
+  end
+
+  def resolve_stories(%{id: publication_id}, args, _) do
+    query = from s in Story, where: s.publication_id == ^publication_id
+
+    Relay.Connection.from_query(query, &Repo.all/1, args)
   end
 
   @doc """
@@ -48,7 +73,7 @@ defmodule MargaretWeb.Resolvers.Publications do
     with {:ok, publication} <- Publications.create_publication(args),
          {:ok, publication_membership} <- Publications.create_publication_membership(
            %{role: :owner, member_id: user.id, publication_id: publication.id}) do
-      {:ok, publication}
+      {:ok, %{publication: publication}}
     else
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end

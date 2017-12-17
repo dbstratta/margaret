@@ -10,6 +10,16 @@ defmodule MargaretWeb.Schema.PublicationTypes do
 
   connection node_type: :publication
 
+  connection node_type: :publication_member do
+    edge do
+      field :node, non_null(:user)
+
+      field :role, non_null(:string) do
+        resolve &Resolvers.Publications.resolve_member_role/3
+      end
+    end
+  end
+
   @desc """
   A Publication is a organization that has members (writers, editors, among others).
   Its writers can publish stories under the publication name.
@@ -21,21 +31,22 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     @desc "The display name of the publication."
     field :display_name, non_null(:string)
 
-    @desc "Lookup a member of the organization."
-    field :member, :publication_membership do
-      arg :member_id, non_null(:id)
-
-      middleware Absinthe.Relay.Node.ParseIDs, member_id: :user
-      resolve &Resolvers.Publications.resolve_member/3
+    field :owner, non_null(:user) do
+      resolve &Resolvers.Publications.resolve_owner/3
     end
 
     @desc "The members of the publication."
-    connection field :members, node_type: :user do
+    connection field :members, node_type: :publication_member do
       resolve &Resolvers.Publications.resolve_members/3
     end
 
+    @desc "The stories published under the publication."
+    connection field :stories, node_type: :story do
+      resolve &Resolvers.Publications.resolve_stories/3
+    end
+
     @desc "The membership invitations of the publication."
-    connection field :membership_invitations, node_type: :publication_membership_invitation do
+    connection field :membership_invitations, node_type: :publication_invitation do
       resolve &Resolvers.Publications.resolve_membership_invitations/3
     end
 

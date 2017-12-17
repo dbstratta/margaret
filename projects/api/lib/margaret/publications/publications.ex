@@ -6,7 +6,9 @@ defmodule Margaret.Publications do
   import Ecto.Query
   alias Margaret.Repo
 
-  alias Margaret.Publications.{Publication, PublicationMembership, PublicationMembershipInvitation}
+  alias Margaret.{Accounts, Publications}
+  alias Publications.{Publication, PublicationMembership, PublicationInvitation}
+  alias Accounts.User
 
   @doc """
   Gets a publication by its id.
@@ -80,7 +82,7 @@ defmodule Margaret.Publications do
   @spec is_publication_admin?(String.t, String.t) :: boolean
   def is_publication_admin?(publication_id, member_id) do
     case get_publication_member_role(publication_id, member_id) do
-      :admin -> true
+      :owner -> true
       _ -> false
     end
   end
@@ -108,21 +110,30 @@ defmodule Margaret.Publications do
   """
   def get_publication_membership(id), do: Repo.get(PublicationMembership, id)
 
+  def get_publication_owner(publication_id) do
+    query = from u in User,
+      join: pm in PublicationMembership, on: pm.member_id == u.id,
+      where: pm.publication_id == ^publication_id and pm.role == ^:owner,
+      select: u
+
+    Repo.one!(query)
+  end
+
   def get_publication_membership_by_publication_and_member(publication_id, member_id) do
     Repo.get_by(PublicationMembership, publication_id: publication_id, member_id: member_id)
   end
 
   @doc """
-  Gets a publication membership invitation.
+  Gets a publication invitation.
   """
-  def get_publication_membership_invitation(id), do: Repo.get(PublicationMembershipInvitation, id)
+  def get_publication_invitation(id), do: Repo.get(PublicationInvitation, id)
 
   @doc """
-  Creates a publication membership invitation.
+  Creates a publication invitation.
   """
-  def create_publication_membership_invitation(attrs) do
-    %PublicationMembershipInvitation{}
-    |> PublicationMembershipInvitation.changeset()
+  def create_publication_invitation(attrs) do
+    %PublicationInvitation{}
+    |> PublicationInvitation.changeset(attrs)
     |> Repo.insert()
   end
 end
