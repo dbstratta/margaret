@@ -21,7 +21,7 @@
     "draft-js": "0.10.4",
     "final-form": "3.0.0",
     "graphql": "0.12.3",
-    "graphql-tag": "2.6.0",
+    "graphql-tag": "2.6.1",
     "history": "4.7.2",
     "polished": "1.9.0",
     "prop-types": "15.6.0",
