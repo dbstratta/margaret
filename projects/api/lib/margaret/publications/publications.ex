@@ -38,6 +38,20 @@ defmodule Margaret.Publications do
   """
   def get_publication_by_name(name), do: Repo.get_by(Publication, name: name)
 
+  @doc """
+  Gets the role of a member of a publication.
+  Returns `nil` if the user is not a member.
+
+  ## Examples
+
+      iex> get_publication_member_role(123, 123)
+      :owner
+
+      iex> get_publication_member_role(123, 456)
+      nil
+
+  """
+  @spec get_publication_member_role(term, term) :: atom | nil
   def get_publication_member_role(publication_id, member_id) do
     case get_publication_membership_by_publication_and_member(publication_id, member_id) do
       %PublicationMembership{role: role} -> role
@@ -58,7 +72,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec is_publication_member?(String.t, String.t) :: boolean
+  @spec is_publication_member?(term, term) :: boolean
   def is_publication_member?(publication_id, member_id) do
     case get_publication_member_role(publication_id, member_id) do
       role when is_atom(role) -> true
@@ -79,10 +93,31 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec is_publication_admin?(String.t, String.t) :: boolean
+  @spec is_publication_admin?(term, term) :: boolean
   def is_publication_admin?(publication_id, member_id) do
     case get_publication_member_role(publication_id, member_id) do
-      :owner -> true
+      role when role in [:owner, :admin] -> true
+      _ -> false
+    end
+  end
+
+  @doc """
+  Returns true if the user can write stories for the publication.
+  False otherwise.
+
+  ## Examples
+
+      iex> can_write_stories?(123, 123)
+      true
+
+      iex> can_write_stories?(123, 456)
+      false
+
+  """
+  @spec can_write_stories?(term, term) :: boolean
+  def can_write_stories?(publication_id, member_id) do
+    case get_publication_member_role(publication_id, member_id) do
+      role when role in [:owner, :writer] -> true
       _ -> false
     end
   end
@@ -119,6 +154,9 @@ defmodule Margaret.Publications do
     Repo.one!(query)
   end
 
+  @doc """
+  Gets a publication membership by publication and member ids.
+  """
   def get_publication_membership_by_publication_and_member(publication_id, member_id) do
     Repo.get_by(PublicationMembership, publication_id: publication_id, member_id: member_id)
   end

@@ -17,7 +17,7 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
 
     with true <- Publications.is_publication_admin?(publication_id, user.id),
          {:ok, invitation} <- Publications.create_publication_invitation(attrs) do
-      {:ok, %{invitation: invitation}} |> IO.inspect
+      {:ok, %{invitation: invitation}}
     else
       false -> Helpers.GraphQLErrors.unauthorized()
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}

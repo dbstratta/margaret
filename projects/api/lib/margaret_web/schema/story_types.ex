@@ -33,7 +33,10 @@ defmodule MargaretWeb.Schema.StoryTypes do
     end
 
     @desc "Identifies the date and time when the object was created."
-    field :created_at , non_null(:datetime)
+    field :inserted_at, non_null(:naive_datetime)
+
+    @desc "Identifies the date and time when the object was last updated."
+    field :updated_at, non_null(:naive_datetime)
 
     @desc "The stargazers of the story."
     connection field :stargazers, node_type: :user do
@@ -45,11 +48,21 @@ defmodule MargaretWeb.Schema.StoryTypes do
       resolve &Resolvers.Stories.resolve_star_count/3
     end
 
+    @desc "The comments of the story."
+    connection field :comments, node_type: :comment do
+      resolve &Resolvers.Stories.resolve_comments/3
+    end
+
     field :viewer_can_star, non_null(:boolean) do
       resolve &Resolvers.Stories.resolve_viewer_can_star/3
     end
 
-    interfaces [:starrable]
+    @desc "Check if the current viewer can comment this story."
+    field :viewer_can_comment, non_null(:boolean) do
+      resolve &Resolvers.Stories.resolve_viewer_can_comment/3
+    end
+
+    interfaces [:starrable, :commentable]
   end
 
   object :story_queries do
@@ -73,25 +86,32 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :title, non_null(:string)
         field :body, non_null(:string)
         field :summary, :string
+        field :publication_id, :id
       end
 
       output do
         field :story, non_null(:story)
       end
 
+      middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
       resolve &Resolvers.Stories.resolve_create_story/2
     end
 
     @desc "Updates a story."
     payload field :update_story do
       input do
+        field :story_id, non_null(:id)
         field :title, :string
+        field :body, :string
         field :summary, :string
       end
 
       output do
         field :story, non_null(:story)
       end
+
+      middleware Absinthe.Relay.Node.ParseIDs, story_id: :story
+      resolve &Resolvers.Stories.resolve_update_story/2
     end
 
     @desc "Deletes a story."

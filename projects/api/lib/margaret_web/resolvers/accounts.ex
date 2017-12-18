@@ -29,6 +29,17 @@ defmodule MargaretWeb.Resolvers.Accounts do
   end
 
   @doc """
+  Resolves a connection of stories of a parent.
+  """
+  def resolve_stories(%User{id: author_id}, args, _) do
+    query = from s in Story,
+      where: s.author_id == ^author_id,
+      select: s
+
+    Relay.Connection.from_query(query, &Repo.all/1, args)
+  end
+
+  @doc """
   Resolves a connection of users.
   """
   def resolve_users(args, _) do

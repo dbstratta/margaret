@@ -51,6 +51,12 @@ defmodule Margaret.Stories do
   end
 
   @doc """
+  Updates a story.
+  """
+  def update_story(attrs) do
+  end
+
+  @doc """
   Deletes a story.
   """
   def delete_story(id) do

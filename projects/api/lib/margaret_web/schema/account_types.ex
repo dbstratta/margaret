@@ -33,7 +33,7 @@ defmodule MargaretWeb.Schema.AccountTypes do
     The stories of the user.
     """
     connection field :stories, node_type: :story do
-      resolve &Resolvers.Stories.resolve_stories/3
+      resolve &Resolvers.Accounts.resolve_stories/3
     end
 
     @desc """
@@ -55,9 +55,9 @@ defmodule MargaretWeb.Schema.AccountTypes do
     end
 
     @desc """
-    Identifies the date and time when the object was created.
+    Identifies the date and time when the user was created.
     """
-    field :created_at, non_null(:datetime)
+    field :inserted_at, non_null(:naive_datetime)
   end
 
   object :account_queries do
