@@ -3753,7 +3753,23 @@ prettier-eslint-cli@4.6.1:
     rxjs "^5.3.0"
     yargs "10.0.3"
 
-prettier-eslint@8.3.1, prettier-eslint@^8.3.0:
+prettier-eslint@8.4.0:
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-8.4.0.tgz#ec947053f558833139f470e1bb7ea0722efc3d26"
+  dependencies:
+    common-tags "^1.4.0"
+    dlv "^1.1.0"
+    eslint "^4.5.0"
+    indent-string "^3.2.0"
+    lodash.merge "^4.6.0"
+    loglevel-colored-level-prefix "^1.0.0"
+    prettier "^1.9.0"
+    pretty-format "^22.0.3"
+    require-relative "^0.8.7"
+    typescript "^2.5.1"
+    typescript-eslint-parser "^11.0.0"
+
+prettier-eslint@^8.3.0:
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-8.3.1.tgz#406f702b5a0790c3ced11942d54e5ff22d9bc984"
   dependencies:
@@ -4707,6 +4723,13 @@ typedarray@^0.0.6:
 typescript-eslint-parser@^10.0.0:
   version "10.0.0"
   resolved "https://registry.yarnpkg.com/typescript-eslint-parser/-/typescript-eslint-parser-10.0.0.tgz#82b550253659c311c2e4a4d18311b94dd08a36d7"
+  dependencies:
+    lodash.unescape "4.0.1"
+    semver "5.4.1"
+
+typescript-eslint-parser@^11.0.0:
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/typescript-eslint-parser/-/typescript-eslint-parser-11.0.0.tgz#37dba6a0130dd307504aa4b4b21b0d3dc7d4e9f2"
   dependencies:
     lodash.unescape "4.0.1"
     semver "5.4.1"
