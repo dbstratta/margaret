@@ -79,7 +79,7 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     payload field :create_publication do
       input do
         field :name, non_null(:string)
-        field :display_name, non_null(:id)
+        field :display_name, non_null(:string)
       end
 
       output do

@@ -15,7 +15,7 @@ defmodule Margaret.Publications.PublicationMembership do
 
   defenum PublicationMembershipRole,
     :publication_membership_role,
-    [:owner, :admin, :writer]
+    [:owner, :admin, :writer, :editor]
 
   schema "publication_memberships" do
     field :role, PublicationMembershipRole

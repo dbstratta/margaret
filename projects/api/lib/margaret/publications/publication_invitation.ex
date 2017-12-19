@@ -17,10 +17,15 @@ defmodule Margaret.Publications.PublicationInvitation do
     :publication_invitation_status,
     [:accepted, :pending, :rejected]
 
+  defenum PublicationInvitationRole,
+    :publication_invitation_role,
+    [:writer, :editor, :admin]
+
   schema "publication_invitations" do
     belongs_to :invitee, User
     belongs_to :inviter, User
     belongs_to :publication, Publication
+    field :role, PublicationInvitationRole
     field :status, PublicationInvitationStatus
 
     timestamps()
@@ -29,8 +34,8 @@ defmodule Margaret.Publications.PublicationInvitation do
   @doc false
   def changeset(%PublicationInvitation{} = publication_invitation, attrs) do
     publication_invitation
-    |> cast(attrs, [:invitee_id, :inviter_id, :publication_id])
-    |> validate_required([:invitee_id, :inviter_id, :publication_id])
+    |> cast(attrs, [:invitee_id, :inviter_id, :publication_id, :role, :status])
+    |> validate_required([:invitee_id, :inviter_id, :publication_id, :role])
     |> foreign_key_constraint(:invitee_id)
     |> foreign_key_constraint(:inviter_id)
     |> foreign_key_constraint(:publication_id)

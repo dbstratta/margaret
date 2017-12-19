@@ -8,6 +8,20 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
 
   import MargaretWeb.Resolvers.PublicationInvitations
 
+  @desc "The possible publication invitation roles."
+  enum :publication_invitation_role do
+    value :admin
+    value :writer
+    value :editor
+  end
+
+  @desc "The possible publication invitation status."
+  enum :publication_invitation_status do
+    value :accepted
+    value :pending
+    value :rejected
+  end
+
   connection node_type: :publication_invitation
 
   @desc """
@@ -28,7 +42,9 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
       resolve &resolve_inviter/3
     end
 
-    field :status, non_null(:string)
+    field :role, non_null(:publication_invitation_role)
+
+    field :status, non_null(:publication_invitation_status)
   end
 
   object :publication_invitation_mutations do
@@ -41,6 +57,9 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
         field :invitee_id, non_null(:id)
         @desc "The id of the publication."
         field :publication_id, non_null(:id)
+
+        @desc "The role of the invitee on the publication."
+        field :role, non_null(:publication_invitation_role)
       end
 
       output do

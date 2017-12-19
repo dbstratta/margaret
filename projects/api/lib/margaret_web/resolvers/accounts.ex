@@ -55,7 +55,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves if the user is the viewer.
   """
-  def resolve_is_viewer(%User{} = user, _args, %{context: %{user: viewer}}) do
-    user.id === viewer.id
+  def resolve_is_viewer(%User{id: user_id}, _, %{context: %{user: %{id: viewer_id}}}) do
+    {:ok, user_id === viewer_id}
   end
 end

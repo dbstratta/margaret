@@ -174,4 +174,18 @@ defmodule Margaret.Publications do
     |> PublicationInvitation.changeset(attrs)
     |> Repo.insert()
   end
+
+  def update_publication_invitation(%PublicationInvitation{} = invitation, attrs) do
+    invitation
+    |> PublicationInvitation.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def accept_publication_invitation(%PublicationInvitation{} = invitation) do
+    update_publication_invitation(invitation, %{status: :accepted})
+  end
+
+  def reject_publication_invitation(%PublicationInvitation{} = invitation) do
+    update_publication_invitation(invitation, %{status: :rejected})
+  end
 end

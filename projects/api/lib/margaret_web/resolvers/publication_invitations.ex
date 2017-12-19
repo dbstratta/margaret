@@ -11,15 +11,23 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
     Helpers.GraphQLErrors.unauthorized()
   end
 
-  def resolve_send_publication_invitation(args, %{context: %{user: user}}) do
-    %{publication_id: publication_id, invitee_id: invitee_id} = args
-    attrs = %{publication_id: publication_id, invitee_id: invitee_id, inviter_id: user.id}
+  def resolve_send_publication_invitation(args, %{context: %{user: %{id: user_id}}}) do
+    %{publication_id: publication_id, invitee_id: invitee_id, role: role} = args
+    attrs = %{
+      publication_id: publication_id,
+      invitee_id: invitee_id,
+      inviter_id: user_id,
+      role: role,
+      status: :pending
+    }
 
-    with true <- Publications.is_publication_admin?(publication_id, user.id),
+    with true <- Publications.is_publication_admin?(publication_id, user_id),
+         false <- Publications.is_publication_member?(publication_id, invitee_id),
          {:ok, invitation} <- Publications.create_publication_invitation(attrs) do
       {:ok, %{invitation: invitation}}
     else
       false -> Helpers.GraphQLErrors.unauthorized()
+      true -> {:error, "Invitee is already a member of the publication."}
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
@@ -36,8 +44,29 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
     {:ok, Accounts.get_user(inviter_id)}
   end
 
-  def resolve_accept_publication_invitation(_, _) do
+  def resolve_accept_publication_invitation(_, %{context: %{user: nil}}) do
+    Helpers.GraphQLErrors.unauthorized()
+  end
 
+  def resolve_accept_publication_invitation(args, %{context: %{user: %{id: user_id}}}) do
+    %{invitation_id: invitation_id} = args
+    invitation = Publications.get_publication_invitation(invitation_id)
+    membership_attrs = %{
+      member_id: invitation.invitee_id,
+      publication_id: invitation.publication_id,
+      role: invitation.role,
+    }
+
+    with %PublicationInvitation{} <- invitation,
+         true <- invitation.invitee_id === user_id,
+         {:ok, invitation} <- Publications.accept_publication_invitation(invitation),
+         {:ok, membership} <- Publications.create_publication_membership(membership_attrs) do
+      {:ok, %{invitation: invitation}}
+    else
+      nil -> Helpers.GraphQLErrors.something_went_wrong()
+      false -> Helpers.GraphQLErrors.unauthorized()
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+    end
   end
 
   def resolve_reject_publication_invitation(_, _) do
