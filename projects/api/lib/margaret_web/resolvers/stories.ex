@@ -40,6 +40,14 @@ defmodule MargaretWeb.Resolvers.Stories do
     {:ok, Stars.get_star_count(%{story_id: story_id})}
   end
 
+  def resolve_stargazers(%Story{id: story_id}, args, _) do
+    query = from u in User,
+      join: s in Star, on: s.user_id == u.id and s.story_id == ^story_id,
+      select: u
+
+    Relay.Connection.from_query(query, &Repo.all/1, args)
+  end
+
   def resolve_comments(%Story{id: story_id}, args, _) do
     query = from c in Comment,
       where: c.story_id == ^story_id,
@@ -51,32 +59,27 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves whether the viewer can star the story or not.
   """
-  def resolve_viewer_can_star(_, _, %{context: %{user: nil}}), do: {:ok, false}
-  def resolve_viewer_can_star(_, _, %{context: %{user: user}}), do: {:ok, true}
+  def resolve_viewer_can_star(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+  def resolve_viewer_can_star(_, _, _), do: {:ok, false}
 
   @doc """
   Resolves whether the viewer can comment the story or not.
   """
-  def resolve_viewer_can_comment(_, _, %{context: %{user: nil}}), do: {:ok, false}
-  def resolve_viewer_can_comment(_, _, %{context: %{user: user}}), do: {:ok, true}
+  def resolve_viewer_can_comment(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+  def resolve_viewer_can_comment(_, _, _), do: {:ok, false}
 
   @doc """
   Resolves a story creation.
   """
-  def resolve_create_story(_, %{context: %{user: nil}}), do: Helpers.GraphQLErrors.unauthorized()
-
-  def resolve_create_story(%{publication_id: p_id} = args, %{context: %{user: %{id: user_id}}}) do
-    case Publications.can_write_stories?(p_id, user_id) do
-      true -> do_resolve_create_story(args, user_id)
-      _ -> Helpers.GraphQLErrors.unauthorized()
-    end
+  def resolve_create_story(args, %{context: %{viewer: %{id: viewer_id}}}) do
+    args.publication_id
+    |> Publications.can_write_stories?(viewer_id)
+    |> do_resolve_create_story(args, viewer_id)
   end
 
-  def resolve_create_story(args, %{context: %{user: %{id: user_id}}}) do
-    do_resolve_create_story(args, user_id)
-  end
+  def resolve_create_story(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
-  defp do_resolve_create_story(args, author_id) do
+  defp do_resolve_create_story(true, args, author_id) do
     args
     |> Map.put(:author_id, author_id)
     |> Stories.create_story()
@@ -86,31 +89,31 @@ defmodule MargaretWeb.Resolvers.Stories do
     end
   end
 
+  defp do_resolve_create_story(false, _, _), do: Helpers.GraphQLErrors.unauthorized()
+
   @doc """
   Resolves a story update.
   """
-  def resolve_update_story(_args, %{context: %{user: nil}}) do
-    Helpers.GraphQLErrors.unauthorized()
-  end 
-
-  def resolve_update_story(args, %{context: %{user: user}}) do
+  def resolve_update_story(_args, %{context: %{viewer: _viewer}}) do
     Helpers.GraphQLErrors.not_implemented()
   end 
+
+  def resolve_update_story(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
   @doc """
   Resolves a story deletion.
   """
-  def resolve_delete_story(_, %{context: %{user: nil}}), do: Helpers.GraphQLErrors.unauthorized()
-
-  def resolve_delete_story(%{story_id: id}, %{context: %{user: %{id: user_id}}}) do
-    with %Story{id: story_id, author_id: author_id} = story <- Stories.get_story(id),
-         true <- author_id === user_id,
+  def resolve_delete_story(%{story_id: story_id}, %{context: %{viewer: %{id: viewer_id}}}) do
+    with %Story{author_id: author_id} = story <- Stories.get_story(story_id),
+         true <- author_id === viewer_id,
          {:ok, _} <- Stories.delete_story(story_id) do
       {:ok, %{story: story}}
     else
-      nil -> Helpers.GraphQLErrors.error_creator("Story with id #{id} doesn't exist")
+      nil -> Helpers.GraphQLErrors.error_creator("Story with id #{story_id} doesn't exist.")
       false -> Helpers.GraphQLErrors.unauthorized()
       {:error, _} -> Helpers.GraphQLErrors.something_went_wrong()
     end
   end
+
+  def resolve_delete_story(_, _), do: Helpers.GraphQLErrors.unauthorized()
 end

@@ -4,7 +4,7 @@ defmodule Margaret.Accounts.SocialLogin do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias __MODULE__, as: SocialLogin
+  alias __MODULE__
   alias Margaret.Accounts.User
 
   @typedoc "The SocialLogin type"

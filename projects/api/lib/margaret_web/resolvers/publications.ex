@@ -50,32 +50,30 @@ defmodule MargaretWeb.Resolvers.Publications do
   @doc """
   Resolves if the user is a member of the publication.
   """
-  def resolve_viewer_is_a_member(_, _, %{context: %{user: nil}}), do: {:ok, false}
-
-  def resolve_viewer_is_a_member(%{id: publication_id}, _, %{context: %{user: user}}) do
-    {:ok, Publications.is_publication_member?(publication_id, user.id)}
+  def resolve_viewer_is_a_member(%{id: publication_id}, _, %{context: %{viewer: viewer}}) do
+    {:ok, Publications.is_publication_member?(publication_id, viewer.id)}
   end
+
+  def resolve_viewer_is_a_member(_, _, _), do: {:ok, false}
 
   @doc """
   Resolves if the user can administer the publication.
   """
-  def resolve_viewer_can_administer(_, _, %{context: %{user: nil}}), do: {:ok, false}
-
-  def resolve_viewer_can_administer(%{id: publication_id}, _, %{context: %{user: user}}) do
-    {:ok, Publications.is_publication_admin?(publication_id, user.id)}
+  def resolve_viewer_can_administer(%{id: publication_id}, _, %{context: %{viewer: viewer}}) do
+    {:ok, Publications.is_publication_admin?(publication_id, viewer.id)}
   end
 
-  def resolve_create_publication(_, %{context: %{user: nil}}) do
-    Helpers.GraphQLErrors.unauthorized()
-  end
+  def resolve_viewer_can_administer(_, _, _), do: {:ok, false}
 
-  def resolve_create_publication(args, %{context: %{user: user}}) do
+  def resolve_create_publication(args, %{context: %{viewer: %{id: viewer_id}}}) do
     with {:ok, publication} <- Publications.create_publication(args),
          {:ok, publication_membership} <- Publications.create_publication_membership(
-           %{role: :owner, member_id: user.id, publication_id: publication.id}) do
+           %{role: :owner, member_id: viewer_id, publication_id: publication.id}) do
       {:ok, %{publication: publication}}
     else
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
+
+  def resolve_create_publication(_, _), do: Helpers.GraphQLErrors.unauthorized()
 end

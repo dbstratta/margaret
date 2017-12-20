@@ -4,7 +4,7 @@ defmodule Margaret.Stars.Star do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias __MODULE__, as: Star
+  alias __MODULE__
   alias Margaret.{Accounts, Stories, Comments}
   alias Accounts.User
   alias Stories.Story

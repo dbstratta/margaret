@@ -4,20 +4,15 @@ defmodule Margaret.Publications.Publication do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias __MODULE__, as: Publication
-  alias Margaret.{Accounts, Publications}
-  alias Accounts.User
-  alias Publications.PublicationMembership
-
-  @typedoc "The Publication type"
-  @type t :: %Publication{}
+  alias __MODULE__
+  alias Margaret.{Accounts.User, Publications.PublicationMembership}
 
   schema "publications" do
     field :name, :string
     field :display_name, :string
 
     many_to_many :members, User,
-      join_through: PublicationMemberhip,
+      join_through: PublicationMembership,
       unique: true
 
     timestamps()

@@ -13,14 +13,6 @@ defmodule MargaretWeb.Resolvers.Starrable do
   alias Comments.Comment
   alias MargaretWeb.Helpers
 
-  def resolve_stargazers(%Story{id: story_id} = story, args, _) do
-    query = from u in User,
-      join: s in Star, on: s.user_id == u.id and s.story_id == ^story_id,
-      select: u
-
-    Relay.Connection.from_query(query, &Repo.all/1, args)
-  end
-
   def resolve_stargazers(%Comment{id: comment_id} = story, args, _) do
     query = from u in User,
       join: s in Star, on: s.user_id == u.id and s.comment_id == ^comment_id,
@@ -29,27 +21,38 @@ defmodule MargaretWeb.Resolvers.Starrable do
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end
 
-  def resolve_star(_, %{context: %{user: nil}}), do: Helpers.GraphQLErrors.unauthorized()
-
-  def resolve_star(%{starrable_id: %{type: :story, id: story_id}}, %{context: %{user: user}}) do
-    Stars.create_star(%{user_id: user.id, story_id: story_id})
+  def resolve_star(
+    %{starrable_id: %{type: :story, id: story_id}} = args, %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    IO.inspect args
+    Stars.create_star(%{user_id: viewer_id, story_id: story_id})
     {:ok, %{starrable: Stories.get_story!(story_id)}}
   end
 
-  def resolve_star(%{starrable_id: %{type: :comment, id: comment_id}}, %{context: %{user: user}}) do
-    Stars.create_star(%{user_id: user.id, comment_id: comment_id})
+  def resolve_star(
+    %{starrable_id: %{type: :comment, id: comment_id}}, %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    Stars.create_star(%{user_id: viewer_id, comment_id: comment_id})
     {:ok, %{starrable: Comments.get_comment!(comment_id)}}
   end
 
+  def resolve_star(_, _), do: Helpers.GraphQLErrors.unauthorized()
+
   def resolve_unstar(_, %{context: %{user: nil}}), do: Helpers.GraphQLErrors.unauthorized()
 
-  def resolve_unstar(%{starrable_id: %{type: :story, id: story_id}}, %{context: %{user: user}}) do
-    Stars.delete_star(user_id: user.id, story_id: story_id)
+  def resolve_unstar(
+    %{starrable_id: %{type: :story, id: story_id}}, %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    Stars.delete_star(user_id: viewer_id, story_id: story_id)
     {:ok, %{starrable: Stories.get_story!(story_id)}}
   end
 
-  def resolve_unstar(%{starrable_id: %{type: :comment, id: id}}, %{context: %{user: user}}) do
-    Stars.delete_star(user_id: user.id, comment_id: id)
+  def resolve_unstar(
+    %{starrable_id: %{type: :comment, id: id}}, %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    Stars.delete_star(user_id: viewer_id, comment_id: id)
     {:ok, %{starrable: Comment.get_comment!(id)}}
   end
+
+  def resolve_unstar(_, _), do: Helpers.GraphQLErrors.unauthorized()
 end

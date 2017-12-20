@@ -62,7 +62,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
       resolve &Resolvers.Stories.resolve_viewer_can_comment/3
     end
 
-    interfaces [:starrable, :commentable]
+    interfaces [:starrable]
   end
 
   object :story_queries do

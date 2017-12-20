@@ -5,13 +5,10 @@ defmodule Margaret.Publications.PublicationMembership do
   import Ecto.Changeset
   import EctoEnum, only: [defenum: 3]
 
-  alias __MODULE__, as: PublicationMembership
+  alias __MODULE__
   alias Margaret.{Accounts, Publications}
   alias Accounts.User
   alias Publications.Publication
-
-  @typedoc "The Publication type"
-  @type t :: %Publication{}
 
   defenum PublicationMembershipRole,
     :publication_membership_role,

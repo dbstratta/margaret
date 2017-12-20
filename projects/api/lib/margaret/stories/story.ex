@@ -32,7 +32,7 @@ defmodule Margaret.Stories.Story do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias __MODULE__, as: Story
+  alias __MODULE__
   alias Margaret.{Accounts, Stars, Comments, Publications}
   alias Accounts.User
   alias Stars.Star
@@ -66,5 +66,13 @@ defmodule Margaret.Stories.Story do
     |> foreign_key_constraint(:publication_id)
     |> TitleSlug.maybe_generate_slug()
     |> TitleSlug.unique_constraint()
+  end
+
+  @doc false
+  def update_changeset(%Story{} = story, attrs) do
+    story
+    |> cast(attrs, [:title, :body, :publication_id, :published_at, :summary])
+    |> validate_required([:title, :body])
+    |> foreign_key_constraint(:publication_id)
   end
 end

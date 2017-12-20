@@ -4,9 +4,9 @@ defmodule Margaret.Publications do
   """
 
   import Ecto.Query
-  alias Margaret.Repo
+  alias Ecto.Multi
 
-  alias Margaret.{Accounts, Publications}
+  alias Margaret.{Repo, Accounts, Publications}
   alias Publications.{Publication, PublicationMembership, PublicationInvitation}
   alias Accounts.User
 
@@ -182,7 +182,25 @@ defmodule Margaret.Publications do
   end
 
   def accept_publication_invitation(%PublicationInvitation{} = invitation) do
-    update_publication_invitation(invitation, %{status: :accepted})
+    invitation_changeset = PublicationInvitation.changeset(invitation, %{status: :accepted})
+    update_others_invitations = from i in PublicationInvitation,
+      where: i.invitee_id == ^invitation.invitee_id and i.id != ^invitation.id,
+      update: [set: [status: ^:rejected]]
+    
+    membership_attrs = %{
+      role: invitation.role,
+      publication_id: invitation.publication_id,
+      member_id: invitation.invitee_id,
+    }
+    membership_changeset = PublicationMembership.changeset(
+      %PublicationMembership{}, membership_attrs)
+
+
+    Multi.new
+    |> Multi.update(:invitation, PublicationInvitation.changeset(invitation_changeset))
+    |> Multi.update_all(:other_invitations, update_others_invitations, [])
+    |> Multi.insert(:membership, membership_changeset)
+    |> Repo.transaction()
   end
 
   def reject_publication_invitation(%PublicationInvitation{} = invitation) do

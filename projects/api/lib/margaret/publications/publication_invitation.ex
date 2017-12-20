@@ -5,7 +5,7 @@ defmodule Margaret.Publications.PublicationInvitation do
   import Ecto.Changeset
   import EctoEnum, only: [defenum: 3]
 
-  alias __MODULE__, as: PublicationInvitation
+  alias __MODULE__
   alias Margaret.{Accounts, Publications}
   alias Accounts.User
   alias Publications.Publication

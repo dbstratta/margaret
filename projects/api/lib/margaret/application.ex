@@ -10,6 +10,10 @@ defmodule Margaret.Application do
       Margaret.Repo,
       # Start the endpoint when the application starts.
       MargaretWeb.Endpoint,
+      %{
+        id: Absinthe.Subscription,
+        start: {Absinthe.Subscription, :start_link, [MargaretWeb.Endpoint]},
+      },
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

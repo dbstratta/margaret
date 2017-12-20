@@ -46,6 +46,6 @@ defmodule MargaretWeb.Schema.CommentTypes do
       resolve &Resolvers.Comments.resolve_viewer_can_comment/3
     end
 
-    interfaces [:starrable, :commentable]
+    interfaces [:starrable]
   end
 end

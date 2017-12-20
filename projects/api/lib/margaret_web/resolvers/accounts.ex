@@ -14,7 +14,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves the currently logged in user.
   """
-  def resolve_viewer(_, %{context: %{user: me}}), do: {:ok, me}
+  def resolve_viewer(_, %{context: %{viewer: viewer}}), do: {:ok, viewer}
   def resolve_viewer(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
   @doc """
@@ -55,7 +55,11 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves if the user is the viewer.
   """
-  def resolve_is_viewer(%User{id: user_id}, _, %{context: %{user: %{id: viewer_id}}}) do
+  def resolve_is_viewer(%User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}) do
     {:ok, user_id === viewer_id}
+  end
+
+  def resolve_is_viewer(_, _) do
+    {:ok, false}
   end
 end

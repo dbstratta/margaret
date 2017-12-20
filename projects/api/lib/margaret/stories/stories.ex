@@ -53,7 +53,7 @@ defmodule Margaret.Stories do
   @doc """
   Updates a story.
   """
-  def update_story(attrs) do
+  def update_story(_attrs) do
   end
 
   @doc """
