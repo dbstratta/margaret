@@ -9,7 +9,8 @@ defmodule Margaret.Repo.Migrations.AddCommentsTable do
       add :body, :text, null: false
       add :author_id, references(:users), null: false
 
-      add :story_id, references(:stories)
+      add :story_id, references(:stories, on_delete: :delete_all), null: false
+      add :parent_id, references(:comments, on_delete: :nilify_all)
 
       timestamps()
     end
