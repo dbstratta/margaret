@@ -1309,7 +1309,7 @@ eslint-scope@^3.7.1:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
-eslint@4.13.1:
+eslint@4.13.1, eslint@^4.0.0:
   version "4.13.1"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.13.1.tgz#0055e0014464c7eb7878caf549ef2941992b444f"
   dependencies:
@@ -3753,17 +3753,17 @@ prettier-eslint-cli@4.6.1:
     rxjs "^5.3.0"
     yargs "10.0.3"
 
-prettier-eslint@8.4.0:
-  version "8.4.0"
-  resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-8.4.0.tgz#ec947053f558833139f470e1bb7ea0722efc3d26"
+prettier-eslint@8.5.0:
+  version "8.5.0"
+  resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-8.5.0.tgz#ec9c2d1538af18b09622d8abfa1052730dffa47b"
   dependencies:
     common-tags "^1.4.0"
     dlv "^1.1.0"
-    eslint "^4.5.0"
+    eslint "^4.0.0"
     indent-string "^3.2.0"
     lodash.merge "^4.6.0"
     loglevel-colored-level-prefix "^1.0.0"
-    prettier "^1.9.0"
+    prettier "^1.7.0"
     pretty-format "^22.0.3"
     require-relative "^0.8.7"
     typescript "^2.5.1"
@@ -3785,7 +3785,7 @@ prettier-eslint@^8.3.0:
     typescript "^2.5.1"
     typescript-eslint-parser "^8.0.0"
 
-prettier@1.9.2, prettier@^1.9.0:
+prettier@1.9.2, prettier@^1.7.0, prettier@^1.9.0:
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.9.2.tgz#96bc2132f7a32338e6078aeb29727178c6335827"
 
