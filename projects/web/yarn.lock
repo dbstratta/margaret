@@ -1070,11 +1070,11 @@ babel-plugin-react-docgen@^1.8.0:
     react-docgen "^2.15.0"
 
 babel-plugin-styled-components@^1.1.4:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-styled-components/-/babel-plugin-styled-components-1.3.0.tgz#9e4d9f718b2975dadbfab0bc1c6793d93c751404"
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-styled-components/-/babel-plugin-styled-components-1.4.0.tgz#3a2207a1852770a383f0106ca85aded4f3e3488f"
   dependencies:
     babel-types "^6.26.0"
-    stylis "3.x"
+    stylis "^3.0.0"
 
 babel-plugin-syntax-async-functions@^6.8.0:
   version "6.13.0"
@@ -3142,8 +3142,8 @@ es6-map@^0.1.3:
     event-emitter "~0.3.5"
 
 es6-promise@^4.0.5:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.1.tgz#3b98a6714ba1b9267428b2c00e6265b16dab0205"
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.2.tgz#f722d7769af88bd33bc13ec6605e1f92966b82d9"
 
 es6-set@~0.1.5:
   version "0.1.5"
@@ -3955,8 +3955,8 @@ glamor@^2.20.40:
     through "^2.3.8"
 
 glamorous@^4.11.0:
-  version "4.11.0"
-  resolved "https://registry.yarnpkg.com/glamorous/-/glamorous-4.11.0.tgz#cb846dda1450c895c59a34060fb19e3251ed619f"
+  version "4.11.1"
+  resolved "https://registry.yarnpkg.com/glamorous/-/glamorous-4.11.1.tgz#2c0992c08e263dd3f1352754056a648fd489a67e"
   dependencies:
     brcast "^3.0.0"
     fast-memoize "^2.2.7"
@@ -8720,9 +8720,9 @@ style-search@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/style-search/-/style-search-0.1.0.tgz#7958c793e47e32e07d2b5cafe5c0bf8e12e77902"
 
-styled-components@2.3.3:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/styled-components/-/styled-components-2.3.3.tgz#351d0be84699db750c73d95617e4334157421f71"
+styled-components@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/styled-components/-/styled-components-2.4.0.tgz#086d0fd483d54638837fca3ea546a030b94adf75"
   dependencies:
     buffer "^5.0.3"
     css-to-react-native "^2.0.3"
@@ -8800,7 +8800,7 @@ stylelint@8.4.0:
     svg-tags "^1.0.0"
     table "^4.0.1"
 
-stylis@3.x, stylis@^3.4.0:
+stylis@^3.0.0, stylis@^3.4.0:
   version "3.4.5"
   resolved "https://registry.yarnpkg.com/stylis/-/stylis-3.4.5.tgz#d7b9595fc18e7b9c8775eca8270a9a1d3e59806e"
 
