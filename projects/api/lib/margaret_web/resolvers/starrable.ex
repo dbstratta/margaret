@@ -22,21 +22,34 @@ defmodule MargaretWeb.Resolvers.Starrable do
   end
 
   def resolve_star(
-    %{starrable_id: %{type: :story, id: story_id}} = args, %{context: %{viewer: %{id: viewer_id}}}
+    %{starrable_id: %{type: :story, id: story_id}}, %{context: %{viewer: %{id: viewer_id}}}
   ) do
-    IO.inspect args
-    Stars.create_star(%{user_id: viewer_id, story_id: story_id})
-    {:ok, %{starrable: Stories.get_story!(story_id)}}
+    story_id
+    |> Stories.get_story()
+    |> do_resolve_star(viewer_id)
   end
 
   def resolve_star(
     %{starrable_id: %{type: :comment, id: comment_id}}, %{context: %{viewer: %{id: viewer_id}}}
   ) do
-    Stars.create_star(%{user_id: viewer_id, comment_id: comment_id})
-    {:ok, %{starrable: Comments.get_comment!(comment_id)}}
+    comment_id
+    |> Comments.get_comment()
+    |> do_resolve_star(viewer_id)
   end
 
   def resolve_star(_, _), do: Helpers.GraphQLErrors.unauthorized()
+
+  defp do_resolve_star(%Story{id: story_id} = story, viewer_id) do
+    Stars.create_star(%{user_id: viewer_id, story_id: story_id})
+    {:ok, %{starrable: story}}
+  end
+
+  defp do_resolve_star(%Comment{id: comment_id} = comment, viewer_id) do
+    Stars.create_star(%{user_id: viewer_id, comment_id: comment_id})
+    {:ok, %{starrable: comment}}
+  end
+
+  defp do_resolve_star(nil, _), do: {:error, "Starrable doesn't exist."}
 
   def resolve_unstar(_, %{context: %{user: nil}}), do: Helpers.GraphQLErrors.unauthorized()
 
@@ -55,4 +68,16 @@ defmodule MargaretWeb.Resolvers.Starrable do
   end
 
   def resolve_unstar(_, _), do: Helpers.GraphQLErrors.unauthorized()
+
+  defp do_resolve_unstar(%Story{id: story_id} = story, viewer_id) do
+    Stars.delete_star(user_id: viewer_id, story_id: story_id)
+    {:ok, %{starrable: story}}
+  end
+
+  defp do_resolve_unstar(%Comment{id: comment_id} = comment, viewer_id) do
+    Stars.delete_star(user_id: viewer_id, comment_id: comment_id)
+    {:ok, %{starrable: comment}}
+  end
+
+  defp do_resolve_unstar(nil, _), do: {:error, "Starrable doesn't exist."}
 end

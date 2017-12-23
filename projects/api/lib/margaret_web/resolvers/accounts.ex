@@ -20,13 +20,8 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves a user by its username.
   """
-  def resolve_user(%{username: username}, _) do
-    {:ok, Accounts.get_user_by_username(username)}
-  end
-
-  def resolve_user(%Story{author_id: author_id}, _, _) do
-    {:ok, Accounts.get_user(author_id)}
-  end
+  def resolve_user(%{username: username}, _), do: {:ok, Accounts.get_user_by_username(username)}
+  def resolve_user(%Story{author_id: author_id}, _, _), do: {:ok, Accounts.get_user(author_id)}
 
   @doc """
   Resolves a connection of stories of a parent.
@@ -42,9 +37,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves a connection of users.
   """
-  def resolve_users(args, _) do
-    Relay.Connection.from_query(User, &Repo.all/1, args)
-  end
+  def resolve_users(args, _), do: Relay.Connection.from_query(User, &Repo.all/1, args)
 
   @doc """
   Resolves a user creation.
@@ -59,7 +52,5 @@ defmodule MargaretWeb.Resolvers.Accounts do
     {:ok, user_id === viewer_id}
   end
 
-  def resolve_is_viewer(_, _) do
-    {:ok, false}
-  end
+  def resolve_is_viewer(_, _), do: {:ok, false}
 end

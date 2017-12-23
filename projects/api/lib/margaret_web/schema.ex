@@ -45,4 +45,8 @@ defmodule MargaretWeb.Schema do
     import_fields :publication_mutations
     import_fields :publication_invitation_mutations
   end
+
+  subscription do
+    import_fields :starrable_subscriptions
+  end
 end

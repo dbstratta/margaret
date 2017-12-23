@@ -1,8 +1,10 @@
 defmodule MargaretWeb.UserSocket do
   use Phoenix.Socket
+  use Absinthe.Phoenix.Socket,
+    schema: MargaretWeb.Schema
 
   ## Channels
-  # channel "room:*", MargaretWeb.RoomChannel
+  channel "starred:*", MargaretWeb.StarredChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
