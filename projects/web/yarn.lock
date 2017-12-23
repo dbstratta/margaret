@@ -67,7 +67,7 @@
   version "3.0.9"
   resolved "https://registry.yarnpkg.com/@hypnosphi/fuse.js/-/fuse.js-3.0.9.tgz#ea99f6121b4a8f065b4c71f85595db2714498807"
 
-"@storybook/addon-actions@3.2.19", "@storybook/addon-actions@^3.2.18":
+"@storybook/addon-actions@3.2.19", "@storybook/addon-actions@^3.2.19":
   version "3.2.19"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-3.2.19.tgz#c20515c16ec382e43807b47081b202459d609d4b"
   dependencies:
@@ -78,17 +78,17 @@
     react-inspector "^2.2.2"
     uuid "^3.1.0"
 
-"@storybook/addon-links@3.2.19", "@storybook/addon-links@^3.2.18":
+"@storybook/addon-links@3.2.19", "@storybook/addon-links@^3.2.19":
   version "3.2.19"
   resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-3.2.19.tgz#23200270ec100771c904a9aa0567c3cb27ccd377"
   dependencies:
     "@storybook/addons" "^3.2.19"
 
-"@storybook/addons@^3.2.18", "@storybook/addons@^3.2.19":
+"@storybook/addons@^3.2.19":
   version "3.2.19"
   resolved "https://registry.yarnpkg.com/@storybook/addons/-/addons-3.2.19.tgz#cddb816f75ca3a45dca3249e5ff11d5dba2f6064"
 
-"@storybook/channel-postmessage@^3.2.18":
+"@storybook/channel-postmessage@^3.2.19":
   version "3.2.19"
   resolved "https://registry.yarnpkg.com/@storybook/channel-postmessage/-/channel-postmessage-3.2.19.tgz#3d7477d60e7d18214896a1c06760e2b1ea27ceda"
   dependencies:
@@ -150,18 +150,17 @@
   dependencies:
     babel-runtime "^6.5.0"
 
-"@storybook/react@3.2.18":
-  version "3.2.18"
-  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-3.2.18.tgz#bb0a86cf808c3c90fedc11e489f10660f650c781"
+"@storybook/react@3.2.19":
+  version "3.2.19"
+  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-3.2.19.tgz#3a609ccf6b0608cec9c6dfe76494e3721efe2fc3"
   dependencies:
-    "@storybook/addon-actions" "^3.2.18"
-    "@storybook/addon-links" "^3.2.18"
-    "@storybook/addons" "^3.2.18"
-    "@storybook/channel-postmessage" "^3.2.18"
-    "@storybook/ui" "^3.2.18"
+    "@storybook/addon-actions" "^3.2.19"
+    "@storybook/addon-links" "^3.2.19"
+    "@storybook/addons" "^3.2.19"
+    "@storybook/channel-postmessage" "^3.2.19"
+    "@storybook/ui" "^3.2.19"
     airbnb-js-shims "^1.4.0"
     autoprefixer "^7.2.3"
-    babel-core "^6.26.0"
     babel-loader "^7.1.2"
     babel-plugin-react-docgen "^1.8.0"
     babel-plugin-transform-regenerator "^6.26.0"
@@ -175,16 +174,16 @@
     case-sensitive-paths-webpack-plugin "^2.1.1"
     chalk "^2.3.0"
     commander "^2.12.2"
-    common-tags "^1.5.1"
+    common-tags "^1.6.0"
     configstore "^3.1.1"
     core-js "^2.5.3"
     css-loader "^0.28.7"
     dotenv-webpack "^1.5.4"
     express "^4.16.2"
-    file-loader "^1.1.5"
+    file-loader "^1.1.6"
     find-cache-dir "^1.0.0"
     glamor "^2.20.40"
-    glamorous "^4.11.0"
+    glamorous "^4.11.2"
     global "^4.3.2"
     json-loader "^0.5.7"
     json-stringify-safe "^5.0.1"
@@ -206,7 +205,7 @@
     webpack-dev-middleware "^1.12.2"
     webpack-hot-middleware "^2.21.0"
 
-"@storybook/ui@^3.2.18":
+"@storybook/ui@^3.2.19":
   version "3.2.19"
   resolved "https://registry.yarnpkg.com/@storybook/ui/-/ui-3.2.19.tgz#8e3aac28379d9cdcb6c7ef6b256e9c45d993b4a2"
   dependencies:
@@ -2272,7 +2271,7 @@ commander@2.12.x, commander@^2.12.2, commander@^2.9.0, commander@~2.12.1:
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.12.2.tgz#0f5946c427ed9ec0d91a46bb9def53e54650e555"
 
-common-tags@^1.5.1:
+common-tags@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/common-tags/-/common-tags-1.6.0.tgz#788e4bcc582f16993e5b2c92f76b1ccb80731537"
   dependencies:
@@ -3700,7 +3699,7 @@ file-loader@1.1.5:
     loader-utils "^1.0.2"
     schema-utils "^0.3.0"
 
-file-loader@^1.1.5:
+file-loader@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-1.1.6.tgz#7b9a8f2c58f00a77fddf49e940f7ac978a3ea0e8"
   dependencies:
@@ -3954,7 +3953,7 @@ glamor@^2.20.40:
     prop-types "^15.5.10"
     through "^2.3.8"
 
-glamorous@^4.11.0, glamorous@^4.11.2:
+glamorous@^4.11.2:
   version "4.11.2"
   resolved "https://registry.yarnpkg.com/glamorous/-/glamorous-4.11.2.tgz#ce144c6a53e247ddf0896ad6faddebf78c49d864"
   dependencies:
