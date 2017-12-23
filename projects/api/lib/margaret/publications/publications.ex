@@ -74,11 +74,13 @@ defmodule Margaret.Publications do
   """
   @spec is_publication_member?(term, term) :: boolean
   def is_publication_member?(publication_id, member_id) do
-    case get_publication_member_role(publication_id, member_id) do
-      role when is_atom(role) -> true
-      _ -> false
-    end
+    publication_id
+    |> get_publication_member_role(member_id)
+    |> do_is_publication_member?()
   end
+
+  defp do_is_publication_member?(role) when not is_nil(role), do: true
+  defp do_is_publication_member?(_), do: false
 
   @doc """
   Returns true if the user is an admin
@@ -181,10 +183,15 @@ defmodule Margaret.Publications do
     |> Repo.update()
   end
 
+  @doc """
+  Accepts a publication invitation.
+  Rejects all other invitations to the invitee.
+  """
   def accept_publication_invitation(%PublicationInvitation{} = invitation) do
     invitation_changeset = PublicationInvitation.changeset(invitation, %{status: :accepted})
-    update_others_invitations = from i in PublicationInvitation,
+    reject_others_invitations = from i in PublicationInvitation,
       where: i.invitee_id == ^invitation.invitee_id and i.id != ^invitation.id,
+      where: i.status == ^:pending,
       update: [set: [status: ^:rejected]]
     
     membership_attrs = %{
@@ -197,13 +204,28 @@ defmodule Margaret.Publications do
 
 
     Multi.new
-    |> Multi.update(:invitation, PublicationInvitation.changeset(invitation_changeset))
-    |> Multi.update_all(:other_invitations, update_others_invitations, [])
+    |> Multi.update(:invitation, invitation_changeset)
+    |> Multi.update_all(:reject_other_invitations, reject_others_invitations, [])
     |> Multi.insert(:membership, membership_changeset)
     |> Repo.transaction()
   end
 
+  @doc """
+  Rejects a publcation invitation.
+  """
   def reject_publication_invitation(%PublicationInvitation{} = invitation) do
     update_publication_invitation(invitation, %{status: :rejected})
+  end
+
+  @doc """
+  Kicks a member out of a publication.
+  """
+  def kick_publication_member(publication_id, member_id) do
+    publication_id
+    |> get_publication_membership_by_publication_and_member(member_id)
+    |> case do
+      %PublicationMembership{} = membership -> Repo.delete(membership)
+      _ -> nil
+    end
   end
 end

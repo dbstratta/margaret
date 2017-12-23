@@ -99,5 +99,21 @@ defmodule MargaretWeb.Schema.AccountTypes do
         field :user, non_null(:user)
       end
     end
+
+    @desc """
+    Updates the currently logged in user.
+    """
+    payload field :update_user do
+      input do
+        field :username, :string
+        field :email, :string
+      end
+
+      output do
+        field :user, non_null(:user)
+      end
+
+      resolve &Resolvers.Accounts.resolve_update_user/2
+    end
   end
 end

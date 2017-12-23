@@ -18,7 +18,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_story(%{slug: slug}, _), do: {:ok, Stories.get_story_by_slug(slug)}
 
   @doc """
-  Resolves the publication of the story
+  Resolves the publication of the story.
   """
   def resolve_publication(%Story{publication_id: nil}, _, _), do: {:ok, nil}
 
@@ -29,7 +29,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves a connection of stories.
   """
-  def resolve_stories(args, _) do
+  def resolve_feed(args, _) do
     Relay.Connection.from_query(Story, &Repo.all/1, args)
   end
 

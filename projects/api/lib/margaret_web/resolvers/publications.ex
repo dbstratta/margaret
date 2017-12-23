@@ -76,4 +76,41 @@ defmodule MargaretWeb.Resolvers.Publications do
   end
 
   def resolve_create_publication(_, _), do: Helpers.GraphQLErrors.unauthorized()
+
+  def resolve_kick_member(
+    %{member_id: member_id, publication_id: publication_id}, 
+    %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    if member_id === viewer_id do
+      {:error, "You can't kick yourself."}
+    else
+      publication_id
+      |> Publications.is_publication_admin(viewer_id)
+      |> do_resolve_kick_member(publication_id, member_id)
+    end
+  end
+
+  def resolve_kick_member(_, _), do: Helpers.GraphQLErrors.unauthorized()
+
+  defp do_resolve_kick_member(true, publication_id, member_id) do
+    case Publications.kick_publication_meber(publication_id, member_id) do
+      {:ok, _} -> {:ok, Publications.get_publication(publication_id)}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end 
+
+  defp do_resolve_kick_member(_, _, _), do: Helpers.GraphQLErrors.unauthorized() 
+
+  def resolve_delete_publication(_, _) do
+    Helpers.GraphQLErrors.not_implemented()
+  end
+
+  def resolve_leave_publication(
+    %{publication_id: publication_id},
+    %{context: %{viewer: %{id: viewer}}}
+  ) do
+    Helpers.GraphQLErrors.not_implemented()
+  end
+
+  def resolve_leave_publication(_, _), do: Helpers.GraphQLErrors.unauthorized()
 end

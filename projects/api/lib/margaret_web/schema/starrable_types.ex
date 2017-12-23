@@ -5,7 +5,6 @@ defmodule MargaretWeb.Schema.StarrableTypes do
 
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
-  import Absinthe.Relay.Node
 
   alias MargaretWeb.Resolvers
 
@@ -57,19 +56,6 @@ defmodule MargaretWeb.Schema.StarrableTypes do
   object :starrable_subscriptions do
     field :starrable_starred, :starrable do
       arg :starrable_id, non_null(:id)
-
-      config fn args, _ ->
-        {:ok, topic: "starred:#{args.starrable_id}"}
-      end
-
-      trigger :star, topic: fn
-        %{id: story_id} -> "starred:#{to_global_id(:story, story_id)}"
-      end
-
-      resolve fn %{starrable: starrable} = starr, _, _ ->
-        IO.inspect starr
-        {:ok, starrable}
-      end
     end
   end
 end

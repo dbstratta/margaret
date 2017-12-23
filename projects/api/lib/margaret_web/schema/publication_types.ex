@@ -88,5 +88,55 @@ defmodule MargaretWeb.Schema.PublicationTypes do
 
       resolve &Resolvers.Publications.resolve_create_publication/2
     end
+
+    @desc """
+    Kicks a member out of a publication.
+    """
+    payload field :kick_publication_member do
+      input do
+        field :member_id, non_null(:id)
+        field :publication_id, non_null(:id)
+      end
+
+      output do
+        field :publication, non_null(:publication)
+      end
+
+      middleware Absinthe.Relay.Node.ParseIDs, member_id: :user
+      middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
+      resolve &Resolvers.Publications.resolve_kick_member/2
+    end
+
+    @desc """
+    Updates a publication.
+    """
+    payload field :update_publication do
+      input do
+        field :publication_id, non_null(:id)
+      end
+
+      output do
+        field :publication, non_null(:publication)
+      end
+
+      middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
+      resolve &Resolvers.Publications.resolve_update_publication/2
+    end
+
+    @desc """
+    Deletes a publication.
+    """
+    payload field :delete_publication do
+      input do
+        field :publication_id, non_null(:id)
+      end
+
+      output do
+        field :publication, non_null(:publication)
+      end
+
+      middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
+      resolve &Resolvers.Publications.resolve_delete_publication/2
+    end
   end
 end

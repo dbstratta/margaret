@@ -32,10 +32,10 @@ defmodule MargaretWeb.Schema.StoryTypes do
       resolve &Resolvers.Stories.resolve_publication/3
     end
 
-    @desc "Identifies the date and time when the object was created."
+    @desc "Identifies the date and time when the story was created."
     field :inserted_at, non_null(:naive_datetime)
 
-    @desc "Identifies the date and time when the object was last updated."
+    @desc "Identifies the date and time when the story was last updated."
     field :updated_at, non_null(:naive_datetime)
 
     @desc "The stargazers of the story."
@@ -52,6 +52,9 @@ defmodule MargaretWeb.Schema.StoryTypes do
     connection field :comments, node_type: :comment do
       resolve &Resolvers.Stories.resolve_comments/3
     end
+
+    @desc "Identifies the date and time when the story was published."
+    field :published_at, :naive_datetime
 
     field :viewer_can_star, non_null(:boolean) do
       resolve &Resolvers.Stories.resolve_viewer_can_star/3
@@ -74,8 +77,8 @@ defmodule MargaretWeb.Schema.StoryTypes do
     end
 
     @desc "Lookup stories."
-    connection field :stories, node_type: :story do
-      resolve &Resolvers.Stories.resolve_stories/2
+    connection field :feed, node_type: :story do
+      resolve &Resolvers.Stories.resolve_feed/2
     end
   end
 
