@@ -13,7 +13,7 @@
     "@playlyfe/gql": "2.4.0",
     "babel-eslint": "8.0.3",
     "codecov": "3.0.0",
-    "eslint": "4.13.1",
+    "eslint": "4.14.0",
     "eslint-config-airbnb": "16.1.0",
     "eslint-config-prettier": "2.9.0",
     "eslint-plugin-graphql": "1.4.1",
