@@ -71,16 +71,14 @@ defmodule MargaretWeb.Resolvers.Stories do
 
   def resolve_stargazers(%Story{id: story_id}, args, _) do
     query = from u in User,
-      join: s in Star, on: s.user_id == u.id and s.story_id == ^story_id,
-      select: u
+      join: s in Star, on: s.user_id == u.id and s.story_id == ^story_id
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end
 
   def resolve_comments(%Story{id: story_id}, args, _) do
     query = from c in Comment,
-      where: c.story_id == ^story_id,
-      select: c
+      where: c.story_id == ^story_id
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end
@@ -90,6 +88,17 @@ defmodule MargaretWeb.Resolvers.Stories do
   """
   def resolve_viewer_can_star(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
   def resolve_viewer_can_star(_, _, _), do: {:ok, false}
+
+  @doc """
+  Resolves whether the viewer has starred this story.
+  """
+  def resolve_viewer_has_starred(
+    %Story{id: story_id}, _, %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    {:ok, !!Stars.get_star(user_id: viewer_id, story_id: story_id)}
+  end
+
+  def resolve_viewer_has_starred(_, _, _), do: {:ok, false}
 
   @doc """
   Resolves whether the viewer can comment the story or not.
@@ -130,11 +139,22 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves a story update.
   """
-  def resolve_update_story(_args, %{context: %{viewer: _viewer}}) do
-    Helpers.GraphQLErrors.not_implemented()
+  def resolve_update_story(
+    %{publication_id: publication_id} = args,
+    %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    publication_id
+    |> Publications.can_write_stories?(viewer_id)
+    |> do_resolve_update_story(args)
   end 
 
   def resolve_update_story(_, _), do: Helpers.GraphQLErrors.unauthorized()
+
+  defp do_resolve_update_story(true, args) do
+
+  end
+
+  defp do_resolve_update_story(false, _), do: Helpers.GraphQLErrors.unauthorized()
 
   @doc """
   Resolves a story deletion.

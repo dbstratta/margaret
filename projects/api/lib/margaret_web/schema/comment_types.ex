@@ -16,7 +16,7 @@ defmodule MargaretWeb.Schema.CommentTypes do
 
     @desc "The author of the comment."
     field :author, non_null(:user) do
-      resolve &Resolvers.Comments.resolve_user/3
+      resolve &Resolvers.Comments.resolve_author/3
     end
 
     @desc "Identifies the date and time when the comment was created."
@@ -32,6 +32,14 @@ defmodule MargaretWeb.Schema.CommentTypes do
       resolve &Resolvers.Comments.resolve_star_count/3
     end
 
+    field :story, non_null(:story) do
+      resolve &Resolvers.Comments.resolve_story/3
+    end
+
+    field :parent, :comment do
+      resolve &Resolvers.Comments.resolve_parent/3
+    end
+
     @desc "The comments of the comments."
     connection field :comments, node_type: :comment do
       resolve &Resolvers.Comments.resolve_comments/3
@@ -41,11 +49,15 @@ defmodule MargaretWeb.Schema.CommentTypes do
       resolve &Resolvers.Comments.resolve_viewer_can_star/3
     end
 
-    @desc "Check if the current viewer can comment this object."
+    field :viewer_has_starred, non_null(:boolean) do
+      resolve &Resolvers.Comments.resolve_viewer_has_starred/3
+    end
+
+    @desc "Check if the current viewer can comment this comment."
     field :viewer_can_comment, non_null(:boolean) do
       resolve &Resolvers.Comments.resolve_viewer_can_comment/3
     end
 
-    interfaces [:starrable]
+    interfaces [:starrable, :commentable]
   end
 end

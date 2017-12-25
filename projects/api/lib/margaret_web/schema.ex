@@ -15,6 +15,7 @@ defmodule MargaretWeb.Schema do
     NotificationTypes,
     StarrableTypes,
     CommentTypes,
+    CommentableTypes,
     TagTypes,
   }
 
@@ -28,6 +29,7 @@ defmodule MargaretWeb.Schema do
   import_types NotificationTypes
   import_types StarrableTypes
   import_types CommentTypes
+  import_types CommentableTypes
   import_types TagTypes
 
   @desc "The root query type."
@@ -46,6 +48,7 @@ defmodule MargaretWeb.Schema do
     import_fields :starrable_mutations
     import_fields :publication_mutations
     import_fields :publication_invitation_mutations
+    import_fields :commentable_mutations
   end
 
   subscription do

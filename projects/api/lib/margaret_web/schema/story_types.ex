@@ -69,12 +69,16 @@ defmodule MargaretWeb.Schema.StoryTypes do
       resolve &Resolvers.Stories.resolve_viewer_can_star/3
     end
 
+    field :viewer_has_starred, non_null(:boolean) do
+      resolve &Resolvers.Stories.resolve_viewer_has_starred/3
+    end
+
     @desc "Check if the current viewer can comment this story."
     field :viewer_can_comment, non_null(:boolean) do
       resolve &Resolvers.Stories.resolve_viewer_can_comment/3
     end
 
-    interfaces [:starrable]
+    interfaces [:starrable, :commentable]
   end
 
   object :story_queries do

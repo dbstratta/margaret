@@ -20,6 +20,9 @@ defmodule MargaretWeb.Schema.StarrableTypes do
     @desc "Check if the current viewer can delete this object."
     field :viewer_can_star, non_null(:boolean)
 
+    @desc "Returns a boolean indicating whether the viewing user has starred this starrable."
+    field :viewer_has_starred, non_null(:boolean)
+
     resolve_type &Resolvers.Nodes.resolve_type/2
   end
 

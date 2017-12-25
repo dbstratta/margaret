@@ -44,33 +44,34 @@ defmodule Margaret.Stories do
   def get_story_by_unique_hash(unique_hash), do: Repo.get_by(Story, unique_hash: unique_hash)
 
   @doc """
-  Creates a story.
+  Inserts a story.
   """
-  def insert_story(attrs), do: upsert_story(%Story{}, attrs)
+  def insert_story(%{tags: tags} = attrs) do
+    Multi.new()
+    |> Multi.run(:tags, fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
+    |> Multi.run(:story, &do_insert_story(attrs, &1))
+    |> Repo.transaction()
+  end
+
+  def insert_story(attrs), do: insert_story(Map.put(attrs, :tags, []))
+
+  defp do_insert_story(attrs, %{tags: tags}) do
+    attrs_with_tags = Map.put(attrs, :tags, tags)
+
+    %Story{}
+    |> Story.changeset(attrs_with_tags)
+    |> Repo.insert_or_update()
+  end
 
   @doc """
   Updates a story.
   """
-  def update_story(story, attrs), do: upsert_story(story, attrs)
+  def update_story(story_id, attrs) do
 
-  @doc """
-  Inserts or updates a story.
-  """
-  def upsert_story(story, %{tags: tags} = attrs) do
-    Multi.new
-    |> Multi.run(:tags, fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
-    |> Multi.run(:story, &do_upsert_story(story, attrs, &1))
-    |> Repo.transaction()
-  end
 
-  def upsert_story(story, attrs), do: upsert_story(story, Map.put(attrs, :tags, []))
-
-  defp do_upsert_story(story, attrs, %{tags: tags}) do
-    attrs_with_tags = Map.put(attrs, :tags, tags) |> IO.inspect
-
-    story
-    |> Story.changeset(attrs_with_tags)
-    |> Repo.insert_or_update()
+    # Multi.new()
+    # |> Multi.run(:tags, fn %{old_story: old_t} -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
+    # upsert_story(story, attrs)
   end
 
   @doc """

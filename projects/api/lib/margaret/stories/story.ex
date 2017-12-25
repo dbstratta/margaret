@@ -24,7 +24,7 @@ defmodule Margaret.Stories.Story do
     has_many :stars, Star
     has_many :comments, Comment
     belongs_to :publication, Publication
-    many_to_many :tags, Tag, join_through: "story_tags"
+    many_to_many :tags, Tag, join_through: "story_tags", on_replace: :delete
 
     timestamps()
   end
