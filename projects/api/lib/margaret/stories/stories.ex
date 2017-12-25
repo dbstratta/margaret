@@ -3,8 +3,10 @@ defmodule Margaret.Stories do
   The Stories context.
   """
 
-  alias Margaret.Repo
-  alias Margaret.Stories.Story
+  alias Ecto.Multi
+
+  alias Margaret.{Repo, Stories, Tags}
+  alias Stories.Story
 
   @doc """
   Gets a single story by its id.
@@ -38,22 +40,37 @@ defmodule Margaret.Stories do
   @spec get_story!(String.t) :: Story.t
   def get_story!(id), do: Repo.get!(Story, id)
 
-  @spec get_story_by_slug(String.t) :: Story.t | nil
-  def get_story_by_slug(slug), do: Repo.get_by(Story, slug: slug)
+  @spec get_story_by_unique_hash(String.t) :: Story.t | nil
+  def get_story_by_unique_hash(unique_hash), do: Repo.get_by(Story, unique_hash: unique_hash)
 
   @doc """
   Creates a story.
   """
-  def create_story(attrs) do
-    %Story{}
-    |> Story.changeset(attrs)
-    |> Repo.insert()
-  end
+  def insert_story(attrs), do: upsert_story(%Story{}, attrs)
 
   @doc """
   Updates a story.
   """
-  def update_story(_attrs) do
+  def update_story(story, attrs), do: upsert_story(story, attrs)
+
+  @doc """
+  Inserts or updates a story.
+  """
+  def upsert_story(story, %{tags: tags} = attrs) do
+    Multi.new
+    |> Multi.run(:tags, fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
+    |> Multi.run(:story, &do_upsert_story(story, attrs, &1))
+    |> Repo.transaction()
+  end
+
+  def upsert_story(story, attrs), do: upsert_story(story, Map.put(attrs, :tags, []))
+
+  defp do_upsert_story(story, attrs, %{tags: tags}) do
+    attrs_with_tags = Map.put(attrs, :tags, tags) |> IO.inspect
+
+    story
+    |> Story.changeset(attrs_with_tags)
+    |> Repo.insert_or_update()
   end
 
   @doc """

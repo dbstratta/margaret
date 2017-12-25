@@ -15,7 +15,27 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves a story by its slug.
   """
-  def resolve_story(%{slug: slug}, _), do: {:ok, Stories.get_story_by_slug(slug)}
+  def resolve_story(%{slug: slug}, _) do
+    unique_hash =
+      slug
+      |> String.split("-")
+      |> List.last()
+
+    {:ok, Stories.get_story_by_unique_hash(unique_hash)}
+  end
+
+  @doc """
+  Resolves the slug of the story.
+  """
+  def resolve_slug(%Story{title: title, unique_hash: unique_hash}, _, _) do
+    slug =
+      title
+      |> Slugger.slugify_downcase()
+      |> Kernel.<>("-")
+      |> Kernel.<>(unique_hash)
+
+    {:ok, slug} |> IO.inspect
+  end
 
   @doc """
   Resolves the publication of the story.
@@ -24,6 +44,15 @@ defmodule MargaretWeb.Resolvers.Stories do
 
   def resolve_publication(%Story{publication_id: publication_id}, _, _) do
     {:ok, Publications.get_publication(publication_id)}
+  end
+
+  def resolve_tags(%Story{} = story, _, _) do
+    tags =
+      story
+      |> Repo.preload(:tags)
+      |> Map.get(:tags)
+
+    {:ok, tags}
   end
 
   @doc """
@@ -71,10 +100,16 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves a story creation.
   """
-  def resolve_create_story(args, %{context: %{viewer: %{id: viewer_id}}}) do
-    args.publication_id
+  def resolve_create_story(
+    %{publication_id: publication_id} = args, %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    publication_id
     |> Publications.can_write_stories?(viewer_id)
     |> do_resolve_create_story(args, viewer_id)
+  end
+
+  def resolve_create_story(args, %{context: %{viewer: %{id: viewer_id}}}) do
+    do_resolve_create_story(true, args, viewer_id)
   end
 
   def resolve_create_story(_, _), do: Helpers.GraphQLErrors.unauthorized()
@@ -82,10 +117,11 @@ defmodule MargaretWeb.Resolvers.Stories do
   defp do_resolve_create_story(true, args, author_id) do
     args
     |> Map.put(:author_id, author_id)
-    |> Stories.create_story()
+    |> Stories.insert_story()
+    |> IO.inspect
     |> case do
-      {:ok, story} -> {:ok, %{story: story}}
-      {:error, changeset} -> Helpers.GraphQLErrors.something_went_wrong()
+      {:ok, %{story: story}} -> {:ok, %{story: story}}
+      {:error, changeset} -> {:error, changeset}
     end
   end
 

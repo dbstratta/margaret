@@ -52,7 +52,7 @@ defmodule Margaret.Mixfile do
       {:absinthe_phoenix, "~> 1.4.0"},
       {:cors_plug, "~> 1.5.0"},
       {:uuid, "~> 1.1.8"},
-      {:ecto_autoslug_field, "~> 0.4.0"},
+      {:slugger, "~> 0.2.0"},
       {:credo, "~> 0.8.10", only: [:dev, :test], runtime: false},
     ]
   end

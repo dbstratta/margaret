@@ -15,6 +15,7 @@ defmodule MargaretWeb.Schema do
     NotificationTypes,
     StarrableTypes,
     CommentTypes,
+    TagTypes,
   }
 
   import_types Absinthe.Type.Custom
@@ -27,6 +28,7 @@ defmodule MargaretWeb.Schema do
   import_types NotificationTypes
   import_types StarrableTypes
   import_types CommentTypes
+  import_types TagTypes
 
   @desc "The root query type."
   query do

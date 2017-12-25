@@ -23,13 +23,22 @@ defmodule MargaretWeb.Schema.StoryTypes do
     end
 
     @desc "The slug of the story."
-    field :slug, non_null(:string)
+    field :slug, non_null(:string) do
+      resolve &Resolvers.Stories.resolve_slug/3
+    end
+
+    @desc "The unique hash of the story."
+    field :unique_hash, non_null(:string)
 
     @desc "The summary of the story."
     field :summary, :string
 
     field :publication, :publication do
       resolve &Resolvers.Stories.resolve_publication/3
+    end
+
+    field :tags, list_of(:tag) do
+      resolve &Resolvers.Stories.resolve_tags/3
     end
 
     @desc "Identifies the date and time when the story was created."
@@ -90,6 +99,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :body, non_null(:string)
         field :summary, :string
         field :publication_id, :id
+        field :tags, list_of(:string)
       end
 
       output do

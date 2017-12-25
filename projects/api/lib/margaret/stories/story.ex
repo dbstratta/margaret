@@ -1,31 +1,3 @@
-defmodule Margaret.Stories.Story.TitleSlug do
-  @moduledoc """
-  Implementation module of EctoAutoslugField.
-  """
-
-  use EctoAutoslugField.Slug, from: :title, to: :slug
-
-  @doc """
-  Generates a hash from a uuid4.
-  """
-  def generate_hash() do
-    :sha512
-    |> :crypto.hash(UUID.uuid4())
-    |> Base.encode32()
-    |> String.slice(0..12)
-    |> String.downcase()
-  end
-
-  @doc """
-  Builds the slug before inserting it into the DB.
-  """
-  def build_slug(sources, changeset) do
-    sources
-    |> super(changeset)
-    |> Kernel.<>("--#{generate_hash()}")
-  end
-end
-
 defmodule Margaret.Stories.Story do
   @moduledoc false
 
@@ -33,14 +5,13 @@ defmodule Margaret.Stories.Story do
   import Ecto.Changeset
 
   alias __MODULE__
-  alias Margaret.{Accounts, Stars, Comments, Publications}
+  alias Margaret.{Accounts, Stars, Comments, Publications, Tags}
   alias Accounts.User
   alias Stars.Star
   alias Comments.Comment
   alias Publications.Publication
-  alias Story.TitleSlug
+  alias Tags.Tag
 
-  @typedoc "The Story type"
   @type t :: %Story{}
 
   schema "stories" do
@@ -48,31 +19,38 @@ defmodule Margaret.Stories.Story do
     field :body, :string
     belongs_to :author, User
     field :summary, :string
-    field :slug, TitleSlug.Type
+    field :unique_hash, :string
     field :published_at, :naive_datetime
     has_many :stars, Star
     has_many :comments, Comment
     belongs_to :publication, Publication
+    many_to_many :tags, Tag, join_through: "story_tags"
 
     timestamps()
   end
 
   @doc false
-  def changeset(%Story{} = story, attrs) do
+  def changeset(%Story{} = story, %{tags: tags} = attrs) do
     story
     |> cast(attrs, [:title, :body, :author_id, :publication_id, :published_at, :summary])
     |> validate_required([:title, :body, :author_id])
+    |> put_assoc(:tags, tags)
     |> foreign_key_constraint(:author_id)
     |> foreign_key_constraint(:publication_id)
-    |> TitleSlug.maybe_generate_slug()
-    |> TitleSlug.unique_constraint()
+    |> maybe_put_unique_hash()
   end
 
-  @doc false
-  def update_changeset(%Story{} = story, attrs) do
-    story
-    |> cast(attrs, [:title, :body, :publication_id, :published_at, :summary])
-    |> validate_required([:title, :body])
-    |> foreign_key_constraint(:publication_id)
+  defp maybe_put_unique_hash(%Ecto.Changeset{data: %{unique_hash: nil}} = changeset) do
+    put_change(changeset, :unique_hash, generate_hash())
+  end
+
+  defp maybe_put_unique_hash(changeset), do: changeset
+
+  defp generate_hash() do
+    :sha512
+    |> :crypto.hash(UUID.uuid4())
+    |> Base.encode32()
+    |> String.slice(0..16)
+    |> String.downcase()
   end
 end

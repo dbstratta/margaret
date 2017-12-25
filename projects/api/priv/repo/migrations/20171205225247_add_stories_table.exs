@@ -10,13 +10,13 @@ defmodule Margaret.Repo.Migrations.AddStoriesTable do
       add :body, :text, null: false
       add :author_id, references(:users, on_delete: :delete_all), null: false
       add :summary, :string, size: 256
-      add :slug, :string, null: false
+      add :unique_hash, :string, size: 32, null: false
       add :publication_id, references(:publications, on_delete: :nilify_all)
       add :published_at, :naive_datetime, default: nil
 
       timestamps()
     end
 
-    create unique_index(:stories, [:slug])
+    create unique_index(:stories, [:unique_hash])
   end
 end
