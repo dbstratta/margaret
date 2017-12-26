@@ -51,20 +51,20 @@ defmodule MargaretWeb.Resolvers.Starrable do
 
   defp do_resolve_star(nil, _), do: {:error, "Starrable doesn't exist."}
 
-  def resolve_unstar(_, %{context: %{user: nil}}), do: Helpers.GraphQLErrors.unauthorized()
-
   def resolve_unstar(
     %{starrable_id: %{type: :story, id: story_id}}, %{context: %{viewer: %{id: viewer_id}}}
   ) do
-    Stars.delete_star(user_id: viewer_id, story_id: story_id)
-    {:ok, %{starrable: Stories.get_story!(story_id)}}
+    story_id
+    |> Stories.get_story()
+    |> do_resolve_unstar(viewer_id)
   end
 
   def resolve_unstar(
-    %{starrable_id: %{type: :comment, id: id}}, %{context: %{viewer: %{id: viewer_id}}}
+    %{starrable_id: %{type: :comment, id: comment_id}}, %{context: %{viewer: %{id: viewer_id}}}
   ) do
-    Stars.delete_star(user_id: viewer_id, comment_id: id)
-    {:ok, %{starrable: Comment.get_comment!(id)}}
+    comment_id
+    |> Comments.get_comment()
+    |> do_resolve_unstar(viewer_id)
   end
 
   def resolve_unstar(_, _), do: Helpers.GraphQLErrors.unauthorized()

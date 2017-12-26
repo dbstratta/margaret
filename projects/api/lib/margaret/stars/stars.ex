@@ -31,6 +31,13 @@ defmodule Margaret.Stars do
     end
   end
 
+  def delete_star(user_id: user_id, comment_id: comment_id) do
+    case get_star(user_id: user_id, comment_id: comment_id) do
+      %Star{id: id} -> delete_star(id)
+      nil -> nil
+    end
+  end
+
   def get_star_count(%{story_id: story_id}) do
     Repo.one!(from s in Star, where: s.story_id == ^story_id, select: count(s.id))
   end

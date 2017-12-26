@@ -35,6 +35,10 @@ defmodule MargaretWeb.Resolvers.Comments do
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end
 
+  def resolve_star_count(_, _, _) do
+    {:ok, 3}
+  end
+
   @doc """
   Resolves whether the viewer can star the comment or not.
   """
@@ -51,4 +55,45 @@ defmodule MargaretWeb.Resolvers.Comments do
   end
 
   def resolve_viewer_has_starred(_, _, _), do: {:ok, false}
+
+  @doc """
+  Resolves the update of a comment.
+  """
+  def resolve_update_comment(
+    %{comment_id: comment_id} = args, %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    comment_id
+    |> Comments.get_comment()
+    |> do_resolve_update_comment(args, viewer_id)
+  end
+
+  def resolve_update_comment(_, _, _), do: Helpers.GraphQLErrors.unauthorized()
+
+  defp do_resolve_update_comment(
+    %Comment{author_id: author_id} = comment,
+    args,
+    viewer_id
+  ) when author_id === viewer_id do
+    case Comments.update_comment(comment, args) do
+      {:ok, comment} -> {:ok, %{comment: comment}}
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+    end
+  end
+
+  defp do_resolve_update_comment(
+    %Comment{author_id: author_id}, _, viewer_id
+  ) when author_id !== viewer_id do
+    Helpers.GraphQLErrors.unauthorized()
+  end
+
+  defp do_resolve_update_comment(nil, _, _), do: {:error, "Comment doesn't exist."}
+
+  @doc """
+  Resolves the deletion of a comment.
+  """
+  def resolve_delete_comment(
+    %{comment_id: comment_id} = args, %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    
+  end
 end

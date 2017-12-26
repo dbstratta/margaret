@@ -60,4 +60,35 @@ defmodule MargaretWeb.Schema.CommentTypes do
 
     interfaces [:starrable, :commentable]
   end
+
+  object :comment_mutations do
+    @desc "Updates a comment."
+    payload field :update_comment do
+      input do
+        field :comment_id, non_null(:id)
+        field :body, :string
+      end
+
+      output do
+        field :comment, non_null(:comment)
+      end
+
+      middleware Absinthe.Relay.Node.ParseIDs, comment_id: :comment
+      resolve &Resolvers.Comments.resolve_update_comment/2
+    end
+
+    @desc "Deletes a comment."
+    payload field :delete_comment do
+      input do
+        field :comment_id, non_null(:id)
+      end
+
+      output do
+        field :comment, non_null(:comment)
+      end
+
+      middleware Absinthe.Relay.Node.ParseIDs, comment_id: :comment
+      resolve &Resolvers.Comments.resolve_delete_comment/2
+    end
+  end
 end

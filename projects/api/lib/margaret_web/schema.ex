@@ -48,6 +48,7 @@ defmodule MargaretWeb.Schema do
     import_fields :starrable_mutations
     import_fields :publication_mutations
     import_fields :publication_invitation_mutations
+    import_fields :comment_mutations
     import_fields :commentable_mutations
   end
 
