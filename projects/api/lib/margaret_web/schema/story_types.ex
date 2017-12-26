@@ -78,7 +78,12 @@ defmodule MargaretWeb.Schema.StoryTypes do
       resolve &Resolvers.Stories.resolve_viewer_can_comment/3
     end
 
-    interfaces [:starrable, :commentable]
+    @desc "Check if the current viewer can update this story."
+    field :viewer_can_update, non_null(:boolean) do
+      resolve &Resolvers.Stories.resolve_viewer_can_update/3
+    end
+
+    interfaces [:starrable, :commentable, :updatable]
   end
 
   object :story_queries do

@@ -5,7 +5,8 @@ defmodule Margaret.Stories do
 
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Stories, Tags}
+  alias Margaret.{Repo, Accounts, Stories, Publications, Tags}
+  alias Accounts.User
   alias Stories.Story
 
   @doc """
@@ -42,6 +43,28 @@ defmodule Margaret.Stories do
 
   @spec get_story_by_unique_hash(String.t) :: Story.t | nil
   def get_story_by_unique_hash(unique_hash), do: Repo.get_by(Story, unique_hash: unique_hash)
+
+  def can_user_update_story?(
+    %Story{author_id: author_id}, %User{id: user_id}
+  ) when author_id === user_id do
+    true
+  end
+
+  def can_user_update_story?(
+    %Story{author_id: author_id, publication_id: nil}, %User{id: user_id}
+  ) when author_id !== user_id do
+    false
+  end
+
+  def can_user_update_story?(
+    %Story{publication_id: publication_id}, %User{id: user_id}
+  ) do
+    cond do
+      Publications.is_publication_editor?(publication_id, user_id) -> true
+      Publications.is_publication_admin?(publication_id, user_id) -> true
+      true -> false
+    end
+  end
 
   @doc """
   Inserts a story.

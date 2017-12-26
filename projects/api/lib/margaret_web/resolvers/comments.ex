@@ -66,6 +66,14 @@ defmodule MargaretWeb.Resolvers.Comments do
 
   def resolve_viewer_has_starred(_, _, _), do: {:ok, false}
 
+  def resolve_viewer_can_update(
+    %Comment{author_id: author_id}, _, %{context: %{viewer: %{id: viewer_id}}}
+  ) when author_id === viewer_id do
+    {:ok, true}
+  end
+
+  def resolve_viewer_can_update(_, _, _), do: {:ok, false}
+
   @doc """
   Resolves the update of a comment.
   """

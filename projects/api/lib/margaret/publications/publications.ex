@@ -73,14 +73,21 @@ defmodule Margaret.Publications do
 
   """
   @spec is_publication_member?(term, term) :: boolean
-  def is_publication_member?(publication_id, member_id) do
+  def is_publication_member?(publication_id, user_id) do
     publication_id
-    |> get_publication_member_role(member_id)
+    |> get_publication_member_role(user_id)
     |> do_is_publication_member?()
   end
 
   defp do_is_publication_member?(role) when not is_nil(role), do: true
   defp do_is_publication_member?(_), do: false
+
+  def is_publication_editor?(publication_id, user_id) do
+    case get_publication_member_role(publication_id, user_id) do
+      :editor -> true
+      _ -> false
+    end
+  end
 
   @doc """
   Returns true if the user is an admin
@@ -96,8 +103,8 @@ defmodule Margaret.Publications do
 
   """
   @spec is_publication_admin?(term, term) :: boolean
-  def is_publication_admin?(publication_id, member_id) do
-    case get_publication_member_role(publication_id, member_id) do
+  def is_publication_admin?(publication_id, user_id) do
+    case get_publication_member_role(publication_id, user_id) do
       role when role in [:owner, :admin] -> true
       _ -> false
     end
@@ -117,8 +124,8 @@ defmodule Margaret.Publications do
 
   """
   @spec can_write_stories?(term, term) :: boolean
-  def can_write_stories?(publication_id, member_id) do
-    case get_publication_member_role(publication_id, member_id) do
+  def can_write_stories?(publication_id, user_id) do
+    case get_publication_member_role(publication_id, user_id) do
       role when role in [:owner, :writer] -> true
       _ -> false
     end

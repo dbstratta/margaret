@@ -106,6 +106,10 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_viewer_can_comment(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
   def resolve_viewer_can_comment(_, _, _), do: {:ok, false}
 
+  def resolve_viewer_can_update(%Story{} = story, _, %{context: %{viewer: viewer}}) do
+    {:ok, Stories.can_user_update_story?(story, viewer)}
+  end
+
   @doc """
   Resolves a story creation.
   """

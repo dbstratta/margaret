@@ -17,6 +17,7 @@ defmodule MargaretWeb.Schema do
     CommentTypes,
     CommentableTypes,
     TagTypes,
+    UpdatableTypes,
   }
 
   import_types Absinthe.Type.Custom
@@ -31,6 +32,7 @@ defmodule MargaretWeb.Schema do
   import_types CommentTypes
   import_types CommentableTypes
   import_types TagTypes
+  import_types UpdatableTypes
 
   @desc "The root query type."
   query do

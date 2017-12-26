@@ -58,7 +58,12 @@ defmodule MargaretWeb.Schema.CommentTypes do
       resolve &Resolvers.Comments.resolve_viewer_can_comment/3
     end
 
-    interfaces [:starrable, :commentable]
+    @desc "Check if the viewer can update this comment."
+    field :viewer_can_update, non_null(:boolean) do
+      resolve &Resolvers.Comments.resolve_viewer_can_update/3
+    end
+
+    interfaces [:starrable, :commentable, :updatable]
   end
 
   object :comment_mutations do
