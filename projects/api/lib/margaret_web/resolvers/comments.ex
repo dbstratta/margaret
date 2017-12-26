@@ -7,19 +7,26 @@ defmodule MargaretWeb.Resolvers.Comments do
   alias Absinthe.Relay
 
   alias MargaretWeb.Helpers
-  alias Margaret.{Repo, Accounts, Stories, Stars, Publications, Comments}
-  alias Accounts.User
-  alias Stories.Story
+  alias Margaret.{Repo, Accounts, Stories, Stars, Comments}
   alias Comments.Comment
 
+  @doc """
+  Resolves the author of the comment.
+  """
   def resolve_author(%Comment{author_id: author_id}, _, _) do
     {:ok, Accounts.get_user(author_id)}
   end
 
+  @doc """
+  Resolves the story of the comment.
+  """
   def resolve_story(%Comment{story_id: story_id}, _, _) do
     {:ok, Stories.get_story(story_id)}
   end
 
+  @doc """
+  Resolves the parent comment of the comment.
+  """
   def resolve_parent(%Comment{parent_id: nil}, _, _) do
     {:ok, nil}
   end
@@ -28,6 +35,9 @@ defmodule MargaretWeb.Resolvers.Comments do
     {:ok, Comments.get_comment(parent_id)}
   end
 
+  @doc """
+  Resolves the comments of the comment.
+  """
   def resolve_comments(%Comment{id: parent_id}, args, _) do
     query = from c in Comment,
       where: c.parent_id == ^parent_id
