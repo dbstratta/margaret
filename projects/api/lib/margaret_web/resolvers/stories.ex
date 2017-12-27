@@ -16,12 +16,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   Resolves a story by its slug.
   """
   def resolve_story(%{slug: slug}, _) do
-    unique_hash =
-      slug
-      |> String.split("-")
-      |> List.last()
-
-    {:ok, Stories.get_story_by_unique_hash(unique_hash)}
+    {:ok, Stories.get_story_slug(slug)}
   end
 
   @doc """

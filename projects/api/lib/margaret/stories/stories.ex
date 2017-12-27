@@ -41,6 +41,13 @@ defmodule Margaret.Stories do
   @spec get_story!(String.t) :: Story.t
   def get_story!(id), do: Repo.get!(Story, id)
 
+  def get_story_by_slug(slug) do
+    slug
+    |> String.split("-")
+    |> List.last()
+    |> get_story_by_unique_hash()
+  end
+
   @spec get_story_by_unique_hash(String.t) :: Story.t | nil
   def get_story_by_unique_hash(unique_hash), do: Repo.get_by(Story, unique_hash: unique_hash)
 

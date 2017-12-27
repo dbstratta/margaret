@@ -8,6 +8,17 @@ defmodule MargaretWeb.Schema.StoryTypes do
 
   alias MargaretWeb.Resolvers
 
+  enum :story_publish_status do
+    value :public
+    value :draft
+    value :unlisted
+  end
+
+  enum :story_license do
+    value :all_rights_reserved
+    value :public_domain
+  end
+
   connection node_type: :story
 
   node object :story do
@@ -65,6 +76,10 @@ defmodule MargaretWeb.Schema.StoryTypes do
     @desc "Identifies the date and time when the story was published."
     field :published_at, :naive_datetime
 
+    field :publish_status, non_null(:story_publish_status)
+
+    field :license, non_null(:story_license)
+
     field :viewer_can_star, non_null(:boolean) do
       resolve &Resolvers.Stories.resolve_viewer_can_star/3
     end
@@ -109,6 +124,8 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :summary, :string
         field :publication_id, :id
         field :tags, list_of(:string)
+        field :publish_status, non_null(:story_publish_status)
+        field :license, non_null(:story_license)
       end
 
       output do
@@ -126,6 +143,9 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :title, :string
         field :body, :string
         field :summary, :string
+        field :publish_status, :story_publish_status
+        field :license, :story_license
+        field :tags, list_of(:string)
       end
 
       output do
