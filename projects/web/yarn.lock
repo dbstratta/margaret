@@ -74,13 +74,7 @@
     react-inspector "^2.2.2"
     uuid "^3.1.0"
 
-"@storybook/addon-links@3.2.19":
-  version "3.2.19"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-3.2.19.tgz#23200270ec100771c904a9aa0567c3cb27ccd377"
-  dependencies:
-    "@storybook/addons" "^3.2.19"
-
-"@storybook/addon-links@^3.2.19":
+"@storybook/addon-links@3.3.1", "@storybook/addon-links@^3.2.19":
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-3.3.1.tgz#e3098a72aa09fefa8a1af6d114e002852d649be3"
   dependencies:
