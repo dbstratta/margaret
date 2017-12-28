@@ -31,8 +31,7 @@ defmodule MargaretWeb.Resolvers.Publications do
   def resolve_members(%{id: publication_id}, args, _) do
     query = from u in User,
       join: pm in PublicationMembership, on: pm.member_id == u.id,
-      where: pm.publication_id == ^publication_id,
-      select: u
+      where: pm.publication_id == ^publication_id
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end

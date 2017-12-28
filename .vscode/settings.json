@@ -1,4 +1,8 @@
 {
-  "elixir.projectPath": "/projects/api",
-  "jest.rootPath": "/projects/web"
+  "jest.rootPath": "/projects/web",
+  "elixirLS.projectDir": "/projects/api",
+  "[elixir]": {
+    "editor.quickSuggestions": true
+  },
+  "elixir.projectPath": "/projects/api"
 }

@@ -15,8 +15,7 @@ defmodule MargaretWeb.Resolvers.Starrable do
 
   def resolve_stargazers(%Comment{id: comment_id} = story, args, _) do
     query = from u in User,
-      join: s in Star, on: s.user_id == u.id and s.comment_id == ^comment_id,
-      select: u
+      join: s in Star, on: s.user_id == u.id and s.comment_id == ^comment_id
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end

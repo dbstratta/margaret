@@ -59,6 +59,10 @@ defmodule Margaret.Publications do
     end
   end
 
+  def check_role(publication_id, user_id, permitted_roles \\ []) do
+    get_publication_member_role(publication_id, user_id) in permitted_roles
+  end
+
   @doc """
   Returns true if the user is a member
   of the publication. False otherwise.
@@ -83,10 +87,7 @@ defmodule Margaret.Publications do
   defp do_is_publication_member?(_), do: false
 
   def is_publication_editor?(publication_id, user_id) do
-    case get_publication_member_role(publication_id, user_id) do
-      :editor -> true
-      _ -> false
-    end
+    check_role(publication_id, user_id, [:editor])
   end
 
   @doc """
@@ -104,10 +105,7 @@ defmodule Margaret.Publications do
   """
   @spec is_publication_admin?(term, term) :: boolean
   def is_publication_admin?(publication_id, user_id) do
-    case get_publication_member_role(publication_id, user_id) do
-      role when role in [:owner, :admin] -> true
-      _ -> false
-    end
+    check_role(publication_id, user_id, [:owner, :admin])
   end
 
   @doc """
@@ -125,10 +123,25 @@ defmodule Margaret.Publications do
   """
   @spec can_write_stories?(term, term) :: boolean
   def can_write_stories?(publication_id, user_id) do
-    case get_publication_member_role(publication_id, user_id) do
-      role when role in [:owner, :writer] -> true
-      _ -> false
-    end
+    check_role(publication_id, user_id, [:owner, :admin, :writer])
+  end
+
+  @doc """
+  Returns true if the user can edit stories for the publication.
+  False otherwise.
+
+  ## Examples
+
+      iex> can_edit_stories?(123, 123)
+      true
+
+      iex> can_edit_stories?(123, 456)
+      false
+
+  """
+  @spec can_edit_stories?(term, term) :: boolean
+  def can_edit_stories?(publication_id, user_id) do
+    check_role(publication_id, user_id, [:owner, :admin, :editor])
   end
 
   @doc """
@@ -157,8 +170,7 @@ defmodule Margaret.Publications do
   def get_publication_owner(publication_id) do
     query = from u in User,
       join: pm in PublicationMembership, on: pm.member_id == u.id,
-      where: pm.publication_id == ^publication_id and pm.role == ^:owner,
-      select: u
+      where: pm.publication_id == ^publication_id and pm.role == ^:owner
 
     Repo.one!(query)
   end
@@ -210,7 +222,7 @@ defmodule Margaret.Publications do
       %PublicationMembership{}, membership_attrs)
 
 
-    Multi.new
+    Multi.new()
     |> Multi.update(:invitation, invitation_changeset)
     |> Multi.update_all(:reject_other_invitations, reject_others_invitations, [])
     |> Multi.insert(:membership, membership_changeset)

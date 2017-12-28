@@ -24,7 +24,19 @@ defmodule MargaretWeb.Resolvers.Nodes do
   """
   def resolve_node(%{type: :user, id: id}, _), do: {:ok, Accounts.get_user(id)}
 
-  def resolve_node(%{type: :story, id: id}, _), do: {:ok, Stories.get_story(id)}
+  def resolve_node(%{type: :story, id: story_id}, %{context: %{viewer: %User{} = viewer}}) do
+    case Stories.can_see_story?(story_id, viewer) do
+      {true, story} -> {:ok, story}
+      {false, _} -> {:ok, nil}
+    end
+  end
+
+  def resolve_node(%{type: :story, id: story_id}, _) do
+    case Stories.is_story_public?(story_id) do
+      {true, story} -> {:ok, story}
+      {false, _} -> {:ok, nil}
+    end
+  end
 
   def resolve_node(%{type: :publication, id: id}, _) do
     {:ok, Publications.get_publication(id)}

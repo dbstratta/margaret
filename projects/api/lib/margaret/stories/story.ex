@@ -61,15 +61,22 @@ defmodule Margaret.Stories.Story do
   end
 
   @doc false
-  def changeset(%Story{} = story, %{tags: tags} = attrs) do
+  def changeset(%Story{} = story, attrs) do
     story
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
-    |> put_assoc(:tags, tags)
     |> foreign_key_constraint(:author_id)
     |> foreign_key_constraint(:publication_id)
+    |> maybe_put_tags()
     |> maybe_put_unique_hash()
+    |> maybe_put_published_at()
   end
+
+  defp maybe_put_tags(%Ecto.Changeset{changes: %{tags: tags}} = changeset) do
+    put_assoc(changeset, :tags, tags)
+  end
+
+  defp maybe_put_tags(changeset), do: changeset
 
   defp maybe_put_unique_hash(%Ecto.Changeset{data: %{unique_hash: nil}} = changeset) do
     put_change(changeset, :unique_hash, generate_hash())
@@ -84,4 +91,16 @@ defmodule Margaret.Stories.Story do
     |> String.slice(0..16)
     |> String.downcase()
   end
+
+  # Only put the `published_at` attribute when the story
+  # hasn't been published before and the change is to make it public.
+  defp maybe_put_published_at(
+    %Ecto.Changeset{
+      data: %{published_at: nil}, changes: %{publish_status: publish_status}
+    } = changeset
+  ) when publish_status === :public do
+    put_change(changeset, :published_at, NaiveDateTime.utc_now())
+  end
+
+  defp maybe_put_published_at(changeset), do: changeset
 end

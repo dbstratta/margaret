@@ -24,12 +24,24 @@ defmodule MargaretWeb.Resolvers.Accounts do
   def resolve_user(%Story{author_id: author_id}, _, _), do: {:ok, Accounts.get_user(author_id)}
 
   @doc """
-  Resolves a connection of stories of a parent.
+  Resolves a connection of stories of a user.
+
+  The author can see their unlisted stories and drafts,
+  other users only can see their public stories.
   """
+  def resolve_stories(
+    %User{id: author_id}, args, %{context: %{viewer: %{id: viewer_id}}}
+  ) when author_id === viewer_id do
+    query = from s in Story,
+      where: s.author_id == ^author_id
+
+    Relay.Connection.from_query(query, &Repo.all/1, args)
+  end
+
   def resolve_stories(%User{id: author_id}, args, _) do
     query = from s in Story,
       where: s.author_id == ^author_id,
-      select: s
+      where: s.publish_status == ^:public
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end

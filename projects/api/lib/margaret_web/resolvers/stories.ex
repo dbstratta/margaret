@@ -29,7 +29,7 @@ defmodule MargaretWeb.Resolvers.Stories do
       |> Kernel.<>("-")
       |> Kernel.<>(unique_hash)
 
-    {:ok, slug} |> IO.inspect
+    {:ok, slug}
   end
 
   @doc """
@@ -101,7 +101,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_viewer_can_comment(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
   def resolve_viewer_can_comment(_, _, _), do: {:ok, false}
 
-  def resolve_viewer_can_update(%Story{} = story, _, %{context: %{viewer: viewer}}) do
+  def resolve_viewer_can_update(%Story{} = story, _, %{context: %{viewer: %User{} = viewer}}) do
     {:ok, Stories.can_user_update_story?(story, viewer)}
   end
 
@@ -126,11 +126,12 @@ defmodule MargaretWeb.Resolvers.Stories do
     args
     |> Map.put(:author_id, author_id)
     |> Stories.insert_story()
-    |> IO.inspect
     |> case do
       {:ok, %{story: story}} -> {:ok, %{story: story}}
+      {:ok, story} -> {:ok, %{story: story}}
       {:error, changeset} -> {:error, changeset}
     end
+    |> IO.inspect()
   end
 
   defp do_resolve_create_story(false, _, _), do: Helpers.GraphQLErrors.unauthorized()
@@ -138,19 +139,27 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves a story update.
   """
-  def resolve_update_story(
-    %{publication_id: publication_id} = args,
-    %{context: %{viewer: %{id: viewer_id}}}
-  ) do
-    publication_id
-    |> Publications.can_write_stories?(viewer_id)
-    |> do_resolve_update_story(args)
-  end 
+  def resolve_update_story(%{story_id: story_id} = args, %{context: %{viewer: %User{} = viewer}}) do
+    attrs = Map.delete(args, :story_id)
+
+    case story = Stories.get_story(story_id) do
+      %Story{} = story ->
+        story
+        |> Stories.can_user_update_story?(viewer)
+        |> do_resolve_update_story(story, attrs)
+
+      _ -> {:error, "Story doesn't exist."}
+    end
+  end
 
   def resolve_update_story(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
-  defp do_resolve_update_story(true, args) do
-
+  defp do_resolve_update_story(true, %Story{} = story, attrs) do
+    case Stories.update_story(story, attrs) do
+      {:ok, %{story: story}} -> {:ok, %{story: story}}
+      {:ok, story} -> {:ok, %{story: story}}
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+    end
   end
 
   defp do_resolve_update_story(false, _), do: Helpers.GraphQLErrors.unauthorized()
