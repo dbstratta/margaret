@@ -32,6 +32,8 @@ defmodule Margaret.Stories.Story do
     :author_id,
     :publish_status,
   ]
+  
+  @unique_hash_length 16
 
   defenum StoryPublishStatus,
     :story_publish_status,
@@ -88,7 +90,7 @@ defmodule Margaret.Stories.Story do
     :sha512
     |> :crypto.hash(UUID.uuid4())
     |> Base.encode32()
-    |> String.slice(0..16)
+    |> String.slice(0..@unique_hash_length)
     |> String.downcase()
   end
 
