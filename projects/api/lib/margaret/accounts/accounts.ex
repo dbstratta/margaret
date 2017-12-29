@@ -200,10 +200,10 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_follow(term) :: Follow.t | nil
+  @spec get_follow(String.t | non_neg_integer) :: Follow.t | nil
   def get_follow(id) when is_integer(id) or is_binary(id), do: Repo.get(Follow, id)
 
-  @spec get_follow([{atom, term}]) :: Follow.t | nil
+  @spec get_follow([{atom, any}]) :: Follow.t | nil
   def get_follow(follower_id: follower_id, user_id: user_id) do
     Repo.get_by(Follow, follower_id: follower_id, user_id: user_id)
   end
@@ -215,9 +215,15 @@ defmodule Margaret.Accounts do
   @doc """
   Inserts a follow.
   """
-  def insert_follow(%{follower_id: follower_id} = attrs) when is_binary(follower_id) do
+  def insert_follow(%{user_id: user_id} = attrs) when is_binary(user_id) do
     attrs
-    |> Map.update(:follower_id, nil, &String.to_integer(&1))
+    |> Map.update(:user_id, nil, &String.to_integer(&1))
+    |> insert_follow()
+  end
+
+  def insert_follow(%{publication_id: publication_id} = attrs) when is_binary(publication_id) do
+    attrs
+    |> Map.update(:publication_id, nil, &String.to_integer(&1))
     |> insert_follow()
   end
 
@@ -234,7 +240,19 @@ defmodule Margaret.Accounts do
   @doc """
   Deletes a follow.
   """
-  def delete_follow(id) when is_integer(id) or is_binary(id) do
+  def delete_follow(id) when not is_list(id), do: Repo.delete(%Follow{id: id})
 
+  def delete_follow(follower_id: follower_id, user_id: user_id) do
+    case get_follow(follower_id: follower_id, user_id: user_id) do
+      %Follow{id: id} -> delete_follow(id)
+      nil -> nil
+    end
+  end
+
+  def delete_follow(follower_id: follower_id, publication_id: publication_id) do
+    case get_follow(follower_id: follower_id, publication_id: publication_id) do
+      %Follow{id: id} -> delete_follow(id)
+      nil -> nil
+    end
   end
 end

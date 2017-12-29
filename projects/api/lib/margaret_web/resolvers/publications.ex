@@ -10,17 +10,17 @@ defmodule MargaretWeb.Resolvers.Publications do
   alias Margaret.{Repo, Accounts, Stories, Publications}
   alias Accounts.User
   alias Stories.Story
-  alias Publications.PublicationMembership
+  alias Publications.{Publication, PublicationMembership}
 
   def resolve_publication(%{name: name}, _) do
     {:ok, Publications.get_publication_by_name(name)}
   end
 
-  def resolve_owner(%{id: publication_id}, _, _) do
+  def resolve_owner(%Publication{id: publication_id}, _, _) do
     {:ok, Publications.get_publication_owner(publication_id)}
   end
 
-  def resolve_member(%{id: publication_id}, %{member_id: %{id: member_id}}, _) do
+  def resolve_member(%Publication{id: publication_id}, %{member_id: %{id: member_id}}, _) do
     {
       :ok,
       Publications.get_publication_membership_by_publication_and_member(
@@ -28,7 +28,7 @@ defmodule MargaretWeb.Resolvers.Publications do
     }
   end
 
-  def resolve_members(%{id: publication_id}, args, _) do
+  def resolve_members(%Publication{id: publication_id}, args, _) do
     query = from u in User,
       join: pm in PublicationMembership, on: pm.member_id == u.id,
       where: pm.publication_id == ^publication_id
@@ -40,8 +40,16 @@ defmodule MargaretWeb.Resolvers.Publications do
     {:ok, "Not implemented yet"}
   end
 
-  def resolve_stories(%{id: publication_id}, args, _) do
+  def resolve_stories(%Publication{id: publication_id}, args, _) do
     query = from s in Story, where: s.publication_id == ^publication_id
+
+    Relay.Connection.from_query(query, &Repo.all/1, args)
+  end
+
+  def resolve_followers(%Publication{id: publication_id}, args, _) do
+    query = from u in User,
+      join: f in Follow, on: f.follower_id == u.id,
+      where: f.publication_id == ^publication_id
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end

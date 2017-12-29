@@ -7,9 +7,11 @@ defmodule MargaretWeb.Resolvers.Accounts do
   alias Absinthe.Relay
 
   alias MargaretWeb.Helpers
-  alias Margaret.{Repo, Accounts, Stories}
-  alias Stories.Story
+  alias Margaret.{Repo, Accounts, Stories, Publications, Stars}
   alias Accounts.{User, Follow}
+  alias Stories.Story
+  alias Publications.{Publication, PublicationMembership}
+  alias Stars.Star
 
   @doc """
   Resolves the currently logged in user.
@@ -47,20 +49,41 @@ defmodule MargaretWeb.Resolvers.Accounts do
   end
 
   def resolve_followers(%User{id: user_id}, args, _) do
-    follows_subset = from f in Follow,
-      where: f.user_id == ^user_id
-
     query = from u in User,
-      join: f in subquery(follows_subset), on: f.follower_id == u.id
+      join: f in Follow, on: f.follower_id == u.id,
+      where: f.user_id == ^user_id
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end
 
   def resolve_followees(%User{id: user_id}, args, _) do
-    # FIXME: this query doesn't work as expected.
     query = from u in User,
-      join: f in Follow, on: f.follower_id == u.id,
+      join: f in Follow, on: f.user_id == u.id,
       where: f.follower_id == ^user_id
+
+    Relay.Connection.from_query(query, &Repo.all/1, args)
+  end
+
+  def resolve_starred_stories(%User{id: user_id}, args, _) do
+    query = from story in Story,
+      join: star in Star, on: star.story_id == story.id,
+      where: star.user_id == ^user_id
+
+    Relay.Connection.from_query(query, &Repo.all/1, args)
+  end
+
+  def resolve_publication(%User{id: user_id}, %{name: publication_name}, _) do
+    query = from p in Publication,
+      join: pm in PublicationMembership, on: pm.publication_id == p.id,
+      where: pm.member_id == ^user_id and p.name == ^publication_name
+
+    {:ok, Repo.one(query)}
+  end
+
+  def resolve_publications(%User{id: user_id}, args, _) do
+    query = from p in Publication,
+      join: pm in PublicationMembership, on: pm.publication_id == p.id,
+      where: pm.member_id == ^user_id
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end
@@ -79,9 +102,34 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves if the user is the viewer.
   """
-  def resolve_is_viewer(%User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}) do
-    {:ok, user_id === viewer_id}
+  def resolve_is_viewer(
+    %User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}
+  ) when user_id === viewer_id do
+    {:ok, true}
   end
 
-  def resolve_is_viewer(_, _), do: {:ok, false}
+  def resolve_is_viewer(_, _, _), do: {:ok, false}
+
+  def resolve_viewer_can_follow(
+    %User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}
+  ) when user_id === viewer_id do
+    {:ok, false}
+  end
+
+  def resolve_viewer_can_follow(
+    %User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}
+  ) when user_id !== viewer_id do
+    {:ok, true}
+  end
+
+  def resolve_viewer_can_follow(_, _, _), do: {:ok, false}
+
+  def resolve_viewer_has_followed(%User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}) do
+    case Accounts.get_follow(follower_id: viewer_id, user_id: user_id) do
+      %Follow{} -> {:ok, true}
+      _ -> {:ok, false}
+    end
+  end
+
+  def resolve_viewer_has_followed(_, _, _), do: {:ok, false}
 end

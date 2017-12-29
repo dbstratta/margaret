@@ -47,6 +47,20 @@ defmodule MargaretWeb.Schema.AccountTypes do
       resolve &Resolvers.Accounts.resolve_followees/3
     end
 
+    connection field :starred_stories, node_type: :story do
+      resolve &Resolvers.Accounts.resolve_starred_stories/3
+    end
+
+    field :publication, :publication do
+      arg :name, non_null(:string)
+
+      resolve &Resolvers.Accounts.resolve_publication/3
+    end
+
+    connection field :publications, node_type: :publication do
+      resolve &Resolvers.Accounts.resolve_publications/3
+    end
+
     @desc """
     The notification connection of the user.
     """
@@ -70,6 +84,11 @@ defmodule MargaretWeb.Schema.AccountTypes do
     Identifies the date and time when the user was created.
     """
     field :inserted_at, non_null(:naive_datetime)
+
+    @desc """
+    Identifies the date and time when the user was last updated.
+    """
+    field :updated_at, non_null(:naive_datetime)
 
     interfaces [:followable]
   end

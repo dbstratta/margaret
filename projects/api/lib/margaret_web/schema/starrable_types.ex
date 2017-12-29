@@ -26,6 +26,8 @@ defmodule MargaretWeb.Schema.StarrableTypes do
     resolve_type &Resolvers.Nodes.resolve_type/2
   end
 
+  connection node_type: :starrable
+
   object :starrable_mutations do
     @desc "Stars a starrable."
     payload field :star do

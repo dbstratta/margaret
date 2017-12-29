@@ -49,7 +49,7 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     The follower connection of the publication.
     """
     connection field :followers, node_type: :user do
-      resolve &Resolvers.Accounts.resolve_followers/3
+      resolve &Resolvers.Publications.resolve_followers/3
     end
 
     @desc "The membership invitations of the publication."
