@@ -7637,11 +7637,12 @@ react-fuzzy@^0.5.1:
     fuse.js "^3.0.1"
     prop-types "^15.5.9"
 
-react-ga@2.3.5:
-  version "2.3.5"
-  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-2.3.5.tgz#7c3d0c530b2bbe64ceb1faa79be340685aa84a9a"
-  dependencies:
-    object-assign "^4.1.1"
+react-ga@2.3.6:
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-2.3.6.tgz#7b8cb82851c2c170ddd620039c4f71f16d97eddc"
+  optionalDependencies:
+    prop-types "^15.5.10"
+    react ">= 0.14.0"
 
 react-headroom@2.2.2:
   version "2.2.2"
@@ -7866,7 +7867,7 @@ react-treebeard@^2.1.0:
     shallowequal "^0.2.2"
     velocity-react "^1.3.1"
 
-react@16.2.0:
+react@16.2.0, "react@>= 0.14.0":
   version "16.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-16.2.0.tgz#a31bd2dab89bff65d42134fa187f24d054c273ba"
   dependencies:
