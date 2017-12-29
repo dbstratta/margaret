@@ -9,7 +9,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   alias MargaretWeb.Helpers
   alias Margaret.{Repo, Accounts, Stories}
   alias Stories.Story
-  alias Accounts.User
+  alias Accounts.{User, Follow}
 
   @doc """
   Resolves the currently logged in user.
@@ -42,6 +42,25 @@ defmodule MargaretWeb.Resolvers.Accounts do
     query = from s in Story,
       where: s.author_id == ^author_id,
       where: s.publish_status == ^:public
+
+    Relay.Connection.from_query(query, &Repo.all/1, args)
+  end
+
+  def resolve_followers(%User{id: user_id}, args, _) do
+    follows_subset = from f in Follow,
+      where: f.user_id == ^user_id
+
+    query = from u in User,
+      join: f in subquery(follows_subset), on: f.follower_id == u.id
+
+    Relay.Connection.from_query(query, &Repo.all/1, args)
+  end
+
+  def resolve_followees(%User{id: user_id}, args, _) do
+    # FIXME: this query doesn't work as expected.
+    query = from u in User,
+      join: f in Follow, on: f.follower_id == u.id,
+      where: f.follower_id == ^user_id
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end

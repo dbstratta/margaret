@@ -29,8 +29,8 @@ defmodule Margaret.Accounts.User do
 
     has_many :stories, Story, foreign_key: :author_id
 
-    has_many :followers, Follow 
-    has_many :followees, Follow, foreign_key: :follower_id
+    many_to_many :followers, User, join_through: Follow, join_keys: [user_id: :id, follower_id: :id] 
+    many_to_many :followees, User, join_through: Follow, join_keys: [follower_id: :id, user_id: :id]
 
     timestamps()
   end
