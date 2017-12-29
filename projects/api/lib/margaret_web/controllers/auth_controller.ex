@@ -41,7 +41,7 @@ defmodule MargaretWeb.AuthController do
   defp get_token(email, provider, uid) when is_binary(email) do
     user = get_or_create_user(email)
 
-    Accounts.create_social_login!(%{provider: provider, uid: uid, user_id: user.id})
+    Accounts.insert_social_login!(%{provider: provider, uid: uid, user_id: user.id})
 
     {:ok, token, _} = MargaretWeb.Guardian.encode_and_sign(user)
     token

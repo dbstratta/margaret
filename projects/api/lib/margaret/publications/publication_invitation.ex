@@ -10,8 +10,22 @@ defmodule Margaret.Publications.PublicationInvitation do
   alias Accounts.User
   alias Publications.Publication
 
-  @typedoc "The Publication type"
   @type t :: %PublicationInvitation{}
+
+  @permitted_attrs [
+    :invitee_id,
+    :inviter_id,
+    :publication_id,
+    :role,
+    :status,
+  ]
+
+  @required_attrs [
+    :invitee_id,
+    :inviter_id,
+    :publication_id,
+    :role,
+  ]
 
   defenum PublicationInvitationStatus,
     :publication_invitation_status,
@@ -25,6 +39,7 @@ defmodule Margaret.Publications.PublicationInvitation do
     belongs_to :invitee, User
     belongs_to :inviter, User
     belongs_to :publication, Publication
+
     field :role, PublicationInvitationRole
     field :status, PublicationInvitationStatus
 
@@ -34,8 +49,8 @@ defmodule Margaret.Publications.PublicationInvitation do
   @doc false
   def changeset(%PublicationInvitation{} = publication_invitation, attrs) do
     publication_invitation
-    |> cast(attrs, [:invitee_id, :inviter_id, :publication_id, :role, :status])
-    |> validate_required([:invitee_id, :inviter_id, :publication_id, :role])
+    |> cast(attrs, @permitted_attrs)
+    |> validate_required(@required_attrs)
     |> foreign_key_constraint(:invitee_id)
     |> foreign_key_constraint(:inviter_id)
     |> foreign_key_constraint(:publication_id)

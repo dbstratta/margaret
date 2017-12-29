@@ -10,6 +10,21 @@ defmodule Margaret.Comments.Comment do
   alias Stories.Story
   alias Stars.Star
 
+  @type t :: %Comment{}
+
+  @permitted_attrs [
+    :author_id,
+    :body,
+    :story_id,
+    :parent_id,
+  ]
+
+  @required_attrs [
+    :author_id,
+    :body,
+    :story_id,
+  ]
+
   schema "comments" do
     field :body, :string
     belongs_to :author, User
@@ -24,8 +39,8 @@ defmodule Margaret.Comments.Comment do
   @doc false
   def changeset(%Comment{} = comment, attrs) do
     comment
-    |> cast(attrs, [:author_id, :body, :story_id, :parent_id])
-    |> validate_required([:author_id, :body, :story_id])
+    |> cast(attrs, @permitted_attrs)
+    |> validate_required(@required_attrs)
     |> foreign_key_constraint(:author_id)
     |> foreign_key_constraint(:story_id)
     |> foreign_key_constraint(:parent_id)

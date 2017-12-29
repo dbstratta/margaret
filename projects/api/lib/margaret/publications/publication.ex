@@ -5,7 +5,21 @@ defmodule Margaret.Publications.Publication do
   import Ecto.Changeset
 
   alias __MODULE__
-  alias Margaret.{Accounts.User, Publications.PublicationMembership}
+  alias Margaret.{Accounts, Publications}
+  alias Accounts.{User, Follow}
+  alias Publications.PublicationMembership
+
+  @type t :: %Publication{}
+
+  @permitted_attrs [
+    :name,
+    :display_name,
+  ]
+
+  @required_attrs [
+    :name,
+    :display_name,
+  ]
 
   schema "publications" do
     field :name, :string
@@ -15,14 +29,16 @@ defmodule Margaret.Publications.Publication do
       join_through: PublicationMembership,
       unique: true
 
+    has_many :followers, Follow
+
     timestamps()
   end
 
   @doc false
   def changeset(%Publication{} = publication, attrs) do
     publication
-    |> cast(attrs, [:name, :display_name])
-    |> validate_required([:name, :display_name])
+    |> cast(attrs, @permitted_attrs)
+    |> validate_required(@required_attrs)
     |> validate_length(:name, min: 2, max: 64)
     |> unique_constraint(:name)
   end

@@ -9,6 +9,14 @@ defmodule Margaret.Tags.Tag do
 
   @type t :: %Tag{}
 
+  @permitted_attrs [
+    :title
+  ]
+
+  @required_attrs [
+    :title
+  ]
+
   schema "tags" do
     field :title, :string
     many_to_many :stories, Story, join_through: "story_tags"
@@ -19,8 +27,8 @@ defmodule Margaret.Tags.Tag do
   @doc false
   def changeset(%Tag{} = tag, attrs) do
     tag
-    |> cast(attrs, [:title])
-    |> validate_required([:title])
+    |> cast(attrs, @permitted_attrs)
+    |> validate_required(@required_attrs)
     |> unique_constraint(:title)
   end
 end

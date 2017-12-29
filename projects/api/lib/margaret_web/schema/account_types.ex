@@ -43,6 +43,10 @@ defmodule MargaretWeb.Schema.AccountTypes do
       resolve &Resolvers.Accounts.resolve_followers/3
     end
 
+    connection field :followees, node_type: :user do
+      resolve &Resolvers.Accounts.resolve_followees/3
+    end
+
     @desc """
     The notification connection of the user.
     """
@@ -54,10 +58,20 @@ defmodule MargaretWeb.Schema.AccountTypes do
       resolve &Resolvers.Accounts.resolve_is_viewer/3
     end
 
+    field :viewer_can_follow, non_null(:boolean) do
+      resolve &Resolvers.Accounts.resolve_viewer_can_follow/3
+    end
+
+    field :viewer_has_followed, non_null(:boolean) do
+      resolve &Resolvers.Accounts.resolve_viewer_has_followed/3
+    end
+
     @desc """
     Identifies the date and time when the user was created.
     """
     field :inserted_at, non_null(:naive_datetime)
+
+    interfaces [:followable]
   end
 
   object :account_queries do

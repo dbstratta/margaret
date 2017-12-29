@@ -45,9 +45,24 @@ defmodule MargaretWeb.Schema.PublicationTypes do
       resolve &Resolvers.Publications.resolve_stories/3
     end
 
+    @desc """
+    The follower connection of the publication.
+    """
+    connection field :followers, node_type: :user do
+      resolve &Resolvers.Accounts.resolve_followers/3
+    end
+
     @desc "The membership invitations of the publication."
     connection field :membership_invitations, node_type: :publication_invitation do
       resolve &Resolvers.Publications.resolve_membership_invitations/3
+    end
+
+    field :viewer_can_follow, non_null(:boolean) do
+      resolve &Resolvers.Publications.resolve_viewer_can_follow/3
+    end
+
+    field :viewer_has_followed, non_null(:boolean) do
+      resolve &Resolvers.Publications.resolve_viewer_has_followed/3
     end
 
     @desc "Viewer is a member of the publication."
@@ -59,6 +74,8 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     field :viewer_can_administer, non_null(:boolean) do
       resolve &Resolvers.Publications.resolve_viewer_can_administer/3
     end
+
+    interfaces [:followable]
   end
 
   object :publication_queries do

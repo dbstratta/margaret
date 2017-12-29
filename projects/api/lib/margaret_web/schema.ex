@@ -14,6 +14,7 @@ defmodule MargaretWeb.Schema do
     PublicationInvitationTypes,
     NotificationTypes,
     StarrableTypes,
+    FollowableTypes,
     CommentTypes,
     CommentableTypes,
     TagTypes,
@@ -29,6 +30,7 @@ defmodule MargaretWeb.Schema do
   import_types PublicationInvitationTypes
   import_types NotificationTypes
   import_types StarrableTypes
+  import_types FollowableTypes
   import_types CommentTypes
   import_types CommentableTypes
   import_types TagTypes
@@ -48,6 +50,7 @@ defmodule MargaretWeb.Schema do
     import_fields :account_mutations
     import_fields :story_mutations
     import_fields :starrable_mutations
+    import_fields :followable_mutations
     import_fields :publication_mutations
     import_fields :publication_invitation_mutations
     import_fields :comment_mutations

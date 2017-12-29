@@ -6,7 +6,7 @@ services:
       dockerfile: dev.dockerfile
     command: tail -f /dev/null
     environment:
-      - VIRTUAL_HOST=api.localhost
+      - VIRTUAL_HOST=api.margaret.test
       - VIRTUAL_PORT=4000
 
       - CI
@@ -16,7 +16,7 @@ services:
       context: ./projects/web
       dockerfile: dev.dockerfile
     environment:
-      - VIRTUAL_HOST=localhost
+      - VIRTUAL_HOST=margaret.test
       - VIRTUAL_PORT=3000
 
       - CI

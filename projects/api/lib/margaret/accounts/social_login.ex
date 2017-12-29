@@ -7,11 +7,7 @@ defmodule Margaret.Accounts.SocialLogin do
   alias __MODULE__
   alias Margaret.Accounts.User
 
-  @typedoc "The SocialLogin type"
-  @type t :: %SocialLogin{
-          uid: String.t,
-          provider: String.t,
-        }
+  @type t :: %SocialLogin{}
 
   schema "social_logins" do
     field :uid, :string

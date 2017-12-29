@@ -21,6 +21,9 @@ defmodule Margaret.Repo.Migrations.AddStarsTable do
       :stars,
       :only_one_not_null_starrable,
       check:
-      "story_id is not null and comment_id is null or story_id is null and comment_id is not null")
+      """
+        story_id is not null and comment_id is null or
+        story_id is null and comment_id is not null
+      """)
   end
 end

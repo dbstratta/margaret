@@ -10,7 +10,7 @@ services:
     volumes:
       - ./projects/api:/usr/src/app
     environment:
-      - VIRTUAL_HOST=api.localhost
+      - VIRTUAL_HOST=api.margaret.localhost
       - VIRTUAL_PORT=4000
     env_file: .env
 
@@ -27,7 +27,7 @@ services:
       - ./projects/web:/usr/src/app
       - /usr/src/app/node_modules
     environment:
-      - VIRTUAL_HOST=localhost
+      - VIRTUAL_HOST=margaret.localhost
       - VIRTUAL_PORT=3000
       - NODE_ENV=development
     env_file: .env

@@ -10,8 +10,17 @@ defmodule Margaret.Stars.Star do
   alias Stories.Story
   alias Comments.Comment
 
-  @typedoc "The Star type"
   @type t :: %Star{}
+
+  @permitted_attrs [
+    :user_id,
+    :story_id,
+    :comment_id,
+  ]
+
+  @required_attrs [
+    :user_id
+  ]
 
   schema "stars" do
     belongs_to :user, User
@@ -25,8 +34,8 @@ defmodule Margaret.Stars.Star do
   @doc false
   def changeset(%Star{} = star, attrs) do
     star
-    |> cast(attrs, [:user_id, :story_id, :comment_id])
-    |> validate_required([:user_id])
+    |> cast(attrs, @permitted_attrs)
+    |> validate_required(@required_attrs)
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:story_id)
     |> foreign_key_constraint(:comment_id)

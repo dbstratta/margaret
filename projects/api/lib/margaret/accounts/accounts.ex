@@ -6,7 +6,7 @@ defmodule Margaret.Accounts do
   import Ecto.Query
 
   alias Margaret.Repo
-  alias Margaret.Accounts.{User, SocialLogin}
+  alias Margaret.Accounts.{User, SocialLogin, Follow}
 
   @doc """
   Gets a single user.
@@ -146,37 +146,95 @@ defmodule Margaret.Accounts do
   end
 
   @doc """
-  Creates a social login.
+  Inserts a social login.
 
   ## Examples
 
-    iex> create_social_login(attrs)
+    iex> insert_social_login(attrs)
     {:ok, %SocialLogin{}}
 
-    iex> create_social_login(%{field: bad_value})
+    iex> insert_social_login(%{field: bad_value})
     {:error, %Ecto.Changeset{}}
 
   """
-  @spec create_social_login(%{optional(any) => any}) :: {atom, Ecto.Changeset}
-  def create_social_login(attrs) do
+  @spec insert_social_login(%{optional(any) => any}) :: {atom, Ecto.Changeset}
+  def insert_social_login(attrs) do
     %SocialLogin{}
     |> SocialLogin.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
-  Creates a social login.
+  Inserts a social login.
 
   ## Examples
 
-    iex> create_social_login(attrs)
+    iex> insert_social_login(attrs)
     {:ok, %SocialLogin{}}
 
+    iex> insert_social_login(bad_attrs)
+    {:error, %Ecto.Changeset{}}
+
   """
-  @spec create_social_login!(%{optional(any) => any}) :: {atom, Ecto.Changeset}
-  def create_social_login!(attrs) do
+  def insert_social_login!(attrs) do
     %SocialLogin{}
     |> SocialLogin.changeset(attrs)
     |> Repo.insert!()
+  end
+
+  @doc """
+  Gets a follow.
+
+  ## Examples
+
+      iex> get_follow(123)
+      %Follow{}
+
+      iex> get_follow(456)
+      nil
+
+      iex> get_follow(follower_id: 123, user_id: 234)
+      %Follow{}
+
+      iex> get_follow(follower_id: 123, publication_id: 234)
+      nil
+
+  """
+  @spec get_follow(term) :: Follow.t | nil
+  def get_follow(id) when is_integer(id) or is_binary(id), do: Repo.get(Follow, id)
+
+  @spec get_follow([{atom, term}]) :: Follow.t | nil
+  def get_follow(follower_id: follower_id, user_id: user_id) do
+    Repo.get_by(Follow, follower_id: follower_id, user_id: user_id)
+  end
+
+  def get_follow(follower_id: follower_id, publication_id: publication_id) do
+    Repo.get_by(Follow, follower_id: follower_id, publication_id: publication_id)
+  end
+
+  @doc """
+  Inserts a follow.
+  """
+  def insert_follow(%{follower_id: follower_id} = attrs) when is_binary(follower_id) do
+    attrs
+    |> Map.update(:follower_id, nil, &String.to_integer(&1))
+    |> insert_follow()
+  end
+
+  def insert_follow(%{follower_id: follower_id, user_id: user_id}) when follower_id === user_id do
+    {:error, "You can't follow yourself."}
+  end
+
+  def insert_follow(attrs) do
+    %Follow{}
+    |> Follow.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Deletes a follow.
+  """
+  def delete_follow(id) when is_integer(id) or is_binary(id) do
+
   end
 end
