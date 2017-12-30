@@ -4,5 +4,6 @@
   "[elixir]": {
     "editor.quickSuggestions": true
   },
-  "elixir.projectPath": "/projects/api"
+  "elixir.projectPath": "/projects/api",
+  "codemetrics.basics.CodeLensHiddenUnder": 8
 }
