@@ -51,7 +51,7 @@ defmodule Margaret.Publications do
       nil
 
   """
-  @spec get_publication_member_role(term, term) :: atom | nil
+  @spec get_publication_member_role(any, any) :: atom | nil
   def get_publication_member_role(publication_id, member_id) do
     case get_publication_membership_by_publication_and_member(publication_id, member_id) do
       %PublicationMembership{role: role} -> role
@@ -76,7 +76,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec is_publication_member?(term, term) :: boolean
+  @spec is_publication_member?(any, any) :: boolean
   def is_publication_member?(publication_id, user_id) do
     publication_id
     |> get_publication_member_role(user_id)
@@ -103,7 +103,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec is_publication_admin?(term, term) :: boolean
+  @spec is_publication_admin?(any, any) :: boolean
   def is_publication_admin?(publication_id, user_id) do
     check_role(publication_id, user_id, [:owner, :admin])
   end
@@ -121,7 +121,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec can_write_stories?(term, term) :: boolean
+  @spec can_write_stories?(any, any) :: boolean
   def can_write_stories?(publication_id, user_id) do
     check_role(publication_id, user_id, [:owner, :admin, :writer])
   end
@@ -139,9 +139,27 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec can_edit_stories?(term, term) :: boolean
+  @spec can_edit_stories?(any, any) :: boolean
   def can_edit_stories?(publication_id, user_id) do
     check_role(publication_id, user_id, [:owner, :admin, :editor])
+  end
+
+  @doc """
+  Returns true if the user can see the invitations sent by the publication.
+  False otherwise.
+
+  ## Examples
+
+      iex> can_see_invitations?(123, 123)
+      true
+
+      iex> can_see_invitations?(123, 456)
+      false
+
+  """
+  @spec can_see_invitations?(any, any) :: boolean
+  def can_see_invitations?(publication_id, user_id) do
+    check_role(publication_id, user_id, [:owner, :admin])
   end
 
   @doc """
@@ -244,7 +262,7 @@ defmodule Margaret.Publications do
     |> get_publication_membership_by_publication_and_member(member_id)
     |> case do
       %PublicationMembership{} = membership -> Repo.delete(membership)
-      _ -> nil
+      _ -> {:error, "User is not a member."}
     end
   end
 end

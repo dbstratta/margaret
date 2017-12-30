@@ -14,12 +14,6 @@ defmodule MargaretWeb.Schema.NotificationTypes do
     field :read, :boolean
   end
 
-  object :notification_queries do
-    connection field :notifications, node_type: :notification do
-      resolve &Resolvers.Notifications.resolve_notifications/2
-    end
-  end
-
   object :notification_mutations do
     @desc "Marks a notification as read."
     payload field :read_notification do

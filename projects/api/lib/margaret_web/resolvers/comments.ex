@@ -66,6 +66,12 @@ defmodule MargaretWeb.Resolvers.Comments do
 
   def resolve_viewer_has_starred(_, _, _), do: {:ok, false}
 
+  @doc """
+  Resolves whether the viewer can comment the comment.
+  """
+  def resolve_viewer_can_comment(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+  def resolve_viewer_can_comment(_, _, _), do: {:ok, false}
+
   def resolve_viewer_can_update(
     %Comment{author_id: author_id}, _, %{context: %{viewer: %{id: viewer_id}}}
   ) when author_id === viewer_id do
@@ -110,7 +116,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   Resolves the deletion of a comment.
   """
   def resolve_delete_comment(
-    %{comment_id: comment_id} = args, %{context: %{viewer: %{id: viewer_id}}}
+    %{comment_id: _comment_id} = _args, %{context: %{viewer: %{id: _viewer_id}}}
   ) do
     
   end

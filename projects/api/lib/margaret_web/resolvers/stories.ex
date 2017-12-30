@@ -16,7 +16,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   Resolves a story by its slug.
   """
   def resolve_story(%{slug: slug}, _) do
-    {:ok, Stories.get_story_slug(slug)}
+    {:ok, Stories.get_story_by_slug(slug)}
   end
 
   @doc """
@@ -142,7 +142,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_update_story(%{story_id: story_id} = args, %{context: %{viewer: %User{} = viewer}}) do
     attrs = Map.delete(args, :story_id)
 
-    case story = Stories.get_story(story_id) do
+    case Stories.get_story(story_id) do
       %Story{} = story ->
         story
         |> Stories.can_user_update_story?(viewer)

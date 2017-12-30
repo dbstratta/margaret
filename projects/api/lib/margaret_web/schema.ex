@@ -42,7 +42,6 @@ defmodule MargaretWeb.Schema do
     import_fields :account_queries
     import_fields :story_queries
     import_fields :publication_queries
-    import_fields :notification_queries
   end
 
   @desc "The root mutation type."

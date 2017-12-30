@@ -88,6 +88,14 @@ defmodule MargaretWeb.Resolvers.Accounts do
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end
 
+  def resolve_notifications(
+    %User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}
+  ) when user_id !== viewer_id do
+    {:ok, nil}
+  end
+
+  def resolve_notifications(_, _), do: {:ok, nil}
+
   @doc """
   Resolves a connection of users.
   """
@@ -96,8 +104,17 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves a user creation.
   """
-  def resolve_create_user(args, _) do
+  def resolve_create_user(_args, _) do
   end
+
+  @doc """
+  Resolves a user update.
+  """
+  def resolve_update_user(_args, %{context: %{viewer: _viewer}}) do
+    Helpers.GraphQLErrors.not_implemented()
+  end
+
+  def resolve_update_user(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
   @doc """
   Resolves if the user is the viewer.
