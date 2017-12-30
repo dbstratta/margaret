@@ -103,13 +103,12 @@ defmodule MargaretWeb.Resolvers.Publications do
   def resolve_viewer_has_followed(_, _, _), do: {:ok, false}
 
   def resolve_create_publication(args, %{context: %{viewer: %{id: viewer_id}}}) do
-    # TODO: Refactor this with a `Ecto.Multi`.
-    with {:ok, publication} <- Publications.create_publication(args),
-         {:ok, _publication_membership} <- Publications.create_publication_membership(
-           %{role: :owner, member_id: viewer_id, publication_id: publication.id}) do
-      {:ok, %{publication: publication}}
-    else
-      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+    args
+    |> Map.put(:owner_id, viewer_id)
+    |> Publications.insert_publication()
+    |> case do
+      {:ok, %{publication: publication}} -> {:ok, %{publication: publication}}
+      {:error, _} -> {:error, "s"}
     end
   end
 

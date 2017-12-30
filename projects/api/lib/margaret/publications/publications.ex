@@ -165,16 +165,24 @@ defmodule Margaret.Publications do
   @doc """
   Creates a publication.
   """
-  def create_publication(attrs) do
-    %Publication{}
-    |> Publication.changeset(attrs)
-    |> Repo.insert()
+  def insert_publication(%{owner_id: owner_id} = attrs) do
+    publication_changeset = Publication.changeset(%Publication{}, attrs)
+
+    Multi.new()
+    |> Multi.insert(:publication, publication_changeset)
+    |> Multi.run(:membership, &insert_owner(&1, owner_id))
+    |> Repo.transaction()
+  end
+
+  defp insert_owner(%{publication: %{id: publication_id}}, owner_id) do
+    insert_publication_membership(
+      %{role: :owner, member_id: owner_id, publication_id: publication_id})
   end
 
   @doc """
   Creates a publication membership.
   """
-  def create_publication_membership(attrs) do
+  def insert_publication_membership(attrs) do
     %PublicationMembership{}
     |> PublicationMembership.changeset(attrs)
     |> Repo.insert()
@@ -208,7 +216,7 @@ defmodule Margaret.Publications do
   @doc """
   Creates a publication invitation.
   """
-  def create_publication_invitation(attrs) do
+  def insert_publication_invitation(attrs) do
     %PublicationInvitation{}
     |> PublicationInvitation.changeset(attrs)
     |> Repo.insert()

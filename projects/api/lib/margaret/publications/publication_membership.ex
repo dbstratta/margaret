@@ -10,6 +10,20 @@ defmodule Margaret.Publications.PublicationMembership do
   alias Accounts.User
   alias Publications.Publication
 
+  @type t :: %PublicationMembership{}
+
+  @permitted_attrs [
+    :role,
+    :member_id,
+    :publication_id,
+  ]
+
+  @required_attrs [
+    :role,
+    :member_id,
+    :publication_id,
+  ]
+
   defenum PublicationMembershipRole,
     :publication_membership_role,
     [:owner, :admin, :writer, :editor]
@@ -25,8 +39,8 @@ defmodule Margaret.Publications.PublicationMembership do
   @doc false
   def changeset(%PublicationMembership{} = publication_membership, attrs) do
     publication_membership
-    |> cast(attrs, [:role, :member_id, :publication_id])
-    |> validate_required([:role, :member_id, :publication_id])
+    |> cast(attrs, @permitted_attrs)
+    |> validate_required(@required_attrs)
     |> foreign_key_constraint(:member_id)
     |> foreign_key_constraint(:publication_id)
     |> unique_constraint(:member_id)

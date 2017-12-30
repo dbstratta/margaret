@@ -25,11 +25,11 @@ defmodule Margaret.Publications.Publication do
     field :name, :string
     field :display_name, :string
 
-    many_to_many :members, User,
-      join_through: PublicationMembership,
-      unique: true
+    many_to_many :members, User, join_through: PublicationMembership
 
-    has_many :followers, Follow
+    many_to_many :followers, User,
+      join_through: Follow,
+      join_keys: [publication_id: :id, follower_id: :id]
 
     timestamps()
   end

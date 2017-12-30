@@ -111,12 +111,15 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_create_story(
     %{publication_id: publication_id} = args, %{context: %{viewer: %{id: viewer_id}}}
   ) do
+    # If the user wants to create the story under a publication,
+    # we have to check that they have permission.
     publication_id
     |> Publications.can_write_stories?(viewer_id)
     |> do_resolve_create_story(args, viewer_id)
   end
 
   def resolve_create_story(args, %{context: %{viewer: %{id: viewer_id}}}) do
+    # If there's no publication, we can safely create the story.
     do_resolve_create_story(true, args, viewer_id)
   end
 
@@ -131,7 +134,6 @@ defmodule MargaretWeb.Resolvers.Stories do
       {:ok, story} -> {:ok, %{story: story}}
       {:error, changeset} -> {:error, changeset}
     end
-    |> IO.inspect()
   end
 
   defp do_resolve_create_story(false, _, _), do: Helpers.GraphQLErrors.unauthorized()

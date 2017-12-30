@@ -63,22 +63,23 @@ defmodule Margaret.Stories.Story do
   end
 
   @doc false
+  def changeset(%Story{} = story, %{tags: tags} = attrs) do
+    attrs_without_tags = Map.delete(attrs, :tags)
+
+    story
+    |> changeset(attrs_without_tags)
+    |> put_assoc(:tags, tags)
+  end
+
   def changeset(%Story{} = story, attrs) do
     story
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> foreign_key_constraint(:author_id)
     |> foreign_key_constraint(:publication_id)
-    |> maybe_put_tags()
     |> maybe_put_unique_hash()
     |> maybe_put_published_at()
   end
-
-  defp maybe_put_tags(%Ecto.Changeset{changes: %{tags: tags}} = changeset) do
-    put_assoc(changeset, :tags, tags)
-  end
-
-  defp maybe_put_tags(changeset), do: changeset
 
   defp maybe_put_unique_hash(%Ecto.Changeset{data: %{unique_hash: nil}} = changeset) do
     put_change(changeset, :unique_hash, generate_hash())

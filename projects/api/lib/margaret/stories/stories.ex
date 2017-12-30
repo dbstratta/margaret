@@ -176,10 +176,10 @@ defmodule Margaret.Stories do
     upsert_story(%Story{}, attrs)
   end
 
-  defp upsert_story(%{tags: tags} = attrs) do
+  defp upsert_story(story, %{tags: tags} = attrs) do
     Multi.new()
     |> Multi.run(:tags, fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
-    |> Multi.run(:story, &do_insert_story(attrs, &1))
+    |> Multi.run(:story, &do_upsert_story(story, attrs, &1))
     |> Repo.transaction()
   end
 
@@ -189,10 +189,11 @@ defmodule Margaret.Stories do
     |> Repo.insert_or_update()
   end
 
-  defp do_upsert_story(attrs, %{tags: tags}) do
+
+  defp do_upsert_story(story, attrs, %{tags: tags}) do
     attrs_with_tags = Map.put(attrs, :tags, tags)
 
-    %Story{}
+    story
     |> Story.changeset(attrs_with_tags)
     |> Repo.insert_or_update()
   end

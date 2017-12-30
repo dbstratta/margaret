@@ -16,7 +16,7 @@ defmodule Margaret.Stars do
     Repo.get_by(Star, user_id: user_id, comment_id: comment_id)
   end
 
-  def create_star(attrs) do
+  def insert_star(attrs) do
     %Star{}
     |> Star.changeset(attrs)
     |> Repo.insert()

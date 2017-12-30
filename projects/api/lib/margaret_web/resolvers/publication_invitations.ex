@@ -19,7 +19,7 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
 
     with true <- Publications.is_publication_admin?(publication_id, viewer_id),
          false <- Publications.is_publication_member?(publication_id, invitee_id),
-         {:ok, invitation} <- Publications.create_publication_invitation(attrs) do
+         {:ok, invitation} <- Publications.insert_publication_invitation(attrs) do
       {:ok, %{invitation: invitation}}
     else
       false -> Helpers.GraphQLErrors.unauthorized()
