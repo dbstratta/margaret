@@ -10,8 +10,6 @@ defmodule MargaretWeb.Middleware.HandleChangesetErrors do
 
   @doc false
   @impl true
-  def call(%Absinthe.Resolution{errors: []} = resolution, _), do: resolution
-
   def call(%Absinthe.Resolution{errors: errors} = resolution, _) do
     %{resolution | errors: handle_errors(errors)}
   end
@@ -21,7 +19,7 @@ defmodule MargaretWeb.Middleware.HandleChangesetErrors do
   defp handle_error(%Ecto.Changeset{} = changeset) do
     changeset
     |> Ecto.Changeset.traverse_errors(fn {err, _opts} -> err end)
-    |> Enum.map(fn {key, value} -> "#{key}: #{value}" end)
+    |> Enum.map(fn {key, value} -> "#{key} #{value}" end)
   end
 
   defp handle_error(error), do: [error]

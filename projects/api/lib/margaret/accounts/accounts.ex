@@ -141,22 +141,43 @@ defmodule Margaret.Accounts do
 
 
   @doc """
-  Creates a user.
+  Inserts a user.
 
   ## Examples
 
-    iex> create_user(attrs)
+    iex> insert_user(attrs)
     {:ok, %User{}}
 
-    iex> create_user(%{field: bad_value})
+    iex> insert_user(%{field: bad_value})
     {:error, %Ecto.Changeset{}}
 
   """
-  @spec create_user(%{optional(any) => any}) :: {atom, Ecto.Changeset}
-  def create_user(attrs) do
+  @spec insert_user(%{optional(any) => any}) :: {:error, Ecto.Changeset.t} | {:ok, User.t}
+  def insert_user(attrs) do
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Inserts a user.
+
+  Raises `Ecto.InvalidChangesetError` if the attributes are invalid.
+
+  ## Examples
+
+    iex> insert_user!(attrs)
+    %User{}
+
+    iex> insert_user!(bad_attrs)
+    ** (Ecto.InvalidChangesetError)
+
+  """
+  @spec insert_user!(%{optional(any) => any}) :: User.t | no_return
+  def insert_user!(attrs) do
+    %User{}
+    |> User.changeset(attrs)
+    |> Repo.insert!()
   end
 
   @doc """
@@ -171,7 +192,8 @@ defmodule Margaret.Accounts do
     {:error, %Ecto.Changeset{}}
 
   """
-  @spec insert_social_login(%{optional(any) => any}) :: {atom, Ecto.Changeset}
+  @spec insert_social_login(%{optional(any) => any}) ::
+    {:error, Ecto.Changeset.t} | {:ok, SocialLogin.t}
   def insert_social_login(attrs) do
     %SocialLogin{}
     |> SocialLogin.changeset(attrs)
@@ -181,13 +203,15 @@ defmodule Margaret.Accounts do
   @doc """
   Inserts a social login.
 
+  Raises `Ecto.InvalidChangesetError` if the attributes are invalid.
+
   ## Examples
 
     iex> insert_social_login(attrs)
     {:ok, %SocialLogin{}}
 
     iex> insert_social_login(bad_attrs)
-    {:error, %Ecto.Changeset{}}
+    ** (Ecto.InvalidChangesetError)
 
   """
   def insert_social_login!(attrs) do
@@ -214,7 +238,7 @@ defmodule Margaret.Accounts do
       where: pm.member_id == ^user_id,
       select: count(pm.id)
 
-    Repo.all(query)
+    Repo.one!(query)
   end
 
   @doc """
@@ -228,22 +252,21 @@ defmodule Margaret.Accounts do
       iex> get_follow(456)
       nil
 
-      iex> get_follow(follower_id: 123, user_id: 234)
+      iex> get_follow(%{follower_id: 123, user_id: 234})
       %Follow{}
 
-      iex> get_follow(follower_id: 123, publication_id: 234)
+      iex> get_follow(%{follower_id: 123, publication_id: 234})
       nil
 
   """
   @spec get_follow(String.t | non_neg_integer) :: Follow.t | nil
   def get_follow(id) when is_integer(id) or is_binary(id), do: Repo.get(Follow, id)
 
-  @spec get_follow([{atom, any}]) :: Follow.t | nil
-  def get_follow(follower_id: follower_id, user_id: user_id) do
+  def get_follow(%{follower_id: follower_id, user_id: user_id}) do
     Repo.get_by(Follow, follower_id: follower_id, user_id: user_id)
   end
 
-  def get_follow(follower_id: follower_id, publication_id: publication_id) do
+  def get_follow(%{follower_id: follower_id, publication_id: publication_id}) do
     Repo.get_by(Follow, follower_id: follower_id, publication_id: publication_id)
   end
 
@@ -265,15 +288,18 @@ defmodule Margaret.Accounts do
 
   ## Examples
 
-    iex> get_follower_count(123)
+    iex> get_follower_count(%{user_id: 123})
     42
 
+    iex> get_follower_count(%{publication_id: 234})
+    815
+
   """
-  def get_follower_count(user_id: user_id) do
+  def get_follower_count(%{user_id: user_id}) do
     Repo.one!(from f in Follow, where: f.user_id == ^user_id, select: count(f.id))
   end
 
-  def get_follower_count(publication_id: publication_id) do
+  def get_follower_count(%{publication_id: publication_id}) do
     Repo.one!(from f in Follow, where: f.publication_id == ^publication_id, select: count(f.id))
   end
 
@@ -319,27 +345,20 @@ defmodule Margaret.Accounts do
 
   ## Examples
 
-    iex> delete_follow(id)
+    iex> delete_follow(123)
     {:ok, %Follow{}}
 
-    iex> delete_follow(follower_id: 123, publication_id: 234)
+    iex> delete_follow(%{follower_id: 123, publication_id: 234})
     {:ok, %Follow{}}
 
-    iex> delete_follow(follower_id: 123, user_id: 234)
+    iex> delete_follow(%{follower_id: 123, user_id: 234})
     {:error, %Ecto.Changeset{}}
 
   """
-  def delete_follow(id) when not is_list(id), do: Repo.delete(%Follow{id: id})
+  def delete_follow(id) when is_integer(id) or is_binary(id), do: Repo.delete(%Follow{id: id})
 
-  def delete_follow(follower_id: follower_id, user_id: user_id) do
-    case get_follow(follower_id: follower_id, user_id: user_id) do
-      %Follow{id: id} -> delete_follow(id)
-      nil -> nil
-    end
-  end
-
-  def delete_follow(follower_id: follower_id, publication_id: publication_id) do
-    case get_follow(follower_id: follower_id, publication_id: publication_id) do
+  def delete_follow(args) do
+    case get_follow(args) do
       %Follow{id: id} -> delete_follow(id)
       nil -> nil
     end

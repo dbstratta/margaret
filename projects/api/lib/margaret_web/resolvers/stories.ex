@@ -76,7 +76,7 @@ defmodule MargaretWeb.Resolvers.Stories do
     connection =
       connection
       |> Map.update!(:edges, transform_edges)
-      |> Map.put(:total_count, Stars.get_star_count(story_id: story_id))
+      |> Map.put(:total_count, Stars.get_star_count(%{story_id: story_id}))
 
     {:ok, connection}
   end
@@ -85,14 +85,18 @@ defmodule MargaretWeb.Resolvers.Stories do
     query = from c in Comment,
       where: c.story_id == ^story_id
 
-    Relay.Connection.from_query(query, &Repo.all/1, args)
+    {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
+
+    connection =
+      Map.put(connection, :total_count, Comments.get_comment_count(%{story_id: story_id}))
+
+    {:ok, connection}
   end
 
   @doc """
   Resolves whether the viewer can star the story or not.
   """
   def resolve_viewer_can_star(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
-  def resolve_viewer_can_star(_, _, _), do: {:ok, false}
 
   @doc """
   Resolves whether the viewer has starred this story.
@@ -100,19 +104,34 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_viewer_has_starred(
     %Story{id: story_id}, _, %{context: %{viewer: %{id: viewer_id}}}
   ) do
-    {:ok, !!Stars.get_star(user_id: viewer_id, story_id: story_id)}
+    {:ok, Stars.has_starred(%{user_id: viewer_id, story_id: story_id})}
   end
 
-  def resolve_viewer_has_starred(_, _, _), do: {:ok, false}
+  def resolve_viewer_has_bookmarked(
+    %Story{id: story_id}, _, %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    {:ok, Bookmarks.has_bookmarked(%{user_id: viewer_id, story_id: story_id})}
+  end
 
   @doc """
-  Resolves whether the viewer can comment the story or not.
+  Resolves whether the viewer can comment the story.
   """
   def resolve_viewer_can_comment(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
-  def resolve_viewer_can_comment(_, _, _), do: {:ok, false}
 
+  @doc """
+  Resolves whether the viewer can update the story.
+  """
   def resolve_viewer_can_update(%Story{} = story, _, %{context: %{viewer: %User{} = viewer}}) do
     {:ok, Stories.can_user_update_story?(story, viewer)}
+  end
+
+  @doc """
+  Resolves whether the viewer can delete the story.
+  """
+  def resolve_viewer_can_delete(
+    %Story{id: author_id}, _, %{context: %{viewer: %{id: author_id}}}
+  ) do
+    {:ok, true}
   end
 
   @doc """

@@ -41,6 +41,26 @@ defmodule Margaret.Comments do
   def get_comment!(id), do: Repo.get!(Comment, id)
 
   @doc """
+  Gets the comment count of a commentable.
+
+  ## Examples
+
+      iex> get_comment_count(story_id: 123)
+      42
+
+      iex> get_comment_count(comment_id: 234)
+      815
+
+  """
+  def get_comment_count(story_id: story_id) do
+    Repo.one!(from c in Comment, where: c.story_id == ^story_id, select: count(c.id))
+  end
+
+  def get_comment_count(comment_id: comment_id) do
+    Repo.one!(from c in Comment, where: c.parent_id == ^comment_id, select: count(c.id))
+  end
+
+  @doc """
   Creates a comment.
   """
   def create_comment(attrs) do

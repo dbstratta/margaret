@@ -17,8 +17,8 @@ defmodule Margaret.Accounts.User do
   @permitted_attrs [
     :username,
     :email,
-    :is_employee,
     :is_admin,
+    :is_employee,
   ]
 
   @required_attrs [
@@ -30,8 +30,8 @@ defmodule Margaret.Accounts.User do
     field :username, :string
     field :email, :string
 
-    field :is_employee, :boolean
     field :is_admin, :boolean
+    field :is_employee, :boolean
 
     has_many :social_logins, SocialLogin
 

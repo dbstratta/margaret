@@ -15,9 +15,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   @doc """
   Resolves the author of the comment.
   """
-  def resolve_author(%Comment{author_id: author_id}, _, _) do
-    {:ok, Accounts.get_user(author_id)}
-  end
+  def resolve_author(%Comment{author_id: author_id}, _, _), do: {:ok, Accounts.get_user(author_id)}
 
   @doc """
   Resolves the stargazers of the comment.
@@ -39,7 +37,7 @@ defmodule MargaretWeb.Resolvers.Comments do
     connection =
       connection
       |> Map.update!(:edges, transform_edges)
-      |> Map.put(:total_count, Stars.get_star_count(comment_id: comment_id))
+      |> Map.put(:total_count, Stars.get_star_count(%{comment_id: comment_id}))
 
     {:ok, connection}
   end
@@ -47,16 +45,12 @@ defmodule MargaretWeb.Resolvers.Comments do
   @doc """
   Resolves the story of the comment.
   """
-  def resolve_story(%Comment{story_id: story_id}, _, _) do
-    {:ok, Stories.get_story(story_id)}
-  end
+  def resolve_story(%Comment{story_id: story_id}, _, _), do: {:ok, Stories.get_story(story_id)}
 
   @doc """
   Resolves the parent comment of the comment.
   """
-  def resolve_parent(%Comment{parent_id: nil}, _, _) do
-    {:ok, nil}
-  end
+  def resolve_parent(%Comment{parent_id: nil}, _, _), do: {:ok, nil}
 
   def resolve_parent(%Comment{parent_id: parent_id}, _, _) do
     {:ok, Comments.get_comment(parent_id)}
@@ -65,18 +59,22 @@ defmodule MargaretWeb.Resolvers.Comments do
   @doc """
   Resolves the comments of the comment.
   """
-  def resolve_comments(%Comment{id: parent_id}, args, _) do
+  def resolve_comments(%Comment{id: comment_id}, args, _) do
     query = from c in Comment,
-      where: c.parent_id == ^parent_id
+      where: c.parent_id == ^comment_id
 
-    Relay.Connection.from_query(query, &Repo.all/1, args)
+    {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
+
+    connection =
+      Map.put(connection, :total_count, Comments.get_comment_count(comment_id: comment_id))
+
+    {:ok, connection}
   end
 
   @doc """
   Resolves whether the viewer can star the comment or not.
   """
   def resolve_viewer_can_star(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
-  def resolve_viewer_can_star(_, _, _), do: {:ok, false}
 
   @doc """
   Resolves whether the viewer has starred this comment.
@@ -84,24 +82,19 @@ defmodule MargaretWeb.Resolvers.Comments do
   def resolve_viewer_has_starred(
     %Comment{id: comment_id}, _, %{context: %{viewer: %{id: viewer_id}}}
   ) do
-    {:ok, !!Stars.get_star(user_id: viewer_id, comment_id: comment_id)}
+    {:ok, Stars.has_starred(%{user_id: viewer_id, comment_id: comment_id})}
   end
-
-  def resolve_viewer_has_starred(_, _, _), do: {:ok, false}
 
   @doc """
   Resolves whether the viewer can comment the comment.
   """
   def resolve_viewer_can_comment(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
-  def resolve_viewer_can_comment(_, _, _), do: {:ok, false}
 
   def resolve_viewer_can_update(
     %Comment{author_id: author_id}, _, %{context: %{viewer: %{id: author_id}}}
   ) do
     {:ok, true}
   end
-
-  def resolve_viewer_can_update(_, _, _), do: {:ok, false}
 
   @doc """
   Resolves the update of a comment.

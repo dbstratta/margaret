@@ -4,15 +4,20 @@ defmodule MargaretWeb.Middleware.Authenticated do
   the user is authenticated.
 
   If no option is given, it'll resolve an error.
-  If `resolve_nil` is true, it'll resolve `{:ok, nil}`
+  If `resolve: value` is given, it'll resolve `{:ok, value}`.
 
   ## Examples
 
-    middleware MargaretWeb.Middleware.Authenticated
-    resolve &resolver/2
+  ```elixir
+  middleware MargaretWeb.Middleware.Authenticated
+  resolve &resolver/2
 
-    middleware MargaretWeb.Middleware.Authenticated, resolve_nil: true
-    resolve &resolver/2
+  middleware MargaretWeb.Middleware.Authenticated, resolve: nil
+  resolve &resolver/2
+
+  middleware MargaretWeb.Middleware.Authenticated, resolve: false
+  resolve &resolver/2
+  ```
   
   """
 
@@ -26,10 +31,6 @@ defmodule MargaretWeb.Middleware.Authenticated do
   @doc false
   @impl true
   def call(%Absinthe.Resolution{context: %{viewer: %User{}}} = resolution, _), do: resolution
-
-  def call(resolution, resolve_nil: true), do: put_result(resolution, {:ok, nil})
-
-  def call(resolution, _) do
-    put_result(resolution, Helpers.GraphQLErrors.unauthorized())
-  end
+  def call(resolution, resolve: value), do: put_result(resolution, {:ok, value})
+  def call(resolution, _), do: put_result(resolution, Helpers.GraphQLErrors.unauthorized())
 end

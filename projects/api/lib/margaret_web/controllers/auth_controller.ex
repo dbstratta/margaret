@@ -47,11 +47,11 @@ defmodule MargaretWeb.AuthController do
     token
   end
 
-  @spec get_or_create_user(String.t) :: {:ok, User.t}
+  @spec get_or_create_user(String.t) :: User.t
   defp get_or_create_user(email) do
     {:ok, user} =
       case Accounts.get_user_by_email(email) do
-        nil -> Accounts.create_user(%{username: UUID.uuid4(), email: email})
+        nil -> Accounts.insert_user(%{username: UUID.uuid4(), email: email})
         user -> {:ok, user}
       end
 

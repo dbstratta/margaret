@@ -71,7 +71,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
     connection =
       connection
       |> Map.update!(:edges, transform_edges)
-      |> Map.put(:total_count, Accounts.get_follower_count(user_id: user_id))
+      |> Map.put(:total_count, Accounts.get_follower_count(%{user_id: user_id}))
 
     {:ok, connection}
   end
@@ -135,7 +135,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
     connection =
       connection
       |> Map.update!(:edges, transform_edges)
-      |> Map.put(:total_count, Stars.get_starred_count(user_id: user_id))
+      |> Map.put(:total_count, Stars.get_starred_count(user_id))
 
     {:ok, connection}
   end
@@ -248,8 +248,6 @@ defmodule MargaretWeb.Resolvers.Accounts do
     {:ok, true}
   end
 
-  def resolve_is_viewer(_, _, _), do: {:ok, false}
-
   def resolve_viewer_can_follow(
     %User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}
   ) when user_id === viewer_id do
@@ -262,14 +260,10 @@ defmodule MargaretWeb.Resolvers.Accounts do
     {:ok, true}
   end
 
-  def resolve_viewer_can_follow(_, _, _), do: {:ok, false}
-
   def resolve_viewer_has_followed(%User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}) do
     case Accounts.get_follow(follower_id: viewer_id, user_id: user_id) do
       %Follow{} -> {:ok, true}
       _ -> {:ok, false}
     end
   end
-
-  def resolve_viewer_has_followed(_, _, _), do: {:ok, false}
 end

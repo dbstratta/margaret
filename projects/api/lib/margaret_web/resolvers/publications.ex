@@ -85,7 +85,7 @@ defmodule MargaretWeb.Resolvers.Publications do
     connection =
       connection
       |> Map.update!(:edges, transform_edges)
-      |> Map.put(:total_count, Accounts.get_follower_count(publication_id: publication_id))
+      |> Map.put(:total_count, Accounts.get_follower_count(%{publication_id: publication_id}))
 
     {:ok, connection}
   end
@@ -100,8 +100,6 @@ defmodule MargaretWeb.Resolvers.Publications do
     |> Publications.can_see_invitations?(viewer_id)
     |> do_resolve_membership_invitations(publication_id, args)
   end
-
-  def resolve_membership_invitations(_, _, _), do: {:ok, nil}
 
   defp do_resolve_membership_invitations(true, publication_id, args) do
     query = from pi in PublicationInvitation,
@@ -119,8 +117,6 @@ defmodule MargaretWeb.Resolvers.Publications do
     {:ok, Publications.is_publication_member?(publication_id, viewer.id)}
   end
 
-  def resolve_viewer_is_a_member(_, _, _), do: {:ok, false}
-
   @doc """
   Resolves whether the user can administer the publication.
   """
@@ -128,13 +124,10 @@ defmodule MargaretWeb.Resolvers.Publications do
     {:ok, Publications.is_publication_admin?(publication_id, viewer.id)}
   end
 
-  def resolve_viewer_can_administer(_, _, _), do: {:ok, false}
-
   @doc """
   Resolves whether the user can follow the publication.
   """
   def resolve_viewer_can_follow(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
-  def resolve_viewer_can_follow(_, _, _), do: {:ok, false}
 
   @doc """
   Resolves whether the user has followd the publication.
@@ -144,8 +137,6 @@ defmodule MargaretWeb.Resolvers.Publications do
   ) do
     {:ok, Accounts.get_follow(follower_id: viewer_id, publication_id: publication_id)}
   end
-
-  def resolve_viewer_has_followed(_, _, _), do: {:ok, false}
 
   @doc """
   Resolves the creation of a publication.
