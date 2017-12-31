@@ -7,7 +7,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   alias Absinthe.Relay
 
   alias MargaretWeb.Helpers
-  alias Margaret.{Repo, Accounts, Stories, Stars, Publications, Comments}
+  alias Margaret.{Repo, Accounts, Stories, Stars, Bookmarks, Publications, Comments}
   alias Accounts.User
   alias Stories.Story
   alias Stars.Star
@@ -94,7 +94,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   end
 
   @doc """
-  Resolves whether the viewer can star the story or not.
+  Resolves whether the viewer can star the story.
   """
   def resolve_viewer_can_star(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
 
@@ -106,6 +106,11 @@ defmodule MargaretWeb.Resolvers.Stories do
   ) do
     {:ok, Stars.has_starred(%{user_id: viewer_id, story_id: story_id})}
   end
+
+  @doc """
+  Resolves whether the viewer can bookmark the story.
+  """
+  def resolve_viewer_can_bookmark(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
 
   def resolve_viewer_has_bookmarked(
     %Story{id: story_id}, _, %{context: %{viewer: %{id: viewer_id}}}
@@ -189,7 +194,7 @@ defmodule MargaretWeb.Resolvers.Stories do
     end
   end
 
-  defp do_resolve_update_story(false, _), do: Helpers.GraphQLErrors.unauthorized()
+  defp do_resolve_update_story(false, _, _), do: Helpers.GraphQLErrors.unauthorized()
 
   @doc """
   Resolves a story deletion.

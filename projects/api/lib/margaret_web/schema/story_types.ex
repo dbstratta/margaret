@@ -81,11 +81,6 @@ defmodule MargaretWeb.Schema.StoryTypes do
       resolve &Resolvers.Stories.resolve_stargazers/3
     end
 
-    @desc "The star count of the story."
-    field :star_count, non_null(:integer) do
-      resolve &Resolvers.Stories.resolve_star_count/3
-    end
-
     @desc "The comments of the story."
     connection field :comments, node_type: :comment do
       resolve &Resolvers.Stories.resolve_comments/3

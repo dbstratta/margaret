@@ -7,7 +7,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   alias Absinthe.Relay
 
   alias MargaretWeb.Helpers
-  alias Margaret.{Repo, Accounts, Stories, Stars, Comments}
+  alias Margaret.{Repo, Accounts, Stories, Stars, Bookmarks, Comments}
   alias Accounts.User
   alias Comments.Comment
   alias Stars.Star
@@ -72,7 +72,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   end
 
   @doc """
-  Resolves whether the viewer can star the comment or not.
+  Resolves whether the viewer can star the comment.
   """
   def resolve_viewer_can_star(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
 
@@ -86,11 +86,31 @@ defmodule MargaretWeb.Resolvers.Comments do
   end
 
   @doc """
+  Resolves whether the viewer can bookmark the comment.
+  """
+  def resolve_viewer_can_bookmark(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+
+  @doc """
+  Resolves whether the viewer has bookmarked this comment.
+  """
+  def resolve_viewer_has_bookmarked(
+    %Comment{id: comment_id}, _, %{context: %{viewer: %{id: viewer_id}}}
+  ) do
+    {:ok, Bookmarks.has_bookmarked(%{user_id: viewer_id, comment_id: comment_id})}
+  end
+
+  @doc """
   Resolves whether the viewer can comment the comment.
   """
   def resolve_viewer_can_comment(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
 
   def resolve_viewer_can_update(
+    %Comment{author_id: author_id}, _, %{context: %{viewer: %{id: author_id}}}
+  ) do
+    {:ok, true}
+  end
+
+  def resolve_viewer_can_delete(
     %Comment{author_id: author_id}, _, %{context: %{viewer: %{id: author_id}}}
   ) do
     {:ok, true}
