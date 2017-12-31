@@ -14,11 +14,13 @@ defmodule MargaretWeb.Schema do
     PublicationInvitationTypes,
     NotificationTypes,
     StarrableTypes,
+    BookmarkableTypes,
     FollowableTypes,
     CommentTypes,
     CommentableTypes,
     TagTypes,
     UpdatableTypes,
+    DeletableTypes,
   }
 
   import_types Absinthe.Type.Custom
@@ -30,11 +32,13 @@ defmodule MargaretWeb.Schema do
   import_types PublicationInvitationTypes
   import_types NotificationTypes
   import_types StarrableTypes
+  import_types BookmarkableTypes
   import_types FollowableTypes
   import_types CommentTypes
   import_types CommentableTypes
   import_types TagTypes
   import_types UpdatableTypes
+  import_types DeletableTypes
 
   @desc "The root query type."
   query do
@@ -49,6 +53,7 @@ defmodule MargaretWeb.Schema do
     import_fields :account_mutations
     import_fields :story_mutations
     import_fields :starrable_mutations
+    import_fields :bookmarkable_mutations
     import_fields :followable_mutations
     import_fields :publication_mutations
     import_fields :publication_invitation_mutations

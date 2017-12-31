@@ -8,15 +8,56 @@ defmodule MargaretWeb.Schema.PublicationTypes do
 
   alias MargaretWeb.Resolvers
 
-  connection node_type: :publication
+  @desc "The role of a user on a publication."
+  enum :publication_member_role do
+    value :owner
+    value :admin
+    value :editor
+    value :writer
+  end
 
-  connection node_type: :publication_member do
+  @desc """
+  The connection type for Publication.
+  """
+  connection node_type: :publication do
+    @desc "The total count of publications."
+    field :total_count, non_null(:integer)
+
+    @desc "An edge in a connection."
+    edge do end
+  end
+
+  @desc """
+  The connection type for PublicationMember.
+  """
+  connection :publication_member, node_type: :user do
+    @desc "The total count of members."
+    field :total_count, non_null(:integer)
+
+    @desc "An edge in a connection."
     edge do
-      field :node, non_null(:user)
+      @desc "The datetime since the user is a member of the publication."
+      field :member_since, non_null(:naive_datetime)
 
-      field :role, non_null(:string) do
-        resolve &Resolvers.Publications.resolve_member_role/3
-      end
+      @desc "The role of the user in the publication."
+      field :role, non_null(:publication_member_role)
+    end
+  end
+
+  @desc """
+  The connection type for UserPublication.
+  """
+  connection :user_publication, node_type: :publication do
+    @desc "The total count of publications."
+    field :total_count, non_null(:integer)
+
+    @desc "An edge in a connection."
+    edge do
+      @desc "The datetime since the user is a member of the publication."
+      field :member_since, non_null(:naive_datetime)
+
+      @desc "The role of the user in the publication."
+      field :role, non_null(:publication_member_role)
     end
   end
 
@@ -36,7 +77,7 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     end
 
     @desc "The members of the publication."
-    connection field :members, node_type: :publication_member do
+    connection field :members, node_type: :user, connection: :publication_member do
       resolve &Resolvers.Publications.resolve_members/3
     end
 
@@ -48,7 +89,7 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     @desc """
     The follower connection of the publication.
     """
-    connection field :followers, node_type: :user do
+    connection field :followers, node_type: :user, connection: :follower do
       resolve &Resolvers.Publications.resolve_followers/3
     end
 
@@ -122,6 +163,22 @@ defmodule MargaretWeb.Schema.PublicationTypes do
       middleware Absinthe.Relay.Node.ParseIDs, member_id: :user
       middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
       resolve &Resolvers.Publications.resolve_kick_member/2
+    end
+
+    @desc """
+    Leaves a publication.
+    """
+    payload field :leave_publication do
+      input do
+        field :publication_id, non_null(:id)
+      end
+
+      output do
+        field :publication, non_null(:publication)
+      end
+
+      middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
+      resolve &Resolvers.Publications.resolve_leave_publication/2
     end
 
     @desc """

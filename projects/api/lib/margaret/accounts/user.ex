@@ -5,16 +5,20 @@ defmodule Margaret.Accounts.User do
   import Ecto.Changeset
 
   alias __MODULE__
-  alias Margaret.{Accounts, Stories, Publications}
+  alias Margaret.{Accounts, Stories, Publications, Stars, Bookmarks}
   alias Accounts.{SocialLogin, Follow}
   alias Stories.Story
   alias Publications.{Publication, PublicationMembership}
+  alias Stars.Star
+  alias Bookmarks.Bookmark
 
   @type t :: %User{}
 
   @permitted_attrs [
     :username,
     :email,
+    :is_employee,
+    :is_admin,
   ]
 
   @required_attrs [
@@ -25,9 +29,15 @@ defmodule Margaret.Accounts.User do
   schema "users" do
     field :username, :string
     field :email, :string
+
+    field :is_employee, :boolean
+    field :is_admin, :boolean
+
     has_many :social_logins, SocialLogin
 
     has_many :stories, Story, foreign_key: :author_id
+    has_many :stars, Star
+    has_many :bookmarks, Bookmark
 
     many_to_many :followers, User, join_through: Follow, join_keys: [user_id: :id, follower_id: :id] 
     many_to_many :followees, User, join_through: Follow, join_keys: [follower_id: :id, user_id: :id]

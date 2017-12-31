@@ -8,21 +8,30 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
 
   import MargaretWeb.Resolvers.PublicationInvitations
 
-  @desc "The possible publication invitation roles."
+  @desc "The role of a invitation."
   enum :publication_invitation_role do
     value :admin
     value :writer
     value :editor
   end
 
-  @desc "The possible publication invitation status."
+  @desc "The status of a invitation."
   enum :publication_invitation_status do
     value :accepted
     value :pending
     value :rejected
   end
 
-  connection node_type: :publication_invitation
+  @desc """
+  The connection type for PublicationInvitation.
+  """
+  connection node_type: :publication_invitation do
+    @desc "The total count of publication invitations."
+    field :total_count, non_null(:integer)
+
+    @desc "An edge in a connection."
+    edge do end
+  end
 
   @desc """
   A publication membership invitation represents an
@@ -30,21 +39,41 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
   not from the publication.
   """
   node object :publication_invitation do
+    @desc """
+    The publication of the invitation.
+    """
     field :publication, non_null(:publication) do
       resolve &resolve_publication/3
     end
 
+    @desc """
+    The invitee of the invitation.
+    """
     field :invitee, non_null(:user) do
       resolve &resolve_invitee/3
     end
 
+    @desc """
+    The inviter of the inviation.
+    """
     field :inviter, non_null(:user) do
       resolve &resolve_inviter/3
     end
 
+    @desc """
+    The role of the user on the publication should they accept the invitation.
+    """
     field :role, non_null(:publication_invitation_role)
 
+    @desc """
+    The status of the invitation.
+    """
     field :status, non_null(:publication_invitation_status)
+
+    @desc """
+    Identifies the date and time when the inviation was sent.
+    """
+    field :inserted_at, non_null(:naive_datetime)
   end
 
   object :publication_invitation_mutations do
@@ -72,9 +101,11 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
     end
 
     @desc """
+    Accepts the invitation.
     """
     payload field :accept_publication_invitation do
       input do
+        @desc "The id of the invitation."
         field :invitation_id, non_null(:id)
       end
 
@@ -87,9 +118,11 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
     end
 
     @desc """
+    Rejects the invitation.
     """
     payload field :reject_publication_invitation do
       input do
+        @desc "The id of the invitation."
         field :invitation_id, non_null(:id)
       end
 

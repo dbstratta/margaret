@@ -10,14 +10,13 @@ defmodule MargaretWeb.Resolvers.Stories do
   alias Margaret.{Repo, Accounts, Stories, Stars, Publications, Comments}
   alias Accounts.User
   alias Stories.Story
+  alias Stars.Star
   alias Comments.Comment
 
   @doc """
   Resolves a story by its slug.
   """
-  def resolve_story(%{slug: slug}, _) do
-    {:ok, Stories.get_story_by_slug(slug)}
-  end
+  def resolve_story(%{slug: slug}, _), do: {:ok, Stories.get_story_by_slug(slug)}
 
   @doc """
   Resolves the slug of the story.
@@ -58,17 +57,28 @@ defmodule MargaretWeb.Resolvers.Stories do
   end
 
   @doc """
-  Resolves the star count of the story.
+  Resolves the stargazers of the story.
   """
-  def resolve_star_count(%Story{id: story_id}, _, _) do
-    {:ok, Stars.get_star_count(%{story_id: story_id})}
-  end
-
   def resolve_stargazers(%Story{id: story_id}, args, _) do
     query = from u in User,
-      join: s in Star, on: s.user_id == u.id and s.story_id == ^story_id
+      join: s in Star, on: s.user_id == u.id, 
+      where: s.story_id == ^story_id,
+      select: {u, s.inserted_at}
 
-    Relay.Connection.from_query(query, &Repo.all/1, args)
+    {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
+
+    transform_edges = &Enum.map &1, fn %{node: {user, starred_at}} = edge ->
+      edge
+      |> Map.put(:starred_at, starred_at)
+      |> Map.update!(:node, fn _ -> user end)
+    end
+
+    connection =
+      connection
+      |> Map.update!(:edges, transform_edges)
+      |> Map.put(:total_count, Stars.get_star_count(story_id: story_id))
+
+    {:ok, connection}
   end
 
   def resolve_comments(%Story{id: story_id}, args, _) do

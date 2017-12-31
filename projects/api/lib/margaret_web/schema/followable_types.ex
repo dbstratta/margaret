@@ -11,8 +11,8 @@ defmodule MargaretWeb.Schema.FollowableTypes do
   interface :followable do
     field :id, non_null(:id)
 
-    @desc "The stargazers of the starrable."
-    field :followers, :user_connection
+    @desc "The followers of the followable."
+    field :followers, :follower_connection
 
     @desc "Returns a boolean indicating whether the viewing user can follow this followable."
     field :viewer_can_follow, non_null(:boolean)

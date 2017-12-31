@@ -3,11 +3,12 @@ defmodule MargaretWeb.Resolvers.Nodes do
   The Node GraphQL resolvers.
   """
 
-  alias Margaret.{Accounts, Stories, Publications, Comments}
+  alias Margaret.{Accounts, Stories, Publications, Comments, Tags}
   alias Accounts.User
   alias Stories.Story
   alias Publications.{Publication, PublicationInvitation}
   alias Comments.Comment
+  alias Tags.Tag
 
   @doc """
   Resolves the type of the resolved object.
@@ -17,6 +18,7 @@ defmodule MargaretWeb.Resolvers.Nodes do
   def resolve_type(%Publication{}, _), do: :publication
   def resolve_type(%PublicationInvitation{}, _), do: :publication_invitation
   def resolve_type(%Comment{}, _), do: :comment
+  def resolve_type(%Tag{}, _), do: :tag
   def resolve_type(_, _), do: nil
 
   @doc """
@@ -44,5 +46,13 @@ defmodule MargaretWeb.Resolvers.Nodes do
 
   def resolve_node(%{type: :publication_invitation, id: id}, _) do
     {:ok, Publications.get_publication_invitation(id)}
+  end 
+
+  def resolve_node(%{type: :comment, id: id}, _) do
+    {:ok, Comments.get_comment(id)}
+  end 
+
+  def resolve_node(%{type: :tag, id: id}, _) do
+    {:ok, Tags.get_tag(id)}
   end 
 end

@@ -8,7 +8,43 @@ defmodule MargaretWeb.Schema.AccountTypes do
 
   alias MargaretWeb.Resolvers
 
-  connection node_type: :user
+  @desc """
+  The connection type for User.
+  """
+  connection node_type: :user do
+    @desc "The total count of users."
+    field :total_count, non_null(:integer)
+
+    # We need to call the `edge` macro in custom connection types.
+    @desc "An edge in a connection."
+    edge do end
+  end
+
+  @desc """
+  The connection type for Followee.
+  """
+  connection :followee, node_type: :followable do
+    @desc "The total count of followees."
+    field :total_count, non_null(:integer)
+
+    @desc "An edge in a connection."
+    edge do
+      field :followed_at, non_null(:naive_datetime)
+    end
+  end
+
+  @desc """
+  The connection type for Follower.
+  """
+  connection :follower, node_type: :user do
+    @desc "The total count of followers."
+    field :total_count, non_null(:integer)
+
+    @desc "An edge in a connection."
+    edge do
+      field :followed_at, non_null(:naive_datetime)
+    end
+  end
 
   @desc """
   A user is an individual's account on Margaret that can make new content.
@@ -37,27 +73,49 @@ defmodule MargaretWeb.Schema.AccountTypes do
     end
 
     @desc """
-    The follower connection of the user.
+    The follower of the user.
     """
-    connection field :followers, node_type: :user do
+    connection field :followers, node_type: :user, connection: :follower do
       resolve &Resolvers.Accounts.resolve_followers/3
     end
 
-    connection field :followees, node_type: :user do
+    @desc """
+    The followees of the user.
+    """
+    connection field :followees, node_type: :followable, connection: :followee do
       resolve &Resolvers.Accounts.resolve_followees/3
     end
 
-    connection field :starred_stories, node_type: :story do
-      resolve &Resolvers.Accounts.resolve_starred_stories/3
+    @desc """
+    The starrables that the user starred.
+    """
+    connection field :starred, node_type: :starrable, connection: :starred do
+      resolve &Resolvers.Accounts.resolve_starred/3
     end
 
+    @desc """
+    The bookmarkables that the user bookmarked.
+
+    Bookmarks are only visible to the user who did them.
+    """
+    connection field :bookmarked, node_type: :bookmarkable, connection: :bookmarked do
+      resolve &Resolvers.Accounts.resolve_bookmarked/3
+    end
+
+    @desc """
+    Find a publication the user is member of.
+    """
     field :publication, :publication do
+      @desc "The name of the publication"
       arg :name, non_null(:string)
 
       resolve &Resolvers.Accounts.resolve_publication/3
     end
 
-    connection field :publications, node_type: :publication do
+    @desc """
+    The publications the user is member of.
+    """
+    connection field :publications, node_type: :publication, connection: :user_publication do
       resolve &Resolvers.Accounts.resolve_publications/3
     end
 
@@ -68,7 +126,20 @@ defmodule MargaretWeb.Schema.AccountTypes do
       resolve &Resolvers.Accounts.resolve_notifications/3
     end
 
-    field :is_viewer, :boolean do
+    @desc """
+    Whether or not this user is a Margaret employee.
+    """
+    field :is_employee, non_null(:boolean)
+
+    @desc """
+    Whether or not this user is a site administrator.
+    """
+    field :is_admin, non_null(:boolean)
+
+    @desc """
+    Whether or not this user is the viewing user.
+    """
+    field :is_viewer, non_null(:boolean) do
       resolve &Resolvers.Accounts.resolve_is_viewer/3
     end
 
@@ -138,14 +209,15 @@ defmodule MargaretWeb.Schema.AccountTypes do
     """
     payload field :update_user do
       input do
-        field :username, :string
-        field :email, :string
+        @desc "The id of the user."
+        field :user_id, non_null(:id)
       end
 
       output do
         field :user, non_null(:user)
       end
 
+      middleware Absinthe.Relay.Node.ParseIDs, user_id: :user
       resolve &Resolvers.Accounts.resolve_update_user/2
     end
   end

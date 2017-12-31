@@ -8,19 +8,37 @@ defmodule MargaretWeb.Schema.StoryTypes do
 
   alias MargaretWeb.Resolvers
 
+  @desc """
+  The publish status of a story.
+  """
   enum :story_publish_status do
     value :public
     value :draft
     value :unlisted
   end
 
+  @desc """
+  The licence of a story.
+  """
   enum :story_license do
     value :all_rights_reserved
     value :public_domain
   end
 
-  connection node_type: :story
+  @desc """
+  The connection type for Story.
+  """
+  connection node_type: :story do
+    @desc "The total count of stories."
+    field :total_count, non_null(:integer)
 
+    @desc "An edge in a connection."
+    edge do end
+  end
+
+  @desc """
+  A story is a post.
+  """
   node object :story do
     @desc "The title of the story."
     field :title, non_null(:string)
@@ -59,8 +77,8 @@ defmodule MargaretWeb.Schema.StoryTypes do
     field :updated_at, non_null(:naive_datetime)
 
     @desc "The stargazers of the story."
-    connection field :stargazers, node_type: :user do
-      resolve &Resolvers.Starrable.resolve_stargazers/3
+    connection field :stargazers, node_type: :user, connection: :stargazer do
+      resolve &Resolvers.Stories.resolve_stargazers/3
     end
 
     @desc "The star count of the story."
@@ -88,6 +106,14 @@ defmodule MargaretWeb.Schema.StoryTypes do
       resolve &Resolvers.Stories.resolve_viewer_has_starred/3
     end
 
+    field :viewer_can_bookmark, non_null(:boolean) do
+      resolve &Resolvers.Stories.resolve_viewer_can_bookmark/3
+    end
+
+    field :viewer_has_bookmarked, non_null(:boolean) do
+      resolve &Resolvers.Stories.resolve_viewer_has_bookmarked/3
+    end
+
     @desc "Check if the current viewer can comment this story."
     field :viewer_can_comment, non_null(:boolean) do
       resolve &Resolvers.Stories.resolve_viewer_can_comment/3
@@ -98,7 +124,12 @@ defmodule MargaretWeb.Schema.StoryTypes do
       resolve &Resolvers.Stories.resolve_viewer_can_update/3
     end
 
-    interfaces [:starrable, :commentable, :updatable]
+    @desc "Check if the current viewer can delete this story."
+    field :viewer_can_delete, non_null(:boolean) do
+      resolve &Resolvers.Stories.resolve_viewer_can_delete/3
+    end
+
+    interfaces [:starrable, :bookmarkable, :commentable, :updatable, :deletable]
   end
 
   object :story_queries do

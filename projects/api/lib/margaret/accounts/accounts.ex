@@ -5,8 +5,9 @@ defmodule Margaret.Accounts do
 
   import Ecto.Query
 
-  alias Margaret.Repo
-  alias Margaret.Accounts.{User, SocialLogin, Follow}
+  alias Margaret.{Repo, Accounts, Publications}
+  alias Accounts.{User, SocialLogin, Follow}
+  alias Publications.PublicationMembership
 
   @doc """
   Gets a single user.
@@ -20,7 +21,7 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user(String.t) :: User.t | nil
+  @spec get_user(String.t | non_neg_integer) :: User.t | nil
   def get_user(id), do: Repo.get(User, id)
 
   @doc """
@@ -37,7 +38,7 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user!(String.t) :: User.t
+  @spec get_user!(String.t | non_neg_integer) :: User.t
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
@@ -127,6 +128,19 @@ defmodule Margaret.Accounts do
   end
 
   @doc """
+  Gets the user count.
+
+  ## Examples
+
+    iex> get_user_count()
+    42
+
+  """
+  @spec get_user_count :: non_neg_integer
+  def get_user_count, do: Repo.one!(from u in User, select: count(u.id))
+
+
+  @doc """
   Creates a user.
 
   ## Examples
@@ -183,6 +197,23 @@ defmodule Margaret.Accounts do
   end
 
   @doc """
+  Gets the publication count of the user.
+
+  ## Examples
+
+    iex> get_publication_count(123)
+    42
+
+    iex> get_publication_count(234)
+    0
+
+  """
+  @spec get_publication_count(String.t | non_neg_integer) :: non_neg_integer
+  def get_publication_count(user_id) do
+    Repo.all(from pm in PublicationMembership, where: pm.user_id == ^user_id, select: count(pm.id))
+  end
+
+  @doc """
   Gets a follow.
 
   ## Examples
@@ -213,17 +244,59 @@ defmodule Margaret.Accounts do
   end
 
   @doc """
+  Gets the followee count of a user.
+
+  ## Examples
+
+    iex> get_followee_count(123)
+    42
+
+  """
+  def get_followee_count(user_id) do
+    Repo.one!(from f in Follow, where: f.follower_id == ^user_id, select: count(f.id))
+  end
+
+  @doc """
+  Gets the follower count of a followable.
+
+  ## Examples
+
+    iex> get_follower_count(123)
+    42
+
+  """
+  def get_follower_count(user_id: user_id) do
+    Repo.one!(from f in Follow, where: f.user_id == ^user_id, select: count(f.id))
+  end
+
+  def get_follower_count(publication_id: publication_id) do
+    Repo.one!(from f in Follow, where: f.publication_id == ^publication_id, select: count(f.id))
+  end
+
+  @doc """
   Inserts a follow.
+
+  ## Examples
+
+    iex> insert_follow(attrs)
+    {:ok, %Follow{}}
+
+    iex> insert_follow(attrs)
+    {:error, %Ecto.Changeset{}}
+
+    iex> insert_follow(attrs)
+    {:error, reason}
+
   """
   def insert_follow(%{user_id: user_id} = attrs) when is_binary(user_id) do
     attrs
-    |> Map.update(:user_id, nil, &String.to_integer(&1))
+    |> Map.update!(:user_id, &String.to_integer(&1))
     |> insert_follow()
   end
 
   def insert_follow(%{publication_id: publication_id} = attrs) when is_binary(publication_id) do
     attrs
-    |> Map.update(:publication_id, nil, &String.to_integer(&1))
+    |> Map.update!(:publication_id, &String.to_integer(&1))
     |> insert_follow()
   end
 
@@ -239,6 +312,18 @@ defmodule Margaret.Accounts do
 
   @doc """
   Deletes a follow.
+
+  ## Examples
+
+    iex> delete_follow(id)
+    {:ok, %Follow{}}
+
+    iex> delete_follow(follower_id: 123, publication_id: 234)
+    {:ok, %Follow{}}
+
+    iex> delete_follow(follower_id: 123, user_id: 234)
+    {:error, %Ecto.Changeset{}}
+
   """
   def delete_follow(id) when not is_list(id), do: Repo.delete(%Follow{id: id})
 

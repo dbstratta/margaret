@@ -1,4 +1,4 @@
-defmodule Margaret.Stars.Star do
+defmodule Margaret.Bookmarks.Bookmark do
   @moduledoc false
 
   use Ecto.Schema
@@ -10,7 +10,7 @@ defmodule Margaret.Stars.Star do
   alias Stories.Story
   alias Comments.Comment
 
-  @type t :: %Star{}
+  @type t :: %Bookmark{}
 
   @permitted_attrs [
     :user_id,
@@ -22,7 +22,7 @@ defmodule Margaret.Stars.Star do
     :user_id,
   ]
 
-  schema "stars" do
+  schema "bookmarks" do
     belongs_to :user, User
 
     belongs_to :story, Story
@@ -32,15 +32,15 @@ defmodule Margaret.Stars.Star do
   end
 
   @doc false
-  def changeset(%Star{} = star, attrs) do
-    star
+  def changeset(%Bookmark{} = bookmark, attrs) do
+    bookmark
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:story_id)
     |> foreign_key_constraint(:comment_id)
-    |> unique_constraint(:user, name: :stars_user_id_story_id_index)
-    |> unique_constraint(:user, name: :stars_user_id_comment_id_index)
-    |> check_constraint(:user, name: :only_one_not_null_starrable)
+    |> unique_constraint(:user, name: :bookmarks_user_id_story_id_index)
+    |> unique_constraint(:user, name: :bookmarks_user_id_comment_id_index)
+    |> check_constraint(:user, name: :only_one_not_null_bookmarkable)
   end
 end

@@ -13,13 +13,9 @@ defmodule MargaretWeb.Resolvers.Starrable do
   alias Comments.Comment
   alias MargaretWeb.Helpers
 
-  def resolve_stargazers(%Comment{id: comment_id} = story, args, _) do
-    query = from u in User,
-      join: s in Star, on: s.user_id == u.id and s.comment_id == ^comment_id
-
-    Relay.Connection.from_query(query, &Repo.all/1, args)
-  end
-
+  @doc """
+  Resolves the star of a starrable.
+  """
   def resolve_star(
     %{starrable_id: %{type: :story, id: story_id}}, %{context: %{viewer: %{id: viewer_id}}}
   ) do
@@ -50,6 +46,9 @@ defmodule MargaretWeb.Resolvers.Starrable do
 
   defp do_resolve_star(nil, _), do: {:error, "Starrable doesn't exist."}
 
+  @doc """
+  Resolves the unstar of a starrable.
+  """
   def resolve_unstar(
     %{starrable_id: %{type: :story, id: story_id}}, %{context: %{viewer: %{id: viewer_id}}}
   ) do

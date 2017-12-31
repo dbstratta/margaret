@@ -6,7 +6,7 @@ defmodule Margaret.Stars do
   import Ecto.Query
   alias Margaret.Repo
 
-  alias Margaret.Stars.{Star}
+  alias Margaret.Stars.Star
 
   def get_star(user_id: user_id, story_id: story_id) do
     Repo.get_by(Star, user_id: user_id, story_id: story_id)
@@ -38,11 +38,15 @@ defmodule Margaret.Stars do
     end
   end
 
-  def get_star_count(%{story_id: story_id}) do
+  def get_star_count(story_id: story_id) do
     Repo.one!(from s in Star, where: s.story_id == ^story_id, select: count(s.id))
   end
 
-  def get_star_count(%{comment_id: comment_id}) do
+  def get_star_count(comment_id: comment_id) do
     Repo.one!(from s in Star, where: s.comment_id == ^comment_id, select: count(s.id))
+  end
+
+  def get_starred_count(user_id) do
+    Repo.one!(from s in Star, where: s.user_id == ^user_id, select: count(s.id))
   end
 end

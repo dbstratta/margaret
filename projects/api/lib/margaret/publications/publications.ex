@@ -6,7 +6,8 @@ defmodule Margaret.Publications do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Publications}
+  alias Margaret.{Repo, Accounts, Stories, Publications}
+  alias Stories.Story
   alias Publications.{Publication, PublicationMembership, PublicationInvitation}
   alias Accounts.User
 
@@ -59,6 +60,28 @@ defmodule Margaret.Publications do
     end
   end
 
+  @doc """
+  Returns the member count of the publication.
+  """
+  def get_member_count(publication_id) do
+    query = from pm in PublicationMembership,
+      where: pm.publication_id == ^publication_id,
+      select: count(pm.id)
+
+    Repo.one!(query)
+  end
+
+  @doc """
+  Returns the story count of the publication.
+  """
+  def get_story_count(publication_id) do
+    query = from s in Story,
+      where: s.publication_id == ^publication_id,
+      select: count(s.id)
+
+    Repo.one!(query)
+  end
+
   def check_role(publication_id, user_id, permitted_roles \\ []) do
     get_publication_member_role(publication_id, user_id) in permitted_roles
   end
@@ -106,6 +129,24 @@ defmodule Margaret.Publications do
   @spec is_publication_admin?(any, any) :: boolean
   def is_publication_admin?(publication_id, user_id) do
     check_role(publication_id, user_id, [:owner, :admin])
+  end
+
+  @doc """
+  Returns true if the user is the owner
+  of the publication. False otherwise.
+
+  ## Examples
+
+      iex> is_publication_owner?(123, 123)
+      true
+
+      iex> is_publication_owner?(123, 456)
+      false
+
+  """
+  @spec is_publication_owner?(any, any) :: boolean
+  def is_publication_owner?(publication_id, user_id) do
+    check_role(publication_id, user_id, [:owner])
   end
 
   @doc """
@@ -207,6 +248,19 @@ defmodule Margaret.Publications do
   def get_publication_membership_by_publication_and_member(publication_id, member_id) do
     Repo.get_by(PublicationMembership, publication_id: publication_id, member_id: member_id)
   end
+
+  def delete_publication_membership(id) when is_integer(id) or is_binary(id) do
+    Repo.delete(%PublicationMembership{id: id})
+  end
+
+  def delete_publication_membership(publication_id, member_id) do
+    case get_publication_membership_by_publication_and_member(publication_id, member_id) do
+      %PublicationMembership{id: id} -> delete_publication_membership(id)
+      _ -> {:error, "User is not a member of the publication."}
+    end
+  end
+
+  def delete_publication_membership(publication_id, member_id)
 
   @doc """
   Gets a publication invitation.

@@ -8,13 +8,40 @@ defmodule MargaretWeb.Resolvers.Comments do
 
   alias MargaretWeb.Helpers
   alias Margaret.{Repo, Accounts, Stories, Stars, Comments}
+  alias Accounts.User
   alias Comments.Comment
+  alias Stars.Star
 
   @doc """
   Resolves the author of the comment.
   """
   def resolve_author(%Comment{author_id: author_id}, _, _) do
     {:ok, Accounts.get_user(author_id)}
+  end
+
+  @doc """
+  Resolves the stargazers of the comment.
+  """
+  def resolve_stargazers(%Comment{id: comment_id}, args, _) do
+    query = from u in User,
+      join: s in Star, on: s.user_id == u.id, 
+      where: s.comment_id == ^comment_id,
+      select: {u, s.inserted_at}
+
+    {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
+
+    transform_edges = &Enum.map &1, fn %{node: {user, starred_at}} = edge ->
+      edge
+      |> Map.put(:starred_at, starred_at)
+      |> Map.update!(:node, fn _ -> user end)
+    end
+
+    connection =
+      connection
+      |> Map.update!(:edges, transform_edges)
+      |> Map.put(:total_count, Stars.get_star_count(comment_id: comment_id))
+
+    {:ok, connection}
   end
 
   @doc """
@@ -45,10 +72,6 @@ defmodule MargaretWeb.Resolvers.Comments do
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end
 
-  def resolve_star_count(_, _, _) do
-    {:ok, 3}
-  end
-
   @doc """
   Resolves whether the viewer can star the comment or not.
   """
@@ -73,8 +96,8 @@ defmodule MargaretWeb.Resolvers.Comments do
   def resolve_viewer_can_comment(_, _, _), do: {:ok, false}
 
   def resolve_viewer_can_update(
-    %Comment{author_id: author_id}, _, %{context: %{viewer: %{id: viewer_id}}}
-  ) when author_id === viewer_id do
+    %Comment{author_id: author_id}, _, %{context: %{viewer: %{id: author_id}}}
+  ) do
     {:ok, true}
   end
 
@@ -93,22 +116,14 @@ defmodule MargaretWeb.Resolvers.Comments do
 
   def resolve_update_comment(_, _, _), do: Helpers.GraphQLErrors.unauthorized()
 
-  defp do_resolve_update_comment(
-    %Comment{author_id: author_id} = comment,
-    args,
-    viewer_id
-  ) when author_id === viewer_id do
+  defp do_resolve_update_comment(%Comment{author_id: author_id} = comment, args, author_id) do
     case Comments.update_comment(comment, args) do
       {:ok, comment} -> {:ok, %{comment: comment}}
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
 
-  defp do_resolve_update_comment(
-    %Comment{author_id: author_id}, _, viewer_id
-  ) when author_id !== viewer_id do
-    Helpers.GraphQLErrors.unauthorized()
-  end
+  defp do_resolve_update_comment(%Comment{}, _, _), do: Helpers.GraphQLErrors.unauthorized()
 
   defp do_resolve_update_comment(nil, _, _), do: {:error, "Comment doesn't exist."}
 
