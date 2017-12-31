@@ -31,8 +31,6 @@ defmodule MargaretWeb.Resolvers.Commentable do
     do_resolve_comment(%{body: body, story_id: story_id, author_id: viewer_id})
   end
 
-  def resolve_comment(_, _, _), do: Helpers.GraphQLErrors.unauthorized()
-
   defp do_resolve_comment(attrs) do
     case Comments.create_comment(attrs) do
       {:ok, comment} -> {:ok, %{comment: comment}}

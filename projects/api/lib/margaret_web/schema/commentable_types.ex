@@ -6,7 +6,12 @@ defmodule MargaretWeb.Schema.CommentableTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias MargaretWeb.Resolvers
+  alias MargaretWeb.{Resolvers, Middleware}
+
+  @commentable_implementations [
+    :story,
+    :comment,
+  ]
 
   interface :commentable do
     field :id, non_null(:id)
@@ -32,7 +37,8 @@ defmodule MargaretWeb.Schema.CommentableTypes do
         field :comment, non_null(:comment)
       end
 
-      middleware Absinthe.Relay.Node.ParseIDs, commentable_id: [:story, :comment]
+      middleware Middleware.Authenticated
+      middleware Absinthe.Relay.Node.ParseIDs, commentable_id: @commentable_implementations
       resolve &Resolvers.Commentable.resolve_comment/2
     end
   end

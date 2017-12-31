@@ -6,7 +6,7 @@ defmodule MargaretWeb.Schema.AccountTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias MargaretWeb.Resolvers
+  alias MargaretWeb.{Resolvers, Middleware}
 
   @desc """
   The connection type for User.
@@ -169,6 +169,7 @@ defmodule MargaretWeb.Schema.AccountTypes do
     Get the authenticated user.
     """
     field :viewer, :user do
+      middleware Middleware.Authenticated, resolve_nil: true
       resolve &Resolvers.Accounts.resolve_viewer/2
     end
 
@@ -217,6 +218,7 @@ defmodule MargaretWeb.Schema.AccountTypes do
         field :user, non_null(:user)
       end
 
+      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, user_id: :user
       resolve &Resolvers.Accounts.resolve_update_user/2
     end

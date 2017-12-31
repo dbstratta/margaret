@@ -23,6 +23,10 @@ defmodule MargaretWeb.Schema do
     DeletableTypes,
   }
 
+  @middleware [
+    MargaretWeb.Middleware.HandleChangesetErrors,
+  ]
+
   import_types Absinthe.Type.Custom
 
   import_types NodeTypes
@@ -64,4 +68,6 @@ defmodule MargaretWeb.Schema do
   subscription do
     import_fields :starrable_subscriptions
   end
+
+  def middleware(middleware, _, _), do: middleware ++ @middleware
 end

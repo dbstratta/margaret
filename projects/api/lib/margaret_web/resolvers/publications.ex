@@ -156,11 +156,10 @@ defmodule MargaretWeb.Resolvers.Publications do
     |> Publications.insert_publication()
     |> case do
       {:ok, %{publication: publication}} -> {:ok, %{publication: publication}}
-      {:error, _} -> {:error, "s"}
+      {:error, reason} -> {:error, reason}
+      {:error, _, reason, _} -> {:error, reason}
     end
   end
-
-  def resolve_create_publication(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
   @doc """
   Resolves the update of a publication.
@@ -170,8 +169,6 @@ defmodule MargaretWeb.Resolvers.Publications do
   ) do
     Helpers.GraphQLErrors.not_implemented()
   end
-
-  def resolve_update_publication(_, _), do: Helpers.GraphQLErrors.unauthorized()
   
   @doc """
   Resolves the kick of a publication member.
@@ -197,8 +194,6 @@ defmodule MargaretWeb.Resolvers.Publications do
     |> do_resolve_kick_member(publication_id, member_id)
   end
 
-  def resolve_kick_member(_, _), do: Helpers.GraphQLErrors.unauthorized()
-
   defp do_resolve_kick_member(true, publication_id, member_id) do
     case Publications.kick_publication_member(publication_id, member_id) do
       {:ok, _} -> {:ok, %{publication: Publications.get_publication(publication_id)}}
@@ -223,8 +218,6 @@ defmodule MargaretWeb.Resolvers.Publications do
     |> Publications.is_publication_owner?(viewer_id)
     |> do_resolve_leave_publication(publication_id, viewer_id)
   end
-
-  def resolve_leave_publication(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
   defp do_resolve_leave_publication(true, publication_id, member_id) do
 

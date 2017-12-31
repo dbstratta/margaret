@@ -32,8 +32,6 @@ defmodule MargaretWeb.Resolvers.Starrable do
     |> do_resolve_star(viewer_id)
   end
 
-  def resolve_star(_, _), do: Helpers.GraphQLErrors.unauthorized()
-
   defp do_resolve_star(%Story{id: story_id} = story, viewer_id) do
     Stars.insert_star(%{user_id: viewer_id, story_id: story_id})
     {:ok, %{starrable: story}}
@@ -64,8 +62,6 @@ defmodule MargaretWeb.Resolvers.Starrable do
     |> Comments.get_comment()
     |> do_resolve_unstar(viewer_id)
   end
-
-  def resolve_unstar(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
   defp do_resolve_unstar(%Story{id: story_id} = story, viewer_id) do
     Stars.delete_star(user_id: viewer_id, story_id: story_id)

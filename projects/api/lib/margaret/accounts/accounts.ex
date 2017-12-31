@@ -210,7 +210,11 @@ defmodule Margaret.Accounts do
   """
   @spec get_publication_count(String.t | non_neg_integer) :: non_neg_integer
   def get_publication_count(user_id) do
-    Repo.all(from pm in PublicationMembership, where: pm.user_id == ^user_id, select: count(pm.id))
+    query = from pm in PublicationMembership,
+      where: pm.member_id == ^user_id,
+      select: count(pm.id)
+
+    Repo.all(query)
   end
 
   @doc """

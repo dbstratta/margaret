@@ -114,8 +114,6 @@ defmodule MargaretWeb.Resolvers.Comments do
     |> do_resolve_update_comment(args, viewer_id)
   end
 
-  def resolve_update_comment(_, _, _), do: Helpers.GraphQLErrors.unauthorized()
-
   defp do_resolve_update_comment(%Comment{author_id: author_id} = comment, args, author_id) do
     case Comments.update_comment(comment, args) do
       {:ok, comment} -> {:ok, %{comment: comment}}

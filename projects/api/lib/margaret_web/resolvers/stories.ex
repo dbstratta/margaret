@@ -133,8 +133,6 @@ defmodule MargaretWeb.Resolvers.Stories do
     do_resolve_create_story(true, args, viewer_id)
   end
 
-  def resolve_create_story(_, _), do: Helpers.GraphQLErrors.unauthorized()
-
   defp do_resolve_create_story(true, args, author_id) do
     args
     |> Map.put(:author_id, author_id)
@@ -164,8 +162,6 @@ defmodule MargaretWeb.Resolvers.Stories do
     end
   end
 
-  def resolve_update_story(_, _), do: Helpers.GraphQLErrors.unauthorized()
-
   defp do_resolve_update_story(true, %Story{} = story, attrs) do
     case Stories.update_story(story, attrs) do
       {:ok, %{story: story}} -> {:ok, %{story: story}}
@@ -190,6 +186,4 @@ defmodule MargaretWeb.Resolvers.Stories do
       {:error, _} -> Helpers.GraphQLErrors.something_went_wrong()
     end
   end
-
-  def resolve_delete_story(_, _), do: Helpers.GraphQLErrors.unauthorized()
 end

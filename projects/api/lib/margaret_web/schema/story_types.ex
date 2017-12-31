@@ -6,7 +6,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias MargaretWeb.Resolvers
+  alias MargaretWeb.{Resolvers, Middleware}
 
   @desc """
   The publish status of a story.
@@ -163,6 +163,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :story, non_null(:story)
       end
 
+      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
       resolve &Resolvers.Stories.resolve_create_story/2
     end
@@ -183,6 +184,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :story, non_null(:story)
       end
 
+      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, story_id: :story
       resolve &Resolvers.Stories.resolve_update_story/2
     end
@@ -197,6 +199,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :story, non_null(:story)
       end
 
+      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, story_id: :story
       resolve &Resolvers.Stories.resolve_delete_story/2
     end

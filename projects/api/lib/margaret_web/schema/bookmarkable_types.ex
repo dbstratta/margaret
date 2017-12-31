@@ -6,7 +6,7 @@ defmodule MargaretWeb.Schema.BookmarkableTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias MargaretWeb.Resolvers
+  alias MargaretWeb.{Resolvers, Middleware}
 
   @desc """
   Things that can be bookmarkable.
@@ -63,6 +63,7 @@ defmodule MargaretWeb.Schema.BookmarkableTypes do
         field :bookmarkable, non_null(:bookmarkable)
       end
 
+      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, bookmarkable_id: [:story, :comment]
       resolve &Resolvers.Bookmarkable.resolve_bookmark/2
     end
@@ -78,6 +79,7 @@ defmodule MargaretWeb.Schema.BookmarkableTypes do
         field :bookmarkable, non_null(:bookmarkable)
       end
 
+      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, bookmarkable_id: [:story, :comment]
       resolve &Resolvers.Bookmarkable.resolve_unbookmark/2
     end

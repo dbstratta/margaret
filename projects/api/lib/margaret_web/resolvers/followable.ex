@@ -31,8 +31,6 @@ defmodule MargaretWeb.Resolvers.Followable do
     |> do_resolve_follow(viewer_id)
   end
 
-  def resolve_follow(_, _), do: Helpers.GraphQLErrors.unauthorized()
-
   defp do_resolve_follow(%User{id: user_id} = followee, viewer_id) do
     case Accounts.insert_follow(%{follower_id: viewer_id, user_id: user_id}) do
       {:ok, _} ->
@@ -76,8 +74,6 @@ defmodule MargaretWeb.Resolvers.Followable do
     |> Publications.get_publication()
     |> do_resolve_unfollow(viewer_id)
   end
-
-  def resolve_unfollow(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
   defp do_resolve_unfollow(%User{id: user_id} = followable, viewer_id) do
     Accounts.delete_follow(follower_id: viewer_id, user_id: user_id)

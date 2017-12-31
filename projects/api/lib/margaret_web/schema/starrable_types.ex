@@ -6,7 +6,12 @@ defmodule MargaretWeb.Schema.StarrableTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias MargaretWeb.Resolvers
+  alias MargaretWeb.{Resolvers, Middleware}
+
+  @starrable_implementations [
+    :story,
+    :comment,
+  ]
 
   @desc """
   Things that can be starrable.
@@ -70,9 +75,12 @@ defmodule MargaretWeb.Schema.StarrableTypes do
   end
 
   object :starrable_mutations do
-    @desc "Stars a starrable."
+    @desc """
+    Stars a starrable.
+    """
     payload field :star do
       input do
+        @desc "The id of the starrable."
         field :starrable_id, non_null(:id)
       end
 
@@ -80,13 +88,17 @@ defmodule MargaretWeb.Schema.StarrableTypes do
         field :starrable, non_null(:starrable)
       end
 
-      middleware Absinthe.Relay.Node.ParseIDs, starrable_id: [:story, :comment]
+      middleware Middleware.Authenticated
+      middleware Absinthe.Relay.Node.ParseIDs, starrable_id: @starrable_implementations
       resolve &Resolvers.Starrable.resolve_star/2
     end
 
-    @desc "Unstars a starrable."
+    @desc """
+    Unstars a starrable.
+    """
     payload field :unstar do
       input do
+        @desc "The id of the starrable."
         field :starrable_id, non_null(:id)
       end
 
@@ -94,7 +106,8 @@ defmodule MargaretWeb.Schema.StarrableTypes do
         field :starrable, non_null(:starrable)
       end
 
-      middleware Absinthe.Relay.Node.ParseIDs, starrable_id: [:story, :comment]
+      middleware Middleware.Authenticated
+      middleware Absinthe.Relay.Node.ParseIDs, starrable_id: @starrable_implementations
       resolve &Resolvers.Starrable.resolve_unstar/2
     end
   end

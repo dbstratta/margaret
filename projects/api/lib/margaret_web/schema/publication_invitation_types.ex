@@ -6,7 +6,7 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  import MargaretWeb.Resolvers.PublicationInvitations
+  alias MargaretWeb.{Resolvers, Middleware}
 
   @desc "The role of a invitation."
   enum :publication_invitation_role do
@@ -43,21 +43,21 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
     The publication of the invitation.
     """
     field :publication, non_null(:publication) do
-      resolve &resolve_publication/3
+      resolve &Resolvers.PublicationInvitations.resolve_publication/3
     end
 
     @desc """
     The invitee of the invitation.
     """
     field :invitee, non_null(:user) do
-      resolve &resolve_invitee/3
+      resolve &Resolvers.PublicationInvitations.resolve_invitee/3
     end
 
     @desc """
     The inviter of the inviation.
     """
     field :inviter, non_null(:user) do
-      resolve &resolve_inviter/3
+      resolve &Resolvers.PublicationInvitations.resolve_inviter/3
     end
 
     @desc """
@@ -95,9 +95,10 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
         field :invitation, non_null(:publication_invitation)
       end
 
+      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, invitee_id: :user
       middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
-      resolve &resolve_send_publication_invitation/2
+      resolve &Resolvers.PublicationInvitations.resolve_send_publication_invitation/2
     end
 
     @desc """
@@ -113,8 +114,9 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
         field :invitation, non_null(:publication_invitation)
       end
 
+      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, invitation_id: :publication_invitation
-      resolve &resolve_accept_publication_invitation/2
+      resolve &Resolvers.PublicationInvitations.resolve_accept_publication_invitation/2
     end
 
     @desc """
@@ -130,8 +132,9 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
         field :invitation, non_null(:publication_invitation)
       end
 
+      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, invitation_id: :publication_invitation
-      resolve &resolve_reject_publication_invitation/2
+      resolve &Resolvers.PublicationInvitations.resolve_reject_publication_invitation/2
     end
   end
 end

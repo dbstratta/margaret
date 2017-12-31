@@ -6,7 +6,12 @@ defmodule MargaretWeb.Schema.FollowableTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias MargaretWeb.Resolvers
+  alias MargaretWeb.{Resolvers, Middleware}
+
+  @followable_implementations [
+    :user,
+    :publication,
+  ]
 
   interface :followable do
     field :id, non_null(:id)
@@ -34,7 +39,8 @@ defmodule MargaretWeb.Schema.FollowableTypes do
         field :followable, non_null(:followable)
       end
 
-      middleware Absinthe.Relay.Node.ParseIDs, followable_id: [:user, :publication]
+      middleware Middleware.Authenticated
+      middleware Absinthe.Relay.Node.ParseIDs, followable_id: @followable_implementations
       resolve &Resolvers.Followable.resolve_follow/2
     end
 
@@ -48,7 +54,8 @@ defmodule MargaretWeb.Schema.FollowableTypes do
         field :followable, non_null(:followable)
       end
 
-      middleware Absinthe.Relay.Node.ParseIDs, followable_id: [:user, :publication]
+      middleware Middleware.Authenticated
+      middleware Absinthe.Relay.Node.ParseIDs, followable_id: @followable_implementations
       resolve &Resolvers.Followable.resolve_unfollow/2
     end
   end

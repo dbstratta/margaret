@@ -29,8 +29,6 @@ defmodule MargaretWeb.Resolvers.Bookmarkable do
     |> do_resolve_bookmark(viewer_id)
   end
 
-  def resolve_bookmark(_, _), do: Helpers.GraphQLErrors.unauthorized()
-
   defp do_resolve_bookmark(%Story{id: story_id} = story, viewer_id) do
     Bookmarks.insert_bookmark(%{user_id: viewer_id, story_id: story_id})
     {:ok, %{bookmarkable: story}}
@@ -58,8 +56,6 @@ defmodule MargaretWeb.Resolvers.Bookmarkable do
     |> Comments.get_comment()
     |> do_resolve_unbookmark(viewer_id)
   end
-
-  def resolve_unbookmark(_, _), do: Helpers.GraphQLErrors.unauthorized()
 
   defp do_resolve_unbookmark(%Story{id: story_id} = story, viewer_id) do
     Bookmarks.delete_bookmark(user_id: viewer_id, story_id: story_id)
