@@ -6,6 +6,8 @@ defmodule MargaretWeb.Middleware.HandleChangesetErrors do
   if they are changesets, formats them.
   """
 
+  alias MargaretWeb.Helpers
+
   @behaviour Absinthe.Middleware
 
   @doc false
@@ -16,11 +18,7 @@ defmodule MargaretWeb.Middleware.HandleChangesetErrors do
 
   defp handle_errors(errors), do: Enum.flat_map(errors, &handle_error/1)
 
-  defp handle_error(%Ecto.Changeset{} = changeset) do
-    changeset
-    |> Ecto.Changeset.traverse_errors(fn {err, _opts} -> err end)
-    |> Enum.map(fn {key, value} -> "#{key} #{value}" end)
-  end
+  defp handle_error(%Ecto.Changeset{} = changeset), do: Helpers.format_changeset(changeset)
 
   defp handle_error(error), do: [error]
 end

@@ -191,6 +191,7 @@ defmodule MargaretWeb.Resolvers.Stories do
       {:ok, %{story: story}} -> {:ok, %{story: story}}
       {:ok, story} -> {:ok, %{story: story}}
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+      {:error, _, %Ecto.Changeset{} = changeset, _} -> {:error, changeset}
     end
   end
 

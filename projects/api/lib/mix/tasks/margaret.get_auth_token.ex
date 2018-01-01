@@ -34,7 +34,7 @@ defmodule Mix.Tasks.Margaret.GetAuthToken do
       Keyword.has_key?(opts, :username) -> %{username: Keyword.get(opts, :username)}
     end
     |> get_user()
-    |> get_token
+    |> get_token()
     |> print_token()
   end
 
