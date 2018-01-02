@@ -88,7 +88,6 @@ defmodule MargaretWeb.Schema.StarrableTypes do
         field :starrable, non_null(:starrable)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, starrable_id: @starrable_implementations
       resolve &Resolvers.Starrable.resolve_star/2
     end
@@ -106,7 +105,6 @@ defmodule MargaretWeb.Schema.StarrableTypes do
         field :starrable, non_null(:starrable)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, starrable_id: @starrable_implementations
       resolve &Resolvers.Starrable.resolve_unstar/2
     end

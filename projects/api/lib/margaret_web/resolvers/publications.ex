@@ -32,6 +32,7 @@ defmodule MargaretWeb.Resolvers.Publications do
   def resolve_members(%Publication{id: publication_id}, args, _) do
     query = from u in User,
       join: pm in PublicationMembership, on: pm.member_id == u.id,
+      where: u.is_active == true,
       where: pm.publication_id == ^publication_id,
       select: {u, pm.role, pm.inserted_at}
 
@@ -71,6 +72,7 @@ defmodule MargaretWeb.Resolvers.Publications do
   def resolve_followers(%Publication{id: publication_id}, args, _) do
     query = from u in User,
       join: f in Follow, on: f.follower_id == u.id,
+      where: u.is_active == true,
       where: f.publication_id == ^publication_id,
       select: {u, f.inserted_at}
 

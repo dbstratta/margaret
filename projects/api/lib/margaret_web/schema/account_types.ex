@@ -212,19 +212,40 @@ defmodule MargaretWeb.Schema.AccountTypes do
     @desc """
     Updates the currently logged in user.
     """
-    payload field :update_user do
+    payload field :update_viewer do
       input do
-        @desc "The id of the user."
-        field :user_id, non_null(:id)
+        field :username, :string
+        field :email, :string
       end
 
       output do
-        field :user, non_null(:user)
+        field :viewer, non_null(:user)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, user_id: :user
-      resolve &Resolvers.Accounts.resolve_update_user/2
+      resolve &Resolvers.Accounts.resolve_update_viewer/2
+    end
+
+    @desc """
+    Deactives the currently logged in user.
+    """
+    payload field :deactivate_viewer do
+      output do
+        field :viewer, non_null(:user)
+      end
+
+      resolve &Resolvers.Accounts.resolve_deactivate_viewer/2
+    end
+
+    @desc """
+    Activates the currently logged in user.
+    """
+    payload field :activate_viewer do
+      output do
+        field :viewer, non_null(:user)
+      end
+
+      resolve &Resolvers.Accounts.resolve_activate_viewer/2
     end
   end
 end

@@ -62,6 +62,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_stargazers(%Story{id: story_id}, args, _) do
     query = from u in User,
       join: s in Star, on: s.user_id == u.id, 
+      where: u.is_active == true,
       where: s.story_id == ^story_id,
       select: {u, s.inserted_at}
 

@@ -39,7 +39,6 @@ defmodule MargaretWeb.Schema.FollowableTypes do
         field :followable, non_null(:followable)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, followable_id: @followable_implementations
       resolve &Resolvers.Followable.resolve_follow/2
     end
@@ -54,7 +53,6 @@ defmodule MargaretWeb.Schema.FollowableTypes do
         field :followable, non_null(:followable)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, followable_id: @followable_implementations
       resolve &Resolvers.Followable.resolve_unfollow/2
     end

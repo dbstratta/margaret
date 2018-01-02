@@ -1,4 +1,4 @@
-defmodule MargaretWeb.Middleware.Authenticated do
+defmodule MargaretWeb.Middleware.RequireAuthenticated do
   @moduledoc """
   Absinthe middleware to only permit actions when
   the user is authenticated.
@@ -9,13 +9,13 @@ defmodule MargaretWeb.Middleware.Authenticated do
   ## Examples
 
   ```elixir
-  middleware MargaretWeb.Middleware.Authenticated
+  middleware MargaretWeb.Middleware.RequireAuthenticated
   resolve &resolver/2
 
-  middleware MargaretWeb.Middleware.Authenticated, resolve: nil
+  middleware MargaretWeb.Middleware.RequireAuthenticated, resolve: nil
   resolve &resolver/2
 
-  middleware MargaretWeb.Middleware.Authenticated, resolve: false
+  middleware MargaretWeb.Middleware.RequireAuthenticated, resolve: false
   resolve &resolver/2
   ```
   

@@ -57,6 +57,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   def resolve_followers(%User{id: user_id}, args, _) do
     query = from u in User,
       join: f in Follow, on: f.follower_id == u.id,
+      where: u.is_active == true,
       where: f.user_id == ^user_id,
       select: {u, f.inserted_at}
 
@@ -84,6 +85,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
       left_join: u in User, on: u.id == f.user_id,
       left_join: p in Publication, on: p.id == f.publication_id,
       where: f.follower_id == ^user_id,
+      where: u.is_active == true,
       select: {u, p, f.inserted_at}
 
     {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
@@ -219,7 +221,10 @@ defmodule MargaretWeb.Resolvers.Accounts do
   Resolves a connection of users.
   """
   def resolve_users(args, _) do
-    {:ok, connection} = Relay.Connection.from_query(User, &Repo.all/1, args)
+    query = from u in User,
+      where: u.is_active == true
+
+    {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
 
     connection = Map.put(connection, :total_count, Accounts.get_user_count())
 
@@ -233,10 +238,21 @@ defmodule MargaretWeb.Resolvers.Accounts do
   end
 
   @doc """
-  Resolves a user update.
+  Resolves the update of the viewer.
   """
-  def resolve_update_user(_args, %{context: %{viewer: _viewer}}) do
-    Helpers.GraphQLErrors.not_implemented()
+  def resolve_update_viewer(attrs, %{context: %{viewer: viewer}}) do
+    do_resolve_update_user(viewer, attrs)
+  end
+
+  def resolve_deactivate_viewer(_, %{context: %{viewer: viewer}}) do
+    do_resolve_update_user(viewer, %{is_active: false})
+  end
+
+  defp do_resolve_update_user(user, attrs) do
+    case Accounts.update_user(user, attrs) do
+      {:ok, %User{} = viewer} -> {:ok, %{viewer: viewer}}
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 
   @doc """

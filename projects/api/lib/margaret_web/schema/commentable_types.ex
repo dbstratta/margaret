@@ -37,7 +37,6 @@ defmodule MargaretWeb.Schema.CommentableTypes do
         field :comment, non_null(:comment)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, commentable_id: @commentable_implementations
       resolve &Resolvers.Commentable.resolve_comment/2
     end

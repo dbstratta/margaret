@@ -149,7 +149,6 @@ defmodule MargaretWeb.Schema.PublicationTypes do
         field :publication, non_null(:publication)
       end
 
-      middleware Middleware.Authenticated
       resolve &Resolvers.Publications.resolve_create_publication/2
     end
 
@@ -166,7 +165,6 @@ defmodule MargaretWeb.Schema.PublicationTypes do
         field :publication, non_null(:publication)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, member_id: :user
       middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
       resolve &Resolvers.Publications.resolve_kick_member/2
@@ -184,7 +182,6 @@ defmodule MargaretWeb.Schema.PublicationTypes do
         field :publication, non_null(:publication)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
       resolve &Resolvers.Publications.resolve_leave_publication/2
     end
@@ -201,7 +198,6 @@ defmodule MargaretWeb.Schema.PublicationTypes do
         field :publication, non_null(:publication)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
       resolve &Resolvers.Publications.resolve_update_publication/2
     end
@@ -218,7 +214,6 @@ defmodule MargaretWeb.Schema.PublicationTypes do
         field :publication, non_null(:publication)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
       resolve &Resolvers.Publications.resolve_delete_publication/2
     end

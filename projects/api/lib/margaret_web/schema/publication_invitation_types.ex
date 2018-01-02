@@ -95,7 +95,6 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
         field :invitation, non_null(:publication_invitation)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, invitee_id: :user
       middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
       resolve &Resolvers.PublicationInvitations.resolve_send_publication_invitation/2
@@ -114,7 +113,6 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
         field :invitation, non_null(:publication_invitation)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, invitation_id: :publication_invitation
       resolve &Resolvers.PublicationInvitations.resolve_accept_publication_invitation/2
     end
@@ -132,7 +130,6 @@ defmodule MargaretWeb.Schema.PublicationInvitationTypes do
         field :invitation, non_null(:publication_invitation)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, invitation_id: :publication_invitation
       resolve &Resolvers.PublicationInvitations.resolve_reject_publication_invitation/2
     end

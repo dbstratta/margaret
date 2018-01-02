@@ -30,8 +30,12 @@ defmodule MargaretWeb.AuthController do
     %{"email" => email} = conn.assigns.ueberauth_auth.extra.raw_info.user
 
     try do
-      user = Accounts.get_user_by_social_login!(provider, uid)
-      {:ok, token, _} = MargaretWeb.Guardian.encode_and_sign(user)
+      {:ok, token, _} =
+        {provider, uid}
+        |> Accounts.get_user_by_social_login!(include_deactivated: true)
+        |> activate_user()
+        |> MargaretWeb.Guardian.encode_and_sign()
+
       token
     rescue
       _ -> get_token(email, provider, uid)
@@ -44,17 +48,26 @@ defmodule MargaretWeb.AuthController do
     Accounts.insert_social_login!(%{provider: provider, uid: uid, user_id: user.id})
 
     {:ok, token, _} = MargaretWeb.Guardian.encode_and_sign(user)
+
     token
   end
 
   @spec get_or_create_user(String.t) :: User.t
   defp get_or_create_user(email) do
     {:ok, user} =
-      case Accounts.get_user_by_email(email) do
+      case Accounts.get_user_by_email(email, include_deactivated: true) do
+        %User{} = user -> {:ok, activate_user(user)}
         nil -> Accounts.insert_user(%{username: UUID.uuid4(), email: email})
-        user -> {:ok, user}
       end
+    
+    user
+  end
+
+  defp activate_user(%User{is_active: false} = user) do
+    {:ok, user} = Accounts.update_user(user, %{is_active: true})
 
     user
   end
+
+  defp activate_user(user), do: user
 end

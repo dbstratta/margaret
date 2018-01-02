@@ -21,8 +21,16 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user(String.t | non_neg_integer) :: User.t | nil
-  def get_user(id), do: Repo.get(User, id)
+  @spec get_user(String.t | non_neg_integer, Keyword.t) :: User.t | nil
+  def get_user(id, opts \\ []) do
+    query = from u in User
+
+    unless Keyword.get(opts, :include_deactivated, false) do
+      query = where(query, [u], u.is_active == true)
+    end
+
+    Repo.get_by(query, id)
+  end
 
   @doc """
   Gets a single user.
@@ -38,8 +46,16 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user!(String.t | non_neg_integer) :: User.t
-  def get_user!(id), do: Repo.get!(User, id)
+  @spec get_user!(String.t | non_neg_integer, Keyword.t) :: User.t | nil
+  def get_user!(id, opts \\ []) do
+    query = from u in User
+
+    unless Keyword.get(opts, :include_deactivated, false) do
+      query = where(query, [u], u.is_active == true)
+    end
+
+    Repo.get!(query, id)
+  end
 
   @doc """
   Gets a user by its username.
@@ -53,8 +69,10 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user_by_username(String.t) :: User.t
-  def get_user_by_username(username), do: Repo.get_by(User, username: username)
+  @spec get_user_by_username(String.t, Keyword.t) :: User.t | nil
+  def get_user_by_username(username, opts \\ []) do
+    Repo.get_by(User, username: username)
+  end
 
   @doc """
   Gets a user by its username.
@@ -119,12 +137,17 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_social_login!(atom, String.t) :: User.t
-  def get_user_by_social_login!(provider, uid) do
-    SocialLogin
-    |> Repo.get_by!([provider: provider, uid: uid])
-    |> Repo.preload(:user)
-    |> Map.get(:user)
+  @spec get_user_by_social_login!({atom, String.t}) :: User.t
+  def get_user_by_social_login!({provider, uid}, opts \\ []) do
+    query = from s in SocialLogin,
+      join: u in User, on: u.id == s.user_id,
+      select: u
+
+    unless Keyword.get(opts, :include_deactivated, false) do
+      query = where(query, [u], u.is_active == true)
+    end
+
+    Repo.one(query)
   end
 
   @doc """
@@ -137,7 +160,13 @@ defmodule Margaret.Accounts do
 
   """
   @spec get_user_count :: non_neg_integer
-  def get_user_count, do: Repo.one!(from u in User, select: count(u.id))
+  def get_user_count do
+    query = from u in User,
+      where: u.is_active == true,
+      select: count(u.id)
+
+    Repo.one!(query)
+  end
 
 
   @doc """
@@ -179,6 +208,33 @@ defmodule Margaret.Accounts do
     |> User.changeset(attrs)
     |> Repo.insert!()
   end
+
+  @doc """
+  Updates a user.
+  """
+  def update_user(user_id, attrs) when is_integer(user_id) or is_binary(user_id) do
+    user_id
+    |> get_user()
+    |> update_user(attrs)
+  end
+
+  def update_user(%User{} = user, attrs) do
+    user
+    |> User.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def update_user(nil, _), do: nil
+
+  @doc """
+  Deletes a user.
+  """
+  def delete_user(%User{} = user), do: Repo.delete(user)
+
+  @doc """
+  Deletes a user.
+  """
+  def delete_user!(%User{} = user), do: Repo.delete!(user)
 
   @doc """
   Inserts a social login.

@@ -23,6 +23,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   def resolve_stargazers(%Comment{id: comment_id}, args, _) do
     query = from u in User,
       join: s in Star, on: s.user_id == u.id, 
+      where: u.is_active == true,
       where: s.comment_id == ^comment_id,
       select: {u, s.inserted_at}
 

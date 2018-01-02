@@ -12,6 +12,8 @@ defmodule Margaret.Repo.Migrations.AddUsersTable do
       add :is_employee, :boolean, default: false, null: false
       add :is_admin, :boolean, default: false, null: false
 
+      add :is_active, :boolean, default: true, null: false
+
       timestamps()
     end
 

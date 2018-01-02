@@ -19,6 +19,7 @@ defmodule Margaret.Accounts.User do
     :email,
     :is_admin,
     :is_employee,
+    :is_active,
   ]
 
   @required_attrs [
@@ -26,12 +27,18 @@ defmodule Margaret.Accounts.User do
     :email,
   ]
 
+  @username_regex ~r/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){1,64}$/
+
+  @email_regex ~r/@/
+
   schema "users" do
     field :username, :string
     field :email, :string
 
     field :is_admin, :boolean
     field :is_employee, :boolean
+
+    field :is_active, :boolean
 
     has_many :social_logins, SocialLogin
 
@@ -50,8 +57,9 @@ defmodule Margaret.Accounts.User do
     user
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
+    |> validate_format(:username, @username_regex)
     |> validate_length(:username, min: 2, max: 64)
-    |> validate_format(:email, ~r/@/)
+    |> validate_format(:email, @email_regex)
     |> validate_length(:email, min: 3, max: 254)
     |> unique_constraint(:username)
     |> unique_constraint(:email)

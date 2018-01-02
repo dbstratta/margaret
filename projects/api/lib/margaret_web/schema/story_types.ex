@@ -165,7 +165,6 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :story, non_null(:story)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, publication_id: :publication
       resolve &Resolvers.Stories.resolve_create_story/2
     end
@@ -186,7 +185,6 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :story, non_null(:story)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, story_id: :story
       resolve &Resolvers.Stories.resolve_update_story/2
     end
@@ -201,7 +199,6 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :story, non_null(:story)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, story_id: :story
       resolve &Resolvers.Stories.resolve_delete_story/2
     end

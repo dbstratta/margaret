@@ -27,6 +27,12 @@ defmodule MargaretWeb.Schema do
     MargaretWeb.Middleware.HandleChangesetErrors,
   ]
 
+  @query_middlware @middleware ++ []
+
+  @mutation_middleware @middleware ++ [
+    MargaretWeb.Middleware.RequireAuthenticated,
+  ]
+
   import_types Absinthe.Type.Custom
 
   import_types NodeTypes
@@ -69,5 +75,6 @@ defmodule MargaretWeb.Schema do
     import_fields :starrable_subscriptions
   end
 
+  def middleware(middleware, _, %{identifier: :mutation}), do: middleware ++ @mutation_middleware
   def middleware(middleware, _, _), do: middleware ++ @middleware
 end

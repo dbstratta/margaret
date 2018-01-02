@@ -137,7 +137,6 @@ defmodule MargaretWeb.Schema.CommentTypes do
         field :comment, non_null(:comment)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, comment_id: :comment
       resolve &Resolvers.Comments.resolve_update_comment/2
     end
@@ -152,7 +151,6 @@ defmodule MargaretWeb.Schema.CommentTypes do
         field :comment, non_null(:comment)
       end
 
-      middleware Middleware.Authenticated
       middleware Absinthe.Relay.Node.ParseIDs, comment_id: :comment
       resolve &Resolvers.Comments.resolve_delete_comment/2
     end
