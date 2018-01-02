@@ -31,6 +31,7 @@ defmodule MargaretWeb.Schema do
 
   @mutation_middleware @middleware ++ [
     MargaretWeb.Middleware.RequireAuthenticated,
+    MargaretWeb.Middleware.RequireActive,
   ]
 
   import_types Absinthe.Type.Custom

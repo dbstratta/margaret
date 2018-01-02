@@ -17,6 +17,9 @@ defmodule MargaretWeb.Helpers.GraphQLErrors do
   @spec unauthorized :: t
   def unauthorized, do: error_creator("Unauthorized")
 
+  @spec deactivated :: t
+  def deactivated, do: error_creator("Your account was deactivated")
+
   @doc """
   Return the `Something went wrong` error.
   """

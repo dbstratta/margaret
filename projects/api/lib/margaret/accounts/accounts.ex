@@ -46,7 +46,7 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user!(String.t | non_neg_integer, Keyword.t) :: User.t | nil
+  @spec get_user!(String.t | non_neg_integer, Keyword.t) :: User.t | no_return
   def get_user!(id, opts \\ []) do
     query = from u in User
 
@@ -71,7 +71,14 @@ defmodule Margaret.Accounts do
   """
   @spec get_user_by_username(String.t, Keyword.t) :: User.t | nil
   def get_user_by_username(username, opts \\ []) do
-    Repo.get_by(User, username: username)
+    query = from u in User,
+      where: u.username == ^username
+
+    unless Keyword.get(opts, :include_deactivated, false) do
+      query = where(query, [u], u.is_active == true)
+    end
+
+    Repo.one(query)
   end
 
   @doc """
@@ -88,8 +95,17 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_username!(String.t) :: User.t
-  def get_user_by_username!(username), do: Repo.get_by!(User, username: username)
+  @spec get_user_by_username!(String.t, Keyword.t) :: User.t | no_return
+  def get_user_by_username!(username, opts \\ []) do
+    query = from u in User,
+      where: u.username == ^username
+
+    unless Keyword.get(opts, :include_deactivated, false) do
+      query = where(query, [u], u.is_active == true)
+    end
+
+    Repo.one!(query)
+  end
 
   @doc """
   Gets a user by its email.
@@ -103,8 +119,17 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user_by_email(String.t) :: User.t
-  def get_user_by_email(email), do: Repo.get_by(User, email: email)
+  @spec get_user_by_email(String.t, Keyword.t) :: User.t | nil
+  def get_user_by_email(email, opts \\ []) do
+    query = from u in User,
+      where: u.email == ^email
+
+    unless Keyword.get(opts, :include_deactivated, false) do
+      query = where(query, [u], u.is_active == true)
+    end
+
+    Repo.one(query)
+  end
 
   @doc """
   Gets a user by its email.
@@ -120,8 +145,17 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_email!(String.t) :: User.t
-  def get_user_by_email!(email), do: Repo.get_by!(User, email: email)
+  @spec get_user_by_email!(String.t, Keyword.t) :: User.t | no_return
+  def get_user_by_email!(email, opts \\ []) do
+    query = from u in User,
+      where: u.email == ^email
+
+    unless Keyword.get(opts, :include_deactivated, false) do
+      query = where(query, [u], u.is_active == true)
+    end
+
+    Repo.one!(query)
+  end
 
   @doc """
   Gets a user by its social login.
@@ -137,7 +171,7 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_social_login!({atom, String.t}) :: User.t
+  @spec get_user_by_social_login!({atom, String.t}) :: User.t | nil
   def get_user_by_social_login!({provider, uid}, opts \\ []) do
     query = from s in SocialLogin,
       join: u in User, on: u.id == s.user_id,

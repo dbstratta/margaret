@@ -25,5 +25,5 @@ defmodule MargaretWeb.Middleware.RequireActive do
     resolution
   end
 
-  def call(resolution, _), do: put_result(resolution, Helpers.GraphQLErrors.unauthorized())
+  def call(resolution, _), do: put_result(resolution, Helpers.GraphQLErrors.deactivated())
 end
