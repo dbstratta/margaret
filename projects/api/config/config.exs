@@ -44,6 +44,12 @@ config :margaret, MargaretWeb.Guardian,
   issuer: "Margaret",
   secret_key: "Cs+SatzTr/4GlMDYRn+lHQCu+iP7b0hIhr71xDT62J3G+gDb5wlma/UMuxJWOdea"
 
+config :exq,
+  name: Exq,
+  host: "redis",
+  port: 6379,
+  namespace: "exq"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
