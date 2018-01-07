@@ -53,11 +53,23 @@ defmodule Margaret.Comments do
 
   """
   def get_comment_count(story_id: story_id) do
-    Repo.one!(from c in Comment, where: c.story_id == ^story_id, select: count(c.id))
+    query = from c in Comment,
+      join: u in User, on: u.id == c.author_id,
+      where: c.story_id == ^story_id,
+      where: u.is_active == true,
+      select: count(c.id)
+
+    Repo.one!(query)
   end
 
   def get_comment_count(comment_id: comment_id) do
-    Repo.one!(from c in Comment, where: c.parent_id == ^comment_id, select: count(c.id))
+    query = from c in Comment,
+      join: u in User, on: u.id == c.author_id,
+      where: c.parent_id == ^parent_id,
+      where: u.is_active == true,
+      select: count(c.id)
+
+    Repo.one!(query)
   end
 
   @doc """

@@ -84,7 +84,9 @@ defmodule MargaretWeb.Resolvers.Stories do
 
   def resolve_comments(%Story{id: story_id}, args, _) do
     query = from c in Comment,
-      where: c.story_id == ^story_id
+      join: u in User,
+      where: c.story_id == ^story_id,
+      where: u.is_active == true
 
     {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
 

@@ -237,7 +237,6 @@ defmodule Margaret.Publications do
   def get_publication_owner(publication_id) do
     query = from u in User,
       join: pm in PublicationMembership, on: pm.member_id == u.id,
-      where: u.is_active == true,
       where: pm.publication_id == ^publication_id and pm.role == ^:owner
 
     Repo.one!(query)

@@ -38,9 +38,12 @@ services:
     image: postgres:10.1
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    deploy:
-      placement:
-        constraints: [node.role == manager]
+
+  redis:
+    image: redis:4.0.6
+    volumes:
+      - redis_data:/data
 
 volumes:
   postgres_data:
+  redis_data:
