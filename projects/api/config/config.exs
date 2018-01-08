@@ -17,9 +17,11 @@ config :margaret, MargaretWeb.Endpoint,
   pubsub: [name: Margaret.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+# Configures CORSPlug
 config :cors_plug,
   methods: ["GET", "POST"]
 
+# Configures Ueberauth
 config :ueberauth, Ueberauth,
   providers: [
     github: {Ueberauth.Strategy.Github, []},
@@ -27,14 +29,17 @@ config :ueberauth, Ueberauth,
     facebook: {Ueberauth.Strategy.Facebook, []},
   ]
 
+# Configures Github's Oauth2
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
   client_id: System.get_env("GITHUB_CLIENT_ID"),
   client_secret: System.get_env("GITHUB_CLIENT_SECRET")
 
+# Configures Google's Oauth2
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_id: System.get_env("GOOGLE_CLIENT_ID"),
   client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
 
+# Configures Facebook's Oauth2
 config :ueberauth, Ueberauth.Strategy.Facebook.OAuth,
   client_id: System.get_env("FACEBOOK_CLIENT_ID"),
   client_secret: System.get_env("FACEBOOK_CLIENT_SECRET")
@@ -44,11 +49,14 @@ config :margaret, MargaretWeb.Guardian,
   issuer: "Margaret",
   secret_key: "Cs+SatzTr/4GlMDYRn+lHQCu+iP7b0hIhr71xDT62J3G+gDb5wlma/UMuxJWOdea"
 
+# Configures Exq
 config :exq,
   name: Exq,
   host: "redis",
   port: 6379,
-  namespace: "exq"
+  namespace: "exq",
+  concurrency: 500,
+  scheduler_enable: true
 
 # Configures Elixir's Logger
 config :logger, :console,

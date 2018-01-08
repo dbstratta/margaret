@@ -227,7 +227,7 @@ defmodule MargaretWeb.Schema.AccountTypes do
     end
 
     @desc """
-    Deactives the currently logged in user.
+    Deactivates the currently logged in user.
     """
     payload field :deactivate_viewer do
       output do
@@ -238,14 +238,18 @@ defmodule MargaretWeb.Schema.AccountTypes do
     end
 
     @desc """
-    Activates the currently logged in user.
+    Deactivates the currently logged in user and marks
+    it for deletion.
+    
+    After a fixed period of time, if not activated, the account
+    will be permanently deleted, along with all its content (stories, comments, etc.).
     """
-    payload field :activate_viewer do
+    payload field :mark_viewer_for_deletion do
       output do
         field :viewer, non_null(:user)
       end
 
-      resolve &Resolvers.Accounts.resolve_activate_viewer/2
+      resolve &Resolvers.Accounts.resolve_mark_viewer_for_deletion/2
     end
   end
 end

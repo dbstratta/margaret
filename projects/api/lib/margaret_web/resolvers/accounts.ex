@@ -255,6 +255,13 @@ defmodule MargaretWeb.Resolvers.Accounts do
     end
   end
 
+  def resolve_mark_viewer_for_deletion(_, %{context: %{viewer: viewer}}) do
+    case Accounts.mark_user_for_deletion(viewer) do
+      {:ok, _} -> {:ok, %{viewer: viewer}}
+      {:error, _, _, _} -> Helpers.GraphQLErrors.something_went_wrong()
+    end
+  end
+
   @doc """
   Resolves if the user is the viewer.
   """
