@@ -73,15 +73,7 @@
     react-inspector "^2.2.2"
     uuid "^3.1.0"
 
-"@storybook/addon-links@3.3.6":
-  version "3.3.6"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-3.3.6.tgz#f66efea8e4b1b7c6c41d1554623de5e74c891e53"
-  dependencies:
-    "@storybook/components" "^3.3.6"
-    global "^4.3.2"
-    prop-types "^15.5.10"
-
-"@storybook/addon-links@^3.3.6":
+"@storybook/addon-links@3.3.7", "@storybook/addon-links@^3.3.6":
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-3.3.7.tgz#df3114718bc7f0a39b6cdc61e301363768d7f2a0"
   dependencies:
@@ -109,7 +101,7 @@
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/@storybook/client-logger/-/client-logger-3.3.7.tgz#78d45bd1f13af2b621bbb5009a63daae381b3f94"
 
-"@storybook/components@^3.3.6", "@storybook/components@^3.3.7":
+"@storybook/components@^3.3.7":
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-3.3.7.tgz#6f64d56e9516907cd077e66564b8171a5745bc82"
   dependencies:
