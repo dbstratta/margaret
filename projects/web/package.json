@@ -68,7 +68,7 @@
     "jest": "22.0.5",
     "jest-enzyme": "4.0.2",
     "jest-styled-components": "4.9.0",
-    "prettier": "1.9.2",
+    "prettier": "1.10.1",
     "react-app-rewire-hot-loader": "1.0.0",
     "react-app-rewire-polished": "1.0.3",
     "react-app-rewire-styled-components": "3.0.0",
