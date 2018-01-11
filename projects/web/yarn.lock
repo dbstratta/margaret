@@ -3839,9 +3839,9 @@ filled-array@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/filled-array/-/filled-array-1.1.0.tgz#c3c4f6c663b923459a9aa29912d2d031f1507f84"
 
-final-form@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/final-form/-/final-form-3.0.1.tgz#3eb8c41b99804ef6d2e4fb0cc4e90182caf7a7c8"
+final-form@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/final-form/-/final-form-3.1.0.tgz#b27fb2261e41ed68b99760f024431ef180461341"
 
 finalhandler@1.1.0:
   version "1.1.0"
