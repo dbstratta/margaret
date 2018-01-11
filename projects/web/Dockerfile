@@ -1,4 +1,4 @@
-FROM node:9.4.0@sha256:108d0346cc5949068ab3734d3c12015f3552e991dfccf39506497eb836e7c66e AS builder
+FROM node:9.4.0@sha256:89f9c88d86d2fa032953bd4f41444eb2abe31eb4ebb3ef507d5e62d9bdffde63 AS builder
 
 # Create and change current directory.
 WORKDIR /usr/src/app
