@@ -3796,9 +3796,9 @@ prettier-eslint-cli@4.7.0:
     rxjs "^5.3.0"
     yargs "10.0.3"
 
-prettier-eslint@8.7.3:
-  version "8.7.3"
-  resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-8.7.3.tgz#244c1e1e36eb84ddc336730a667b05b97439a998"
+prettier-eslint@8.7.4:
+  version "8.7.4"
+  resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-8.7.4.tgz#81b2a4c7083d5ac67d2771f6edac89d014cab510"
   dependencies:
     babel-runtime "^6.26.0"
     common-tags "^1.4.0"
