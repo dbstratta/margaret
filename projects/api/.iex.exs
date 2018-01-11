@@ -1,0 +1,10 @@
+alias Ecto.Changeset
+
+alias Margaret.{Repo, Accounts, Stories, Comments, Publications, Stars, Bookmarks, Tags}
+alias Accounts.{User, SocialLogin, Follow}
+alias Stories.Story
+alias Comments.Comment
+alias Publications.Publication
+alias Stars.Star
+alias Bookmarks.Bookmark
+alias Tags.Tag

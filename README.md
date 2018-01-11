@@ -8,12 +8,17 @@
 ## Table of contents
 
 * [Introduction](#introduction)
+* [Contributing](#contributing)
 * [Projects](#projects)
 * [License](#license)
 
 ## Introduction
 
 This is the umbrella repository of Margaret.
+
+## Contributing
+
+Please see [CONTRIBUTING](./CONTRIBUTING.md).
 
 ## Projects
 
