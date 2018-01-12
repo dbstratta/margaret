@@ -1,5 +1,12 @@
 # Margaret API
 
+## Table of contents
+
+* [Introduction](#introduction)
+* [Project Structure](#project-structure)
+
+## Introduction
+
 The Margaret API is a GraphQL built with
 [Elixir](https://elixir-lang.org/),
 [Phoenix](https://hexdocs.pm/phoenix/overview.html),
