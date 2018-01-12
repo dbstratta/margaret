@@ -5,10 +5,9 @@ defmodule Margaret.Accounts.User do
   import Ecto.Changeset
 
   alias __MODULE__
-  alias Margaret.{Accounts, Stories, Publications, Stars, Bookmarks}
+  alias Margaret.{Accounts, Stories, Stars, Bookmarks}
   alias Accounts.{SocialLogin, Follow}
   alias Stories.Story
-  alias Publications.{Publication, PublicationMembership}
   alias Stars.Star
   alias Bookmarks.Bookmark
 

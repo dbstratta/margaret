@@ -159,6 +159,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :tags, list_of(:string)
         field :publish_status, non_null(:story_publish_status)
         field :license, non_null(:story_license)
+        field :publish_at, :naive_datetime
       end
 
       output do
@@ -179,6 +180,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :publish_status, :story_publish_status
         field :license, :story_license
         field :tags, list_of(:string)
+        field :publish_at, :naive_datetime
       end
 
       output do

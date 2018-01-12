@@ -4,14 +4,11 @@ defmodule MargaretWeb.Resolvers.Starrable do
   """
 
   import Ecto.Query
-  alias Absinthe.Relay
 
-  alias Margaret.{Repo, Accounts, Stories, Stars, Comments}
-  alias Accounts.User
+  alias Margaret.{Accounts, Stories, Stars, Comments}
   alias Stars.Star
   alias Stories.Story
   alias Comments.Comment
-  alias MargaretWeb.Helpers
 
   @doc """
   Resolves the star of a starrable.

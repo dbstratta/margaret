@@ -56,6 +56,7 @@ config :exq,
   port: 6379,
   namespace: "exq",
   concurrency: 500,
+  queues: ["user_deletion", "story_publication"],
   scheduler_enable: true
 
 # Configures Elixir's Logger

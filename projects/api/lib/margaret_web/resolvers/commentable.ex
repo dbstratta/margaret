@@ -3,13 +3,7 @@ defmodule MargaretWeb.Resolvers.Commentable do
   The Commentable GraphQL resolvers.
   """
 
-  import Ecto.Query
-  alias Absinthe.Relay
-
-  alias MargaretWeb.Helpers
-  alias Margaret.{Repo, Accounts, Stories, Comments}
-  alias Stories.Story
-  alias Accounts.User
+  alias Margaret.Comments
   alias Comments.Comment
 
   def resolve_comment(

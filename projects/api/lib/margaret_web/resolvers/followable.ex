@@ -3,13 +3,9 @@ defmodule MargaretWeb.Resolvers.Followable do
   The Followable GraphQL resolvers.
   """
 
-  import Ecto.Query
-  alias Absinthe.Relay
-
   alias Margaret.{Accounts, Publications}
   alias Accounts.User
   alias Publications.Publication
-  alias MargaretWeb.Helpers
 
   @doc """
   Resolves the follow of a followable.

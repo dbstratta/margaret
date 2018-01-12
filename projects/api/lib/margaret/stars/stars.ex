@@ -39,13 +39,6 @@ defmodule Margaret.Stars do
     end
   end
 
-  def delete_star(args) do
-    case get_star(args) do
-      %Star{id: id} -> delete_star(id)
-      nil -> nil
-    end
-  end
-
   def get_star_count(%{story_id: story_id}) do
     query = from s in Star,
       join: u in User, on: u.id == s.user_id,

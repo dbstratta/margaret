@@ -19,7 +19,6 @@ defmodule Margaret.Stories.Story do
     :title,
     :body,
     :author_id,
-    :summary,
     :publication_id,
     :published_at,
     :publish_status,
@@ -47,7 +46,6 @@ defmodule Margaret.Stories.Story do
     field :title, :string
     field :body, :string
     belongs_to :author, User
-    field :summary, :string
     field :unique_hash, :string
 
     field :published_at, :naive_datetime
@@ -98,10 +96,8 @@ defmodule Margaret.Stories.Story do
   # Only put the `published_at` attribute when the story
   # hasn't been published before and the change is to make it public.
   defp maybe_put_published_at(
-    %Ecto.Changeset{
-      data: %{published_at: nil}, changes: %{publish_status: publish_status}
-    } = changeset
-  ) when publish_status === :public do
+    %Ecto.Changeset{data: %{published_at: nil}, changes: %{publish_status: :public}} = changeset
+  ) do
     put_change(changeset, :published_at, NaiveDateTime.utc_now())
   end
 

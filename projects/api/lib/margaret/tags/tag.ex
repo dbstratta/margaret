@@ -5,7 +5,9 @@ defmodule Margaret.Tags.Tag do
   import Ecto.Changeset
 
   alias __MODULE__
-  alias Margaret.Stories.Story
+  alias Margaret.{Stories, Publications}
+  alias Stories.Story
+  alias Publications.Publication
 
   @type t :: %Tag{}
 
@@ -20,6 +22,7 @@ defmodule Margaret.Tags.Tag do
   schema "tags" do
     field :title, :string
     many_to_many :stories, Story, join_through: "story_tags"
+    many_to_many :publications, Publication, join_through: "publication_tags"
 
     timestamps()
   end

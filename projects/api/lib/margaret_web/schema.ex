@@ -77,5 +77,6 @@ defmodule MargaretWeb.Schema do
   end
 
   def middleware(middleware, _, %{identifier: :mutation}), do: middleware ++ @mutation_middleware
+  def middleware(middleware, _, %{identifier: :query}), do: middleware ++ @query_middlware
   def middleware(middleware, _, _), do: middleware ++ @middleware
 end

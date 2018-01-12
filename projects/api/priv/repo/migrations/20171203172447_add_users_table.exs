@@ -12,7 +12,7 @@ defmodule Margaret.Repo.Migrations.AddUsersTable do
       add :is_employee, :boolean, default: false, null: false
       add :is_admin, :boolean, default: false, null: false
 
-      add :is_active, :boolean, default: true, null: false
+      add :deactivated_at, :naive_datetime, default: nil
 
       timestamps()
     end

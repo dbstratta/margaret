@@ -3,15 +3,9 @@ defmodule MargaretWeb.Resolvers.Bookmarkable do
   The Bookmarkable GraphQL resolvers.
   """
 
-  import Ecto.Query
-  alias Absinthe.Relay
-
-  alias Margaret.{Repo, Accounts, Stories, Comments, Bookmarks}
-  alias Accounts.User
+  alias Margaret.{Stories, Comments, Bookmarks}
   alias Stories.Story
   alias Comments.Comment
-  alias Bookmarks.Bookmark
-  alias MargaretWeb.Helpers
 
   def resolve_bookmark(
     %{bookmarkable_id: %{type: :story, id: story_id}}, %{context: %{viewer: %{id: viewer_id}}}

@@ -212,7 +212,7 @@ defmodule MargaretWeb.Resolvers.Publications do
     |> do_resolve_leave_publication(publication_id, viewer_id)
   end
 
-  defp do_resolve_leave_publication(true, publication_id, member_id) do
+  defp do_resolve_leave_publication(true, _publication_id, _member_id) do
 
   end
 

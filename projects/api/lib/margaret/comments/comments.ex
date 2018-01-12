@@ -65,7 +65,7 @@ defmodule Margaret.Comments do
   def get_comment_count(comment_id: comment_id) do
     query = from c in Comment,
       join: u in User, on: u.id == c.author_id,
-      where: c.parent_id == ^parent_id,
+      where: c.parent_id == ^comment_id,
       where: u.is_active == true,
       select: count(c.id)
 
