@@ -7,7 +7,7 @@
 
 ## Introduction
 
-The Margaret API is a GraphQL built with
+The Margaret API is a GraphQL API built with
 [Elixir](https://elixir-lang.org/),
 [Phoenix](https://hexdocs.pm/phoenix/overview.html),
 [Ecto](https://hexdocs.pm/ecto/Ecto.html),
@@ -74,4 +74,4 @@ We try to comply with the
 
   * `seeds.ex`: Contains the initial data to populate the database with.
 
-* **`test`**: Contains the all the tests.
+* **`test`**: Contains all the tests.
