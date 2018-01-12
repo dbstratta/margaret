@@ -21,7 +21,7 @@ defmodule MargaretWeb.Middleware.RequireActive do
 
   @doc false
   @impl true
-  def call(%Absinthe.Resolution{context: %{viewer: %User{is_active: true}}} = resolution, _) do
+  def call(%Absinthe.Resolution{context: %{viewer: %User{deactivated_at: nil}}} = resolution, _) do
     resolution
   end
 

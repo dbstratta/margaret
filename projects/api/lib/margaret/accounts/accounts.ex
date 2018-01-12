@@ -26,16 +26,9 @@ defmodule Margaret.Accounts do
   """
   @spec get_user(String.t | non_neg_integer, Keyword.t) :: User.t | nil
   def get_user(id, opts \\ []) do
-    query = from u in User
-
-    query =
-      if Keyword.get(opts, :include_deactivated, false) do
-        query
-      else
-        where(query, [u], u.is_active == true)
-      end
-
-    Repo.get_by(query, id)
+    User
+    |> maybe_include_deactivated(opts)
+    |> Repo.get(id)
   end
 
   @doc """
@@ -54,16 +47,9 @@ defmodule Margaret.Accounts do
   """
   @spec get_user!(String.t | non_neg_integer, Keyword.t) :: User.t | no_return
   def get_user!(id, opts \\ []) do
-    query = from u in User
-
-    query =
-      if Keyword.get(opts, :include_deactivated, false) do
-        query
-      else
-        where(query, [u], u.is_active == true)
-      end
-
-    Repo.get!(query, id)
+    User
+    |> maybe_include_deactivated(opts)
+    |> Repo.get!(id)
   end
 
   @doc """
@@ -83,14 +69,9 @@ defmodule Margaret.Accounts do
     query = from u in User,
       where: u.username == ^username
 
-    query =
-      if Keyword.get(opts, :include_deactivated, false) do
-        query
-      else
-        where(query, [u], u.is_active == true)
-      end
-
-    Repo.one(query)
+    query
+    |> maybe_include_deactivated(opts)
+    |> Repo.one()
   end
 
   @doc """
@@ -112,14 +93,9 @@ defmodule Margaret.Accounts do
     query = from u in User,
       where: u.username == ^username
 
-    query =
-      if Keyword.get(opts, :include_deactivated, false) do
-        query
-      else
-        where(query, [u], u.is_active == true)
-      end
-
-    Repo.one!(query)
+    query
+    |> maybe_include_deactivated(opts)
+    |> Repo.one!()
   end
 
   @doc """
@@ -139,14 +115,9 @@ defmodule Margaret.Accounts do
     query = from u in User,
       where: u.email == ^email
 
-    query =
-      if Keyword.get(opts, :include_deactivated, false) do
-        query
-      else
-        where(query, [u], u.is_active == true)
-      end
-
-    Repo.one(query)
+    query
+    |> maybe_include_deactivated(opts)
+    |> Repo.one()
   end
 
   @doc """
@@ -168,14 +139,9 @@ defmodule Margaret.Accounts do
     query = from u in User,
       where: u.email == ^email
 
-    query =
-      if Keyword.get(opts, :include_deactivated, false) do
-        query
-      else
-        where(query, [u], u.is_active == true)
-      end
-
-    Repo.one!(query)
+    query
+    |> maybe_include_deactivated(opts)
+    |> Repo.one!()
   end
 
   @doc """
@@ -198,14 +164,9 @@ defmodule Margaret.Accounts do
       join: s in SocialLogin, on: s.user_id == u.id,
       where: s.provider == ^provider and s.uid == ^uid
 
-    query =
-      if Keyword.get(opts, :include_deactivated, false) do
-        query
-      else
-        where(query, [u], u.is_active == true)
-      end
-
-    Repo.one(query)
+    query
+    |> maybe_include_deactivated(opts)
+    |> Repo.one()
   end
 
   @doc """
@@ -218,14 +179,27 @@ defmodule Margaret.Accounts do
 
   """
   @spec get_user_count :: non_neg_integer
-  def get_user_count do
+  def get_user_count(opts \\ []) do
     query = from u in User,
-      where: u.is_active == true,
       select: count(u.id)
 
-    Repo.one!(query)
+    query
+    |> maybe_include_deactivated(opts)
+    |> Repo.one!()
   end
 
+
+  defp maybe_include_deactivated(query, opts) do
+    opts
+    |> Keyword.get(:include_deactivated, false)
+    |> do_maybe_include_deactivated(query)
+  end
+
+  defp do_maybe_include_deactivated(false, query) do
+    from u in query, where: is_nil(u.deactivated_at)
+  end
+
+  defp do_maybe_include_deactivated(true, query), do: query
 
   @doc """
   Inserts a user.

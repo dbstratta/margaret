@@ -57,7 +57,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   def resolve_followers(%User{id: user_id}, args, _) do
     query = from u in User,
       join: f in Follow, on: f.follower_id == u.id,
-      where: u.is_active == true,
+      where: is_nil(u.deactivated_at),
       where: f.user_id == ^user_id,
       select: {u, f.inserted_at}
 
@@ -85,7 +85,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
       left_join: u in User, on: u.id == f.user_id,
       left_join: p in Publication, on: p.id == f.publication_id,
       where: f.follower_id == ^user_id,
-      where: u.is_active == true,
+      where: is_nil(u.deactivated_at),
       select: {u, p, f.inserted_at}
 
     {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
@@ -222,7 +222,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   """
   def resolve_users(args, _) do
     query = from u in User,
-      where: u.is_active == true
+      where: is_nil(u.deactivated_at)
 
     {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
 
@@ -245,7 +245,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   end
 
   def resolve_deactivate_viewer(_, %{context: %{viewer: viewer}}) do
-    do_resolve_update_user(viewer, %{is_active: false})
+    do_resolve_update_user(viewer, %{deactivated_at: NaiveDateTime.utc_now()})
   end
 
   defp do_resolve_update_user(user, attrs) do

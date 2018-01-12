@@ -20,7 +20,6 @@ defmodule Margaret.Stories.Story do
     :body,
     :author_id,
     :publication_id,
-    :published_at,
     :publish_status,
     :license,
   ]

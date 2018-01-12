@@ -95,29 +95,29 @@ defmodule MargaretWeb.Schema.PublicationTypes do
 
     @desc "The membership invitations of the publication."
     connection field :membership_invitations, node_type: :publication_invitation do
-      middleware Middleware.Authenticated, resolve: nil
+      middleware Middleware.RequireAuthenticated, resolve: nil
       resolve &Resolvers.Publications.resolve_membership_invitations/3
     end
 
     field :viewer_can_follow, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Publications.resolve_viewer_can_follow/3
     end
 
     field :viewer_has_followed, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Publications.resolve_viewer_has_followed/3
     end
 
     @desc "Viewer is a member of the publication."
     field :viewer_is_a_member, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Publications.resolve_viewer_is_a_member/3
     end
 
     @desc "Viewer can administer the publication."
     field :viewer_can_administer, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Publications.resolve_viewer_can_administer/3
     end
 

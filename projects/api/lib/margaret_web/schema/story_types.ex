@@ -94,40 +94,40 @@ defmodule MargaretWeb.Schema.StoryTypes do
     field :license, non_null(:story_license)
 
     field :viewer_can_star, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Stories.resolve_viewer_can_star/3
     end
 
     field :viewer_has_starred, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Stories.resolve_viewer_has_starred/3
     end
 
     field :viewer_can_bookmark, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Stories.resolve_viewer_can_bookmark/3
     end
 
     field :viewer_has_bookmarked, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Stories.resolve_viewer_has_bookmarked/3
     end
 
     @desc "Check if the current viewer can comment this story."
     field :viewer_can_comment, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Stories.resolve_viewer_can_comment/3
     end
 
     @desc "Check if the current viewer can update this story."
     field :viewer_can_update, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Stories.resolve_viewer_can_update/3
     end
 
     @desc "Check if the current viewer can delete this story."
     field :viewer_can_delete, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Stories.resolve_viewer_can_delete/3
     end
 

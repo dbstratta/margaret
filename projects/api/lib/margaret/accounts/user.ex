@@ -18,7 +18,7 @@ defmodule Margaret.Accounts.User do
     :email,
     :is_admin,
     :is_employee,
-    :is_active,
+    :deactivated_at,
   ]
 
   @required_attrs [
@@ -37,7 +37,7 @@ defmodule Margaret.Accounts.User do
     field :is_admin, :boolean
     field :is_employee, :boolean
 
-    field :is_active, :boolean
+    field :deactivated_at, :naive_datetime
 
     has_many :social_logins, SocialLogin
 

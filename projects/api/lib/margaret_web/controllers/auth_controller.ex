@@ -63,8 +63,10 @@ defmodule MargaretWeb.AuthController do
     user
   end
 
-  defp activate_user(%User{is_active: false} = user) do
-    {:ok, user} = Accounts.update_user(user, %{is_active: true})
+  defp activate_user(
+    %User{deactivated_at: deactivated_at} = user
+  ) when not is_nil(deactivated_at) do
+    {:ok, user} = Accounts.update_user(user, %{deactivated_at: nil})
 
     user
   end

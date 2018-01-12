@@ -56,7 +56,7 @@ defmodule Margaret.Comments do
     query = from c in Comment,
       join: u in User, on: u.id == c.author_id,
       where: c.story_id == ^story_id,
-      where: u.is_active == true,
+      where: is_nil(u.deactivated_at),
       select: count(c.id)
 
     Repo.one!(query)
@@ -66,7 +66,7 @@ defmodule Margaret.Comments do
     query = from c in Comment,
       join: u in User, on: u.id == c.author_id,
       where: c.parent_id == ^comment_id,
-      where: u.is_active == true,
+      where: is_nil(u.deactivated_at),
       select: count(c.id)
 
     Repo.one!(query)

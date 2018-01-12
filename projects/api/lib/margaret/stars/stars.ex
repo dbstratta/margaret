@@ -43,7 +43,7 @@ defmodule Margaret.Stars do
     query = from s in Star,
       join: u in User, on: u.id == s.user_id,
       where: s.story_id == ^story_id,
-      where: u.is_active == true,
+      where: is_nil(u.deactivated_at),
       select: count(s.id)
 
     Repo.one!(query)
@@ -53,7 +53,7 @@ defmodule Margaret.Stars do
     query = from s in Star,
       join: u in User, on: u.id == s.user_id,
       where: s.comment_id == ^comment_id,
-      where: u.is_active == true,
+      where: is_nil(u.deactivated_at),
       select: count(s.id)
 
     Repo.one!(query)

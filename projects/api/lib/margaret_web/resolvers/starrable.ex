@@ -3,10 +3,7 @@ defmodule MargaretWeb.Resolvers.Starrable do
   The Starrable GraphQL resolvers.
   """
 
-  import Ecto.Query
-
-  alias Margaret.{Accounts, Stories, Stars, Comments}
-  alias Stars.Star
+  alias Margaret.{Stories, Stars, Comments}
   alias Stories.Story
   alias Comments.Comment
 

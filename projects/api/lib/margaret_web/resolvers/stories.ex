@@ -62,7 +62,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_stargazers(%Story{id: story_id}, args, _) do
     query = from u in User,
       join: s in Star, on: s.user_id == u.id, 
-      where: u.is_active == true,
+      where: is_nil(u.deactivated_at),
       where: s.story_id == ^story_id,
       select: {u, s.inserted_at}
 
@@ -86,7 +86,7 @@ defmodule MargaretWeb.Resolvers.Stories do
     query = from c in Comment,
       join: u in User,
       where: c.story_id == ^story_id,
-      where: u.is_active == true
+      where: is_nil(u.deactivated_at)
 
     {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
 

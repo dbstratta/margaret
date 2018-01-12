@@ -123,7 +123,7 @@ defmodule MargaretWeb.Schema.AccountTypes do
     The notification connection of the user.
     """
     connection field :notifications, node_type: :notification do
-      middleware Middleware.Authenticated, resolve: nil
+      middleware Middleware.RequireAuthenticated, resolve: nil
       resolve &Resolvers.Accounts.resolve_notifications/3
     end
 
@@ -141,17 +141,17 @@ defmodule MargaretWeb.Schema.AccountTypes do
     Whether or not this user is the viewing user.
     """
     field :is_viewer, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Accounts.resolve_is_viewer/3
     end
 
     field :viewer_can_follow, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Accounts.resolve_viewer_can_follow/3
     end
 
     field :viewer_has_followed, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Accounts.resolve_viewer_has_followed/3
     end
 
@@ -173,7 +173,7 @@ defmodule MargaretWeb.Schema.AccountTypes do
     Get the authenticated user.
     """
     field :viewer, :user do
-      middleware Middleware.Authenticated, resolve: nil
+      middleware Middleware.RequireAuthenticated, resolve: nil
       resolve &Resolvers.Accounts.resolve_viewer/2
     end
 

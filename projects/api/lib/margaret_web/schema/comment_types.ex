@@ -70,7 +70,7 @@ defmodule MargaretWeb.Schema.CommentTypes do
     Indicates whether the viewer can star this comment.
     """
     field :viewer_can_star, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Comments.resolve_viewer_can_star/3
     end
 
@@ -78,7 +78,7 @@ defmodule MargaretWeb.Schema.CommentTypes do
     Returns a boolean indicating whether the viewing user has starred this comment.
     """
     field :viewer_has_starred, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Comments.resolve_viewer_has_starred/3
     end
 
@@ -86,7 +86,7 @@ defmodule MargaretWeb.Schema.CommentTypes do
     Indicates whether the viewer can bookmark this comment.
     """
     field :viewer_can_bookmark, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Comments.resolve_viewer_can_bookmark/3
     end
 
@@ -94,7 +94,7 @@ defmodule MargaretWeb.Schema.CommentTypes do
     Returns a boolean indicating whether the viewing user has bookmarked this comment.
     """
     field :viewer_has_bookmarked, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Comments.resolve_viewer_has_bookmarked/3
     end
 
@@ -102,7 +102,7 @@ defmodule MargaretWeb.Schema.CommentTypes do
     Indicates whether the viewer can comment on this comment.
     """
     field :viewer_can_comment, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Comments.resolve_viewer_can_comment/3
     end
 
@@ -110,7 +110,7 @@ defmodule MargaretWeb.Schema.CommentTypes do
     Indicates whether the viewer can update this comment.
     """
     field :viewer_can_update, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Comments.resolve_viewer_can_update/3
     end
 
@@ -118,7 +118,7 @@ defmodule MargaretWeb.Schema.CommentTypes do
     Indicates whether the viewer can delete this comment.
     """
     field :viewer_can_delete, non_null(:boolean) do
-      middleware Middleware.Authenticated, resolve: false
+      middleware Middleware.RequireAuthenticated, resolve: false
       resolve &Resolvers.Comments.resolve_viewer_can_delete/3
     end
 
