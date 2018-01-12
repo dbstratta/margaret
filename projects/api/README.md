@@ -1,6 +1,13 @@
 # Margaret API
 
-The Margaret API is a GraphQL built with Elixir, Phoenix, Ecto and Absinthe.
+The Margaret API is a GraphQL built with
+[Elixir](https://elixir-lang.org/),
+[Phoenix](https://hexdocs.pm/phoenix/overview.html),
+[Ecto](https://hexdocs.pm/ecto/Ecto.html),
+[Absinthe](https://hexdocs.pm/absinthe/overview.html)
+and [Absinthe Relay](https://hexdocs.pm/absinthe_relay/Absinthe.Relay.html).
+
+For background tasks we use [Exq](https://hexdocs.pm/exq/readme.html).
 
 We try to comply with the
 [Relay Graphql Server Specification](https://facebook.github.io/relay/docs/en/graphql-server-specification.html) whenever possible.
