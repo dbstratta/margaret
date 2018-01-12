@@ -19,6 +19,11 @@ max_line_length = 100
 indent_size = 4
 max_line_length = 79
 
+[*.md]
+indent_size = 2
+trim_trailing_whitespace = false
+max_line_length = 100
+
 [*.{json,yml}]
 indent_size = 2
 

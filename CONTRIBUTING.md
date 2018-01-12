@@ -22,6 +22,11 @@ and check that you see the React app.
 The GraphiQL playground is served at
 [http://api.margaret.localhost/graphiql](http://api.margaret.localhost/graphiql).
 
+Make sure to read the projects' READMEs before contributing:
+
+* [api](./projects/api/README.md)
+* [web](./projects/web/README.md)
+
 ### Creating a user
 
 Inside the API container run `mix margaret.create_user`.
