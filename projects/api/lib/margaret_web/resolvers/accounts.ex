@@ -147,7 +147,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
 
   Bookmarks are only visible to the user who bookmarked.
   """
-  def resolve_bookmarked( %User{id: user_id}, args, %{context: %{viewer: %{id: user_id}}}) do
+  def resolve_bookmarked(%User{id: user_id}, args, %{context: %{viewer: %{id: user_id}}}) do
     query = from b in Bookmark,
       left_join: s in Story, on: s.id == b.story_id,
       left_join: c in Comment, on: c.id == b.comment_id,

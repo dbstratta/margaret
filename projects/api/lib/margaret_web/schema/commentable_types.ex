@@ -6,7 +6,7 @@ defmodule MargaretWeb.Schema.CommentableTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias MargaretWeb.{Resolvers, Middleware}
+  alias MargaretWeb.Resolvers
 
   @commentable_implementations [
     :story,

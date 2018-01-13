@@ -28,11 +28,14 @@ defmodule Mix.Tasks.Margaret.GetAuthToken do
   end
 
   defp do_run(opts) do
-    cond do
-      Keyword.has_key?(opts, :id) -> %{id: Keyword.get(opts, :id)}
-      Keyword.has_key?(opts, :email) -> %{email: Keyword.get(opts, :email)}
-      Keyword.has_key?(opts, :username) -> %{username: Keyword.get(opts, :username)}
-    end
+    map =
+      cond do
+        Keyword.has_key?(opts, :id) -> %{id: Keyword.get(opts, :id)}
+        Keyword.has_key?(opts, :email) -> %{email: Keyword.get(opts, :email)}
+        Keyword.has_key?(opts, :username) -> %{username: Keyword.get(opts, :username)}
+      end
+    
+    map
     |> get_user()
     |> get_token()
     |> print_token()

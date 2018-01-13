@@ -6,8 +6,6 @@ defmodule MargaretWeb.Schema.TagTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias MargaretWeb.Resolvers
-
   @desc """
   A story tag.
   """

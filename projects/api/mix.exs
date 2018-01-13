@@ -55,6 +55,7 @@ defmodule Margaret.Mixfile do
       {:uuid, "~> 1.1.8"},
       {:slugger, "~> 0.2.0"},
       {:credo, "~> 0.8.10", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 0.5.1", only: [:dev], runtime: false},
     ]
   end
 
