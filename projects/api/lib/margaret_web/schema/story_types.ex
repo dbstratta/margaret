@@ -9,11 +9,11 @@ defmodule MargaretWeb.Schema.StoryTypes do
   alias MargaretWeb.{Resolvers, Middleware}
 
   @desc """
-  The publish status of a story.
+  The audience of a story.
   """
-  enum :story_publish_status do
-    value :public
-    value :draft
+  enum :story_audience do
+    value :all
+    value :members
     value :unlisted
   end
 
@@ -89,9 +89,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
     @desc "Identifies the date and time when the story was published."
     field :published_at, :naive_datetime
 
-    field :publish_status, non_null(:story_publish_status)
-
-    field :publication_scheduled_at, :naive_datetime
+    field :audience, non_null(:story_audience)
 
     field :license, non_null(:story_license)
 
@@ -156,10 +154,9 @@ defmodule MargaretWeb.Schema.StoryTypes do
       input do
         field :title, non_null(:string)
         field :body, non_null(:string)
-        field :summary, :string
         field :publication_id, :id
+        field :audience, non_null(:story_audience)
         field :tags, list_of(:string)
-        field :publish_status, non_null(:story_publish_status)
         field :license, non_null(:story_license)
         field :publish_at, :naive_datetime
       end
@@ -178,10 +175,10 @@ defmodule MargaretWeb.Schema.StoryTypes do
         field :story_id, non_null(:id)
         field :title, :string
         field :body, :string
-        field :summary, :string
-        field :publish_status, :story_publish_status
-        field :license, :story_license
+        field :publication_id, :id
+        field :audience, :story_audience
         field :tags, list_of(:string)
+        field :license, :story_license
         field :publish_at, :naive_datetime
       end
 

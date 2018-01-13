@@ -6,7 +6,9 @@ defmodule Margaret.Comments do
   import Ecto.Query
   alias Margaret.Repo
 
-  alias Margaret.Comments.Comment
+  alias Margaret.{Accounts, Stories, Comments}
+  alias Accounts.User
+  alias Comments.Comment
 
   @doc """
   Gets a comment by its id.
@@ -37,7 +39,7 @@ defmodule Margaret.Comments do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_comment!(term) :: Story.t
+  @spec get_comment!(String.t | non_neg_integer) :: Story.t | no_return
   def get_comment!(id), do: Repo.get!(Comment, id)
 
   @doc """
@@ -45,14 +47,14 @@ defmodule Margaret.Comments do
 
   ## Examples
 
-      iex> get_comment_count(story_id: 123)
+      iex> get_comment_count(%{story_id: 123})
       42
 
-      iex> get_comment_count(comment_id: 234)
+      iex> get_comment_count(%{comment_id: 234})
       815
 
   """
-  def get_comment_count(story_id: story_id) do
+  def get_comment_count(%{story_id: story_id}) do
     query = from c in Comment,
       join: u in User, on: u.id == c.author_id,
       where: c.story_id == ^story_id,
@@ -62,7 +64,7 @@ defmodule Margaret.Comments do
     Repo.one!(query)
   end
 
-  def get_comment_count(comment_id: comment_id) do
+  def get_comment_count(%{comment_id: comment_id}) do
     query = from c in Comment,
       join: u in User, on: u.id == c.author_id,
       where: c.parent_id == ^comment_id,
@@ -70,6 +72,12 @@ defmodule Margaret.Comments do
       select: count(c.id)
 
     Repo.one!(query)
+  end
+
+  def can_see_comment?(%Comment{story_id: story_id}, %User{} = user) do
+    story_id
+    |> Stories.get_story()
+    |> Stories.can_see_story?(user)
   end
 
   @doc """

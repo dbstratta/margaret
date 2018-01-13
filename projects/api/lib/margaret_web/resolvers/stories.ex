@@ -130,7 +130,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   Resolves whether the viewer can update the story.
   """
   def resolve_viewer_can_update(%Story{} = story, _, %{context: %{viewer: %User{} = viewer}}) do
-    {:ok, Stories.can_user_update_story?(story, viewer)}
+    {:ok, Stories.can_update_story?(story, viewer)}
   end
 
   @doc """
@@ -182,7 +182,7 @@ defmodule MargaretWeb.Resolvers.Stories do
     case Stories.get_story(story_id) do
       %Story{} = story ->
         story
-        |> Stories.can_user_update_story?(viewer)
+        |> Stories.can_update_story?(viewer)
         |> do_resolve_update_story(story, attrs)
 
       _ -> {:error, "Story doesn't exist."}

@@ -4,9 +4,10 @@ defmodule Margaret.Stars do
   """
 
   import Ecto.Query
-  alias Margaret.Repo
 
-  alias Margaret.Stars.Star
+  alias Margaret.{Repo, Accounts, Stars}
+  alias Accounts.User
+  alias Stars.Star
 
   @doc """
   Gets a star.
@@ -60,6 +61,10 @@ defmodule Margaret.Stars do
   end
 
   def get_starred_count(user_id) do
-    Repo.one!(from s in Star, where: s.user_id == ^user_id, select: count(s.id))
+    query = from s in Star,
+      where: s.user_id == ^user_id,
+      select: count(s.id)
+
+    Repo.one!(query)
   end
 end

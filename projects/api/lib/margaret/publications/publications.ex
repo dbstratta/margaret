@@ -92,24 +92,24 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> is_publication_member?(123, 123)
+      iex> publication_member?(123, 123)
       true
 
-      iex> is_publication_member?(123, 456)
+      iex> publication_member?(123, 456)
       false
 
   """
-  @spec is_publication_member?(any, any) :: boolean
-  def is_publication_member?(publication_id, user_id) do
+  @spec publication_member?(any, any) :: boolean
+  def publication_member?(publication_id, user_id) do
     publication_id
     |> get_publication_member_role(user_id)
-    |> do_is_publication_member?()
+    |> do_publication_member?()
   end
 
-  defp do_is_publication_member?(role) when not is_nil(role), do: true
-  defp do_is_publication_member?(_), do: false
+  defp do_publication_member?(role) when not is_nil(role), do: true
+  defp do_publication_member?(_), do: false
 
-  def is_publication_editor?(publication_id, user_id) do
+  def publication_editor?(publication_id, user_id) do
     check_role(publication_id, user_id, [:editor])
   end
 
@@ -119,15 +119,15 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> is_publication_admin?(123, 123)
+      iex> publication_admin?(123, 123)
       true
 
-      iex> is_publication_admin?(123, 456)
+      iex> publication_admin?(123, 456)
       false
 
   """
-  @spec is_publication_admin?(any, any) :: boolean
-  def is_publication_admin?(publication_id, user_id) do
+  @spec publication_admin?(any, any) :: boolean
+  def publication_admin?(publication_id, user_id) do
     check_role(publication_id, user_id, [:owner, :admin])
   end
 
@@ -137,15 +137,15 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> is_publication_owner?(123, 123)
+      iex> publication_owner?(123, 123)
       true
 
-      iex> is_publication_owner?(123, 456)
+      iex> publication_owner?(123, 456)
       false
 
   """
-  @spec is_publication_owner?(any, any) :: boolean
-  def is_publication_owner?(publication_id, user_id) do
+  @spec publication_owner?(any, any) :: boolean
+  def publication_owner?(publication_id, user_id) do
     check_role(publication_id, user_id, [:owner])
   end
 

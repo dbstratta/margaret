@@ -44,7 +44,8 @@ defmodule MargaretWeb.Resolvers.Accounts do
   def resolve_stories(%User{id: author_id}, args, _) do
     query = from s in Story,
       where: s.author_id == ^author_id,
-      where: s.publish_status == ^:public
+      where: s.audience == ^:all,
+      where: s.published_at >= ^NaiveDateTime.utc_now()
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end

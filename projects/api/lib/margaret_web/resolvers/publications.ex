@@ -116,14 +116,14 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves whether the user is a member of the publication.
   """
   def resolve_viewer_is_a_member(%{id: publication_id}, _, %{context: %{viewer: viewer}}) do
-    {:ok, Publications.is_publication_member?(publication_id, viewer.id)}
+    {:ok, Publications.publication_member?(publication_id, viewer.id)}
   end
 
   @doc """
   Resolves whether the user can administer the publication.
   """
   def resolve_viewer_can_administer(%{id: publication_id}, _, %{context: %{viewer: viewer}}) do
-    {:ok, Publications.is_publication_admin?(publication_id, viewer.id)}
+    {:ok, Publications.publication_admin?(publication_id, viewer.id)}
   end
 
   @doc """
@@ -173,8 +173,8 @@ defmodule MargaretWeb.Resolvers.Publications do
   end
 
   def resolve_kick_member(
-    %{member_id: member_id}, %{context: %{viewer: %{id: viewer_id}}}
-  ) when member_id === viewer_id do
+    %{member_id: member_id}, %{context: %{viewer: %{id: member_id}}}
+  ) do
     {:error, "You can't kick yourself."}
   end
 
@@ -183,7 +183,7 @@ defmodule MargaretWeb.Resolvers.Publications do
     %{context: %{viewer: %{id: viewer_id}}}
   ) do
     publication_id
-    |> Publications.is_publication_admin?(viewer_id)
+    |> Publications.publication_admin?(viewer_id)
     |> do_resolve_kick_member(publication_id, member_id)
   end
 
@@ -208,7 +208,7 @@ defmodule MargaretWeb.Resolvers.Publications do
     %{context: %{viewer: %{id: viewer_id}}}
   ) do
     publication_id
-    |> Publications.is_publication_owner?(viewer_id)
+    |> Publications.publication_owner?(viewer_id)
     |> do_resolve_leave_publication(publication_id, viewer_id)
   end
 

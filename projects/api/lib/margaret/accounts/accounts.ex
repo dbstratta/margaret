@@ -201,6 +201,8 @@ defmodule Margaret.Accounts do
 
   defp do_maybe_include_deactivated(true, query), do: query
 
+  def member?(%User{}), do: false
+
   @doc """
   Inserts a user.
 
@@ -244,19 +246,11 @@ defmodule Margaret.Accounts do
   @doc """
   Updates a user.
   """
-  def update_user(user_id, attrs) when is_integer(user_id) or is_binary(user_id) do
-    user_id
-    |> get_user()
-    |> update_user(attrs)
-  end
-
   def update_user(%User{} = user, attrs) do
     user
     |> User.changeset(attrs)
     |> Repo.update()
   end
-
-  def update_user(nil, _), do: nil
 
   @doc """
   Deletes a user.
@@ -275,14 +269,16 @@ defmodule Margaret.Accounts do
   after the specified time has passed.
   """
   def mark_user_for_deletion(%User{id: user_id} = user, seconds \\ @seconds_before_user_deletion) do
-    # TODO: finish this function.
-
     user_changeset = User.changeset(user, %{})
+
+    schedule_deletion = fn _ ->
+      Exq.enqueue_in(Exq, "user_deletion", seconds, MargaretWeb.Workers.DeleteAccount, [user_id])
+    end
 
     Multi.new()
     |> Multi.update(:deactivate_user, user_changeset)
+    |> Multi.run(:schedule_deletion, schedule_deletion)
     |> Repo.transaction()
-    Exq.enqueue_in(Exq, "user_deletion", seconds, MargaretWeb.Workers.DeleteAccount, [user_id])
   end
 
   @doc """

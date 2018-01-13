@@ -67,7 +67,7 @@ defmodule MargaretWeb.Resolvers.Comments do
     {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
 
     connection =
-      Map.put(connection, :total_count, Comments.get_comment_count(comment_id: comment_id))
+      Map.put(connection, :total_count, Comments.get_comment_count(%{comment_id: comment_id}))
 
     {:ok, connection}
   end

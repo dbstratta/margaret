@@ -26,19 +26,11 @@ defmodule MargaretWeb.Resolvers.Nodes do
   """
   def resolve_node(%{type: :user, id: id}, _), do: {:ok, Accounts.get_user(id)}
 
-  def resolve_node(%{type: :story, id: story_id}, %{context: %{viewer: %User{} = viewer}}) do
-    case Stories.can_see_story?(story_id, viewer) do
-      {true, story} -> {:ok, story}
-      {false, _} -> {:ok, nil}
-    end
+  def resolve_node(%{type: :story, id: story_id}, %{context: %{viewer: viewer}}) do
+    resolve_story(story_id, viewer)
   end
 
-  def resolve_node(%{type: :story, id: story_id}, _) do
-    case Stories.is_story_public?(story_id) do
-      {true, story} -> {:ok, story}
-      {false, _} -> {:ok, nil}
-    end
-  end
+  def resolve_node(%{type: :story, id: story_id}, _), do: resolve_story(story_id, nil)
 
   def resolve_node(%{type: :publication, id: id}, _), do: {:ok, Publications.get_publication(id)}
 
@@ -46,9 +38,33 @@ defmodule MargaretWeb.Resolvers.Nodes do
     {:ok, Publications.get_publication_invitation(id)}
   end 
 
-  def resolve_node(%{type: :comment, id: id}, _) do
-    {:ok, Comments.get_comment(id)}
+  def resolve_node(%{type: :comment, id: comment_id}, %{context: %{viewer: viewer}}) do
+    resolve_comment(comment_id, viewer)
   end 
 
   def resolve_node(%{type: :tag, id: id}, _), do: {:ok, Tags.get_tag(id)}
+
+  defp resolve_story(story_id, viewer) do
+    story_id
+    |> Stories.get_story()
+    |> do_resolve_story(viewer)
+  end
+
+  defp do_resolve_story(%Story{} = story, viewer) do
+    if Stories.can_see_story?(story, viewer), do: {:ok, story}, else: {:ok, nil}
+  end
+
+  defp do_resolve_story(nil, _), do: {:ok, nil}
+
+  defp resolve_comment(comment_id, viewer) do
+    comment_id
+    |> Comments.get_comment()
+    |> do_resolve_comment(viewer)
+  end
+
+  defp do_resolve_comment(%Comment{} = comment, viewer) do
+    if Comments.can_see_comment?(comment, viewer), do: {:ok, comment}, else: {:ok, nil}
+  end
+
+  defp do_resolve_comment(nil, _), do: {:ok, nil}
 end

@@ -19,8 +19,9 @@ defmodule Margaret.Stories.Story do
     :title,
     :body,
     :author_id,
+    :audience,
     :publication_id,
-    :publish_status,
+    :published_at,
     :license,
   ]
 
@@ -28,14 +29,15 @@ defmodule Margaret.Stories.Story do
     :title,
     :body,
     :author_id,
-    :publish_status,
+    :audience,
+    :license,
   ]
   
   @unique_hash_length 16
 
-  defenum StoryPublishStatus,
-    :story_publish_status,
-    [:public, :draft, :unlisted]
+  defenum StoryAudience,
+    :story_audience,
+    [:all, :members, :unlisted]
 
   defenum StoryLicense,
     :story_license,
@@ -47,15 +49,16 @@ defmodule Margaret.Stories.Story do
     belongs_to :author, User
     field :unique_hash, :string
 
+    field :audience, StoryAudience
     field :published_at, :naive_datetime
-    field :publish_status, StoryPublishStatus
-    field :publication_scheduled_at, :naive_datetime
 
     field :license, StoryLicense
 
     has_many :stars, Star
     has_many :comments, Comment
+
     belongs_to :publication, Publication
+
     many_to_many :tags, Tag, join_through: "story_tags", on_replace: :delete
 
     timestamps()
@@ -63,6 +66,9 @@ defmodule Margaret.Stories.Story do
 
   @doc false
   def changeset(%Story{} = story, %{tags: tags} = attrs) do
+    # If the attributes map contains a %Tag{} list,
+    # delete it from the map and put it in the changeset
+    # with `put_assoc/4`.
     attrs_without_tags = Map.delete(attrs, :tags)
 
     story
@@ -77,7 +83,6 @@ defmodule Margaret.Stories.Story do
     |> foreign_key_constraint(:author_id)
     |> foreign_key_constraint(:publication_id)
     |> maybe_put_unique_hash()
-    |> maybe_put_published_at()
   end
 
   defp maybe_put_unique_hash(%Ecto.Changeset{data: %{unique_hash: nil}} = changeset) do
@@ -93,14 +98,4 @@ defmodule Margaret.Stories.Story do
     |> String.slice(0..@unique_hash_length)
     |> String.downcase()
   end
-
-  # Only put the `published_at` attribute when the story
-  # hasn't been published before and the change is to make it public.
-  defp maybe_put_published_at(
-    %Ecto.Changeset{data: %{published_at: nil}, changes: %{publish_status: :public}} = changeset
-  ) do
-    put_change(changeset, :published_at, NaiveDateTime.utc_now())
-  end
-
-  defp maybe_put_published_at(changeset), do: changeset
 end

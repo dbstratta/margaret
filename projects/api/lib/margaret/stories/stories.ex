@@ -63,111 +63,78 @@ defmodule Margaret.Stories do
   @spec get_story_by_unique_hash(String.t) :: Story.t | nil
   def get_story_by_unique_hash(unique_hash), do: Repo.get_by(Story, unique_hash: unique_hash)
 
-  @doc """
-  Returns `{true, %Story{}}` if the story is public,
-  `{false, %Story{}}` otherwise.
-
-  ## Examples
-
-      iex> is_story_public?(%Story{})
-      {true, %Story{}}
-
-      iex> is_story_public?(123)
-      {false, %Story{}}
-
-      iex> is_story_public?(nil)
-      {false, nil}
-
-  """
-  @spec is_story_public?(Story.t) :: {boolean, Story.t}
-  def is_story_public?(%Story{publish_status: :public} = story), do: {true, story}
-
-  def is_story_public?(%Story{} = story), do: {false, story}
-
-  @spec is_story_public?(nil) :: {false, nil}
-  def is_story_public?(nil), do: {false, nil}
-
-  @spec is_story_public?(String.t | non_neg_integer) :: {boolean, Story.t | nil}
-  def is_story_public?(story_id) when is_integer(story_id) or is_binary(story_id) do
-    story_id
-    |> get_story()
-    |> is_story_public?()
+  def has_been_published?(%Story{published_at: published_at}) do
+    published_at <= NaiveDateTime.utc_now()
   end
 
   @doc """
-  Returns `{true, %Story{}}` if the user can see the story.
-  `{false, %Story{}}` otherwise.
+  Returns `true` if the story is public,
+  `false` otherwise.
 
   ## Examples
 
-      iex> is_story_public?(%Story{})
-      {true, %Story{}}
+      iex> story_public?(%Story{})
+      true
 
-      iex> is_story_public?(123)
-      {false, %Story{}}
+      iex> story_public?(123)
+      false
 
-      iex> is_story_public?(nil)
-      {false, nil}
+      iex> story_public?(nil)
+      false
 
   """
-  @spec can_see_story?(Story.t, User.t) :: {boolean, Story.t}
-  def can_see_story?(
-    %Story{author_id: author_id} = story, %User{id: user_id}
-  ) when author_id === user_id do
-    {true, story}
-  end
+  @spec story_public?(Story.t) :: boolean
+  def story_public?(%Story{audience: :all} = story), do: has_been_published?(story)
 
-  def can_see_story?(%Story{publish_status: :public} = story, _user), do: {true, story}
+  def story_public?(_), do: false
+
+  @doc """
+  Returns `true` if the user can see the story.
+  `false` otherwise.
+
+  ## Examples
+
+      iex> story_public?(%Story{})
+      true
+
+      iex> story_public?(123)
+      false
+
+      iex> story_public?(nil)
+      false
+
+  """
+  @spec can_see_story?(Story.t, User.t) :: boolean
+  def can_see_story?(%Story{author_id: author_id} = story, %User{id: author_id}), do: true
 
   def can_see_story?(
     %Story{publication_id: publication_id} = story, %User{id: user_id}
   ) when not is_nil(publication_id) do
-    {Publications.can_edit_stories?(publication_id, user_id), story}
+    Publications.can_edit_stories?(publication_id, user_id)
   end
 
-  def can_see_story?(story, user) when is_nil(story) or is_nil(user), do: {false, nil}
+  def can_see_story?(%Story{audience: :members} = story, %User{} = user) do
+    is_member = Accounts.member?(user)
+    has_been_published = has_been_published?(story)
 
-  def can_see_story?(story_id, user) when is_integer(story_id) or is_binary(story_id) do
-    can_see_story?(get_story(story_id), user)
+    is_member and has_been_published
   end
 
-  def can_see_story?(story, user_id) when is_integer(user_id) or is_binary(user_id) do
-    can_see_story?(story, Accounts.get_user(user_id))
-  end
+  def can_see_story?(%Story{} = story, _user), do: story_public?(story)
 
   @doc """
   Returns `true` if the user can update the story,
   `false` otherwise.
   """
-  def can_user_update_story?(
-    %Story{author_id: author_id}, %User{id: user_id}
-  ) when author_id === user_id do
-    true
-  end
+  def can_update_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
 
-  def can_user_update_story?(
-    %Story{author_id: author_id, publication_id: nil}, %User{id: user_id}
-  ) when author_id !== user_id do
-    false
-  end
-
-  def can_user_update_story?(
-    %Story{publication_id: publication_id}, %User{id: user_id}
+  def can_update_story?(
+    %Story{publication_id: publication_id} = story, %User{id: user_id}
   ) when not is_nil(publication_id) do
     Publications.can_edit_stories?(publication_id, user_id)
   end
 
-  def can_user_update_story?(story, user) when is_nil(story) or is_nil(user) do
-    false
-  end
-
-  def can_user_update_story?(story_id, user) when is_binary(story_id) or is_integer(story_id) do
-    can_user_update_story?(get_story(story_id), user)
-  end
-
-  def can_user_update_story?(story, user_id) when is_binary(user_id) or is_integer(user_id) do
-    can_user_update_story?(story, Accounts.get_user(user_id))
-  end
+  def can_update_story?(_, _), do: false
 
   @doc """
   Inserts a story.

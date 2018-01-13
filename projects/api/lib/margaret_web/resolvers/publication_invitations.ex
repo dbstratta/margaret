@@ -17,8 +17,8 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
       status: :pending
     }
 
-    with true <- Publications.is_publication_admin?(publication_id, viewer_id),
-         false <- Publications.is_publication_member?(publication_id, invitee_id),
+    with true <- Publications.publication_admin?(publication_id, viewer_id),
+         false <- Publications.publication_member?(publication_id, invitee_id),
          {:ok, invitation} <- Publications.insert_publication_invitation(attrs) do
       {:ok, %{invitation: invitation}}
     else
