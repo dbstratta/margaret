@@ -73,11 +73,11 @@
     react-inspector "^2.2.2"
     uuid "^3.1.0"
 
-"@storybook/addon-links@3.3.8", "@storybook/addon-links@^3.3.8":
-  version "3.3.8"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-3.3.8.tgz#d760952951c1f51eef280ceb091505d7af84bfb6"
+"@storybook/addon-links@3.3.9", "@storybook/addon-links@^3.3.8":
+  version "3.3.9"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-3.3.9.tgz#13781ac1c21ddfe347ece6ceab8518c8d1f98a0f"
   dependencies:
-    "@storybook/components" "^3.3.8"
+    "@storybook/components" "^3.3.9"
     global "^4.3.2"
     prop-types "^15.5.10"
 
@@ -86,14 +86,14 @@
   resolved "https://registry.yarnpkg.com/@storybook/addons/-/addons-3.3.9.tgz#356ce7f1de892d88ca4bc5f686d06e07dd8c2108"
 
 "@storybook/channel-postmessage@^3.3.8":
-  version "3.3.8"
-  resolved "https://registry.yarnpkg.com/@storybook/channel-postmessage/-/channel-postmessage-3.3.8.tgz#249a25e6f8c1c59e229ecec71a545c8127d59ab8"
+  version "3.3.9"
+  resolved "https://registry.yarnpkg.com/@storybook/channel-postmessage/-/channel-postmessage-3.3.9.tgz#a59220f9ecbdbe05deac6ac4339715aa587d41dd"
   dependencies:
-    "@storybook/channels" "^3.3.8"
+    "@storybook/channels" "^3.3.9"
     global "^4.3.2"
     json-stringify-safe "^5.0.1"
 
-"@storybook/channels@^3.3.8":
+"@storybook/channels@^3.3.9":
   version "3.3.9"
   resolved "https://registry.yarnpkg.com/@storybook/channels/-/channels-3.3.9.tgz#3116a6c5e441fd057558870b254c34fe3a9fbfb0"
 
@@ -101,7 +101,7 @@
   version "3.3.9"
   resolved "https://registry.yarnpkg.com/@storybook/client-logger/-/client-logger-3.3.9.tgz#a73e382c383c1bfa6d2ff7fa5cae77cd09efa524"
 
-"@storybook/components@^3.3.8":
+"@storybook/components@^3.3.9":
   version "3.3.9"
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-3.3.9.tgz#1f7ced8b10a0e405c1d3fd6fe7ef7b8957ddf89f"
   dependencies:
@@ -212,10 +212,10 @@
     webpack-hot-middleware "^2.21.0"
 
 "@storybook/ui@^3.3.8":
-  version "3.3.8"
-  resolved "https://registry.yarnpkg.com/@storybook/ui/-/ui-3.3.8.tgz#fc9e9f3da3d988da8b6e07f78e1f6db0a5c6e1dd"
+  version "3.3.9"
+  resolved "https://registry.yarnpkg.com/@storybook/ui/-/ui-3.3.9.tgz#abb1df557131b174bf3c0879863a309ee85de8e3"
   dependencies:
-    "@storybook/components" "^3.3.8"
+    "@storybook/components" "^3.3.9"
     "@storybook/mantra-core" "^1.7.2"
     "@storybook/react-komposer" "^2.0.3"
     babel-runtime "^6.26.0"
