@@ -49,6 +49,8 @@ defmodule Margaret.Stories.Story do
 
     field :published_at, :naive_datetime
     field :publish_status, StoryPublishStatus
+    field :publication_scheduled_at, :naive_datetime
+
     field :license, StoryLicense
 
     has_many :stars, Star

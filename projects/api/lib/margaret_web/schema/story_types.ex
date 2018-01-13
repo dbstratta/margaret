@@ -91,6 +91,8 @@ defmodule MargaretWeb.Schema.StoryTypes do
 
     field :publish_status, non_null(:story_publish_status)
 
+    field :publication_scheduled_at, :naive_datetime
+
     field :license, non_null(:story_license)
 
     field :viewer_can_star, non_null(:boolean) do
