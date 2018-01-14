@@ -6,13 +6,13 @@ defmodule MargaretWeb.Helpers.GraphQLErrors do
   @typep t :: Absinthe.Type.Field.error_result
 
   @doc """
-  Creates an error tuple with a message.
+  Creates an error tuple.
   """
-  @spec error_creator(String.t) :: t
-  def error_creator(message), do: {:error, message}
+  @spec error_creator(any) :: t
+  def error_creator(reason), do: {:error, reason}
 
   @doc """
-  Return the `Unauthorized` error.
+  Returns the `Unauthorized` error.
   """
   @spec unauthorized :: t
   def unauthorized, do: error_creator("Unauthorized")
@@ -21,14 +21,18 @@ defmodule MargaretWeb.Helpers.GraphQLErrors do
   def deactivated, do: error_creator("Your account was deactivated")
 
   @doc """
-  Return the `Something went wrong` error.
+  Returns the `Something went wrong` error.
   """
   @spec something_went_wrong :: t
   def something_went_wrong, do: error_creator("Something went wrong")
 
   @doc """
-  Return the `Not implemented` error.
+  Returns the `Not implemented` error.
   """
   @spec not_implemented :: t
   def not_implemented, do: error_creator("Not implemented")
+
+  defp doesnt_exist(thing), do: error_creator("#{thing} doesn't exist")
+
+  def publication_doesnt_exist(), do: doesnt_exist("Publication")
 end

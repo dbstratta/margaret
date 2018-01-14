@@ -92,6 +92,15 @@ defmodule MargaretWeb.Resolvers.Publications do
     {:ok, connection}
   end
 
+  def resolve_tags(%Publication{} = publication, _, _) do
+    tags =
+      publication
+      |> Repo.preload(:tags)
+      |> Map.get(:tags)
+
+    {:ok, tags}
+  end
+
   @doc """
   Resolves the invitations sent by the publication.
   """
@@ -158,10 +167,31 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves the update of a publication.
   """
   def resolve_update_publication(
-    %{publication_id: _publication_id}, %{context: %{viewer: %{id: _viewer_id}}}
+    %{publication_id: publication_id} = args, %{context: %{viewer: %{id: viewer_id}}}
   ) do
-    Helpers.GraphQLErrors.not_implemented()
+    args = Map.delete(args, :publication_id)
+
+    publication_id
+    |> Publications.can_update_publication?(viewer_id)
+    |> do_resolve_update_publication(publication_id, args)
   end
+
+  defp do_resolve_update_publication(true, publication_id, attrs) do
+    publication_id
+    |> Publications.get_publication()
+    |> do_resolve_update_publication(attrs)
+  end
+
+  defp do_resolve_update_publication(false, _, _), do: Helpers.GraphQLErrors.unauthorized()
+
+  defp do_resolve_update_publication(%Publication{} = publication, attrs) do
+    case Publications.update_publication(publication, attrs) do
+      {:ok, %{publication: publication}} -> {:ok, %{publication: publication}}
+      {:error, _, reason, _} -> {:error, reason}
+    end
+  end
+
+  defp do_resolve_update_publication(nil, _), do: Helpers.GraphQLErrors.publication_doesnt_exist()
   
   @doc """
   Resolves the kick of a publication member.

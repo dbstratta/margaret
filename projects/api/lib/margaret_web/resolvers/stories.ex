@@ -214,15 +214,15 @@ defmodule MargaretWeb.Resolvers.Stories do
   defp do_resolve_delete_story(story, viewer) do
     story
     |> Stories.can_delete_story?(viewer)
-    |> do_resolve_delete_story(story, viewer)
+    |> do_resolve_delete_story(story)
   end
 
-  defp do_resolve_delete_story(true, story, viewer) do
+  defp do_resolve_delete_story(true, story) do
     case Stories.delete_story(story) do
       {:ok, _} -> {:ok, %{story: story}}
       {:error, changeset} -> {:error, changeset}
     end
   end
 
-  defp do_resolve_delete_story(false, _, _), do: Helpers.GraphQLErrors.unauthorized()
+  defp do_resolve_delete_story(false, _), do: Helpers.GraphQLErrors.unauthorized()
 end

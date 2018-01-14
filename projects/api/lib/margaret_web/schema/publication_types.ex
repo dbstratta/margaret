@@ -93,6 +93,10 @@ defmodule MargaretWeb.Schema.PublicationTypes do
       resolve &Resolvers.Publications.resolve_followers/3
     end
 
+    field :tags, non_null(list_of(:tag)) do
+      resolve &Resolvers.Publications.resolve_tags/3
+    end
+
     @desc "The membership invitations of the publication."
     connection field :membership_invitations, node_type: :publication_invitation do
       middleware Middleware.RequireAuthenticated, resolve: nil
@@ -141,8 +145,9 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     """
     payload field :create_publication do
       input do
-        field :name, non_null(:string)
+        field :name, :string
         field :display_name, non_null(:string)
+        field :tags, list_of(:string)
       end
 
       output do
@@ -192,6 +197,9 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     payload field :update_publication do
       input do
         field :publication_id, non_null(:id)
+        field :name, :string
+        field :display_name, :string
+        field :tags, list_of(:string)
       end
 
       output do

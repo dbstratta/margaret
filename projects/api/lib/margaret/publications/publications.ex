@@ -6,7 +6,7 @@ defmodule Margaret.Publications do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stories, Publications}
+  alias Margaret.{Repo, Accounts, Stories, Publications, Tags}
   alias Stories.Story
   alias Publications.{Publication, PublicationMembership, PublicationInvitation}
   alias Accounts.User
@@ -164,7 +164,7 @@ defmodule Margaret.Publications do
   """
   @spec can_write_stories?(any, any) :: boolean
   def can_write_stories?(publication_id, user_id) do
-    check_role(publication_id, user_id, [:owner, :admin, :writer])
+    check_role(publication_id, user_id, [:owner, :admin, :editor, :writer])
   end
 
   @doc """
@@ -204,15 +204,71 @@ defmodule Margaret.Publications do
   end
 
   @doc """
+  Returns true if the user can update the publication information.
+  False otherwise.
+
+  ## Examples
+
+      iex> can_update_publication?(123, 123)
+      true
+
+      iex> can_update_publication?(123, 456)
+      false
+
+  """
+  @spec can_update_publication?(any, any) :: boolean
+  def can_update_publication?(publication_id, user_id) do
+    check_role(publication_id, user_id, [:owner, :admin])
+  end
+
+  @doc """
   Creates a publication.
   """
-  def insert_publication(%{owner_id: owner_id} = attrs) do
-    publication_changeset = Publication.changeset(%Publication{}, attrs)
-
+  def insert_publication(%{tags: tags} = attrs) do
     Multi.new()
-    |> Multi.insert(:publication, publication_changeset)
+    |> Multi.run(:tags, fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
+    |> do_insert_publication(attrs)
+  end
+
+  def insert_publication(attrs), do: do_insert_publication(Multi.new(), attrs)
+
+  defp do_insert_publication(multi, %{owner_id: owner_id} = attrs) do
+    multi
+    |> Multi.run(:publication, &upsert_publication_fn(%Publication{}, attrs, &1))
     |> Multi.run(:membership, &insert_owner(&1, owner_id))
     |> Repo.transaction()
+  end
+
+  def update_publication(%Publication{} = publication, %{tags: tags} = attrs) do
+    Multi.new()
+    |> Multi.run(:tags, fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
+    |> do_update_publication(publication, attrs)
+  end
+
+  def update_publication(%Publication{} = publication, attrs) do
+    do_update_publication(Multi.new(), publication, attrs)
+  end
+
+  defp do_update_publication(multi, publication, attrs) do
+    multi
+    |> Multi.run(:publication, &upsert_publication_fn(publication, attrs, &1))
+    |> Repo.transaction()
+  end
+
+  defp upsert_publication_fn(publication, attrs, %{tags: tags}) do
+    attrs_with_tags = Map.put(attrs, :tags, tags)
+
+    publication
+    |> Repo.preload(:tags)
+    |> upsert_publication_fn(attrs_with_tags)
+  end
+
+  defp upsert_publication_fn(publication, attrs, _), do: upsert_publication_fn(publication, attrs)
+
+  defp upsert_publication_fn(publication, attrs) do
+    publication
+    |> Publication.changeset(attrs)
+    |> Repo.insert_or_update()
   end
 
   defp insert_owner(%{publication: %{id: publication_id}}, owner_id) do

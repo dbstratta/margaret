@@ -157,8 +157,8 @@ defmodule Margaret.Stories do
   def insert_story(attrs), do: upsert_story(%Story{}, attrs)
 
   defp upsert_story(story, %{tags: tags} = attrs) do
-    upsert_story_fn = fn %{tags: tags} ->
-      attrs_with_tags = Map.put(attrs, :tags, tags)
+    upsert_story_fn = fn %{tags: tag_structs} ->
+      attrs_with_tags = Map.put(attrs, :tags, tag_structs)
 
       story
       |> Repo.preload(:tags)
