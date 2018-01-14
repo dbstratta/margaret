@@ -6,7 +6,7 @@ defmodule MargaretWeb.Schema.FollowableTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias MargaretWeb.{Resolvers, Middleware}
+  alias MargaretWeb.Resolvers
 
   @followable_implementations [
     :user,

@@ -16,8 +16,7 @@ defmodule Margaret.Stories.Story do
   @type t :: %Story{}
 
   @permitted_attrs [
-    :title,
-    :body,
+    :content,
     :author_id,
     :audience,
     :publication_id,
@@ -26,8 +25,7 @@ defmodule Margaret.Stories.Story do
   ]
 
   @required_attrs [
-    :title,
-    :body,
+    :content,
     :author_id,
     :audience,
     :license,
@@ -44,8 +42,8 @@ defmodule Margaret.Stories.Story do
     [:all_rights_reserved, :public_domain]
 
   schema "stories" do
-    field :title, :string
-    field :body, :string
+    # `content` isn't plaintext, it contains metadata, so we store it as a map (JSON).
+    field :content, :map
     belongs_to :author, User
     field :unique_hash, :string
 

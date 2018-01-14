@@ -41,14 +41,16 @@ defmodule MargaretWeb.Schema.StoryTypes do
   """
   node object :story do
     @desc "The title of the story."
-    field :title, non_null(:string)
+    field :title, non_null(:string) do
+      resolve &Resolvers.Stories.resolve_title/3
+    end
 
-    @desc "The body of the story."
-    field :body, non_null(:string)
+    @desc "The content of the story."
+    field :content, non_null(:json)
 
     @desc "The author of the story."
     field :author, non_null(:user) do
-      resolve &Resolvers.Accounts.resolve_user/3
+      resolve &Resolvers.Stories.resolve_author/3
     end
 
     @desc "The slug of the story."
@@ -152,8 +154,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
     @desc "Creates a story."
     payload field :create_story do
       input do
-        field :title, non_null(:string)
-        field :body, non_null(:string)
+        field :content, non_null(:json)
         field :publication_id, :id
         field :audience, non_null(:story_audience)
         field :tags, list_of(:string)
@@ -173,8 +174,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
     payload field :update_story do
       input do
         field :story_id, non_null(:id)
-        field :title, :string
-        field :body, :string
+        field :content, :json
         field :publication_id, :id
         field :audience, :story_audience
         field :tags, list_of(:string)

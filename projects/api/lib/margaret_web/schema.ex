@@ -7,6 +7,7 @@ defmodule MargaretWeb.Schema do
   use Absinthe.Relay.Schema, :modern
 
   alias MargaretWeb.Schema.{
+    JSONTypes,
     NodeTypes,
     AccountTypes,
     StoryTypes,
@@ -36,6 +37,7 @@ defmodule MargaretWeb.Schema do
 
   import_types Absinthe.Type.Custom
 
+  import_types JSONTypes
   import_types NodeTypes
   import_types AccountTypes
   import_types StoryTypes

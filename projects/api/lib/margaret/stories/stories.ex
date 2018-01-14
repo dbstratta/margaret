@@ -63,6 +63,18 @@ defmodule Margaret.Stories do
   @spec get_story_by_unique_hash(String.t) :: Story.t | nil
   def get_story_by_unique_hash(unique_hash), do: Repo.get_by(Story, unique_hash: unique_hash)
 
+  def get_title(%Story{content: %{"blocks" => [%{"text" => title} | _]}}) do
+    title
+  end
+
+  def get_slug(%Story{unique_hash: unique_hash} = story) do
+    story
+    |> Stories.get_title()
+    |> Slugger.slugify_downcase()
+    |> Kernel.<>("-")
+    |> Kernel.<>(unique_hash)
+  end
+
   def has_been_published?(%Story{published_at: published_at}) do
     published_at <= NaiveDateTime.utc_now()
   end
@@ -105,10 +117,10 @@ defmodule Margaret.Stories do
 
   """
   @spec can_see_story?(Story.t, User.t) :: boolean
-  def can_see_story?(%Story{author_id: author_id} = story, %User{id: author_id}), do: true
+  def can_see_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
 
   def can_see_story?(
-    %Story{publication_id: publication_id} = story, %User{id: user_id}
+    %Story{publication_id: publication_id}, %User{id: user_id}
   ) when not is_nil(publication_id) do
     Publications.can_edit_stories?(publication_id, user_id)
   end
@@ -129,59 +141,52 @@ defmodule Margaret.Stories do
   def can_update_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
 
   def can_update_story?(
-    %Story{publication_id: publication_id} = story, %User{id: user_id}
+    %Story{publication_id: publication_id}, %User{id: user_id}
   ) when not is_nil(publication_id) do
     Publications.can_edit_stories?(publication_id, user_id)
   end
 
   def can_update_story?(_, _), do: false
 
+  def can_delete_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
+  def can_delete_story?(_, _), do: false
+
   @doc """
   Inserts a story.
   """
-  def insert_story(attrs) do
-    upsert_story(%Story{}, attrs)
-  end
+  def insert_story(attrs), do: upsert_story(%Story{}, attrs)
 
   defp upsert_story(story, %{tags: tags} = attrs) do
+    upsert_story_fn = fn %{tags: tags} ->
+      attrs_with_tags = Map.put(attrs, :tags, tags)
+
+      story
+      |> Repo.preload(:tags)
+      |> Story.changeset(attrs_with_tags)
+      |> Repo.insert_or_update()
+    end
+
     Multi.new()
     |> Multi.run(:tags, fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
-    |> Multi.run(:story, &do_upsert_story(story, attrs, &1))
+    |> Multi.run(:story, upsert_story_fn)
     |> Repo.transaction()
   end
 
   defp upsert_story(story, attrs) do
-    story
-    |> Story.changeset(attrs)
-    |> Repo.insert_or_update()
-  end
+    story_changeset = Story.changeset(story, attrs)
 
-
-  defp do_upsert_story(story, attrs, %{tags: tags}) do
-    attrs_with_tags = Map.put(attrs, :tags, tags)
-
-    story
-    |> Story.changeset(attrs_with_tags)
-    |> Repo.insert_or_update()
+    Multi.new()
+    |> Multi.insert_or_update(:story, story_changeset)
+    |> Repo.transaction()
   end
 
   @doc """
   Updates a story.
   """
-  def update_story(%Story{} = story, attrs) do
-    upsert_story(story, attrs)
-  end
-
-  def update_story(story_id, attrs) when is_integer(story_id) or is_binary(story_id) do
-    story_id
-    |> get_story()
-    |> upsert_story(attrs)
-  end
+  def update_story(%Story{} = story, attrs), do: upsert_story(story, attrs)
 
   @doc """
   Deletes a story.
   """
-  def delete_story(id) do
-    Repo.delete(%Story{id: id})
-  end
+  def delete_story(%Story{} = story), do: Repo.delete(story)
 end

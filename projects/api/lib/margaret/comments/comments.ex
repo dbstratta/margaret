@@ -22,7 +22,7 @@ defmodule Margaret.Comments do
       nil
 
   """
-  @spec get_comment(term) :: Comment.t | nil
+  @spec get_comment(String.t | non_neg_integer) :: Comment.t | nil
   def get_comment(id), do: Repo.get(Comment, id)
 
   @doc """
@@ -39,7 +39,7 @@ defmodule Margaret.Comments do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_comment!(String.t | non_neg_integer) :: Story.t | no_return
+  @spec get_comment!(String.t | non_neg_integer) :: Comment.t | no_return
   def get_comment!(id), do: Repo.get!(Comment, id)
 
   @doc """
@@ -55,21 +55,27 @@ defmodule Margaret.Comments do
 
   """
   def get_comment_count(%{story_id: story_id}) do
-    query = from c in Comment,
-      join: u in User, on: u.id == c.author_id,
-      where: c.story_id == ^story_id,
-      where: is_nil(u.deactivated_at),
-      select: count(c.id)
+    query =
+      from c in Comment,
+        where: c.story_id == ^story_id
 
-    Repo.one!(query)
+    do_get_comment_count(query)
   end
 
   def get_comment_count(%{comment_id: comment_id}) do
-    query = from c in Comment,
-      join: u in User, on: u.id == c.author_id,
-      where: c.parent_id == ^comment_id,
-      where: is_nil(u.deactivated_at),
-      select: count(c.id)
+    query =
+      from c in Comment,
+        where: c.parent_id == ^comment_id
+
+    do_get_comment_count(query)
+  end
+
+  defp do_get_comment_count(query) do
+    query =
+      from c in query,
+        join: u in User, on: u.id == c.author_id,
+        where: is_nil(u.deactivated_at),
+        select: count(c.id)
 
     Repo.one!(query)
   end

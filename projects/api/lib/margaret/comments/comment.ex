@@ -14,19 +14,19 @@ defmodule Margaret.Comments.Comment do
 
   @permitted_attrs [
     :author_id,
-    :body,
+    :content,
     :story_id,
     :parent_id,
   ]
 
   @required_attrs [
     :author_id,
-    :body,
+    :content,
     :story_id,
   ]
 
   schema "comments" do
-    field :body, :string
+    field :content, :map
     belongs_to :author, User
     has_many :stars, Star
 
@@ -49,6 +49,6 @@ defmodule Margaret.Comments.Comment do
   @doc false
   def update_changeset(%Comment{} = comment, attrs) do
     comment
-    |> cast(attrs, [:body])
+    |> cast(attrs, [:content])
   end
 end

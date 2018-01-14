@@ -24,7 +24,6 @@ defmodule MargaretWeb.Resolvers.Accounts do
   Resolves a user by its username.
   """
   def resolve_user(%{username: username}, _), do: {:ok, Accounts.get_user_by_username(username)}
-  def resolve_user(%Story{author_id: author_id}, _, _), do: {:ok, Accounts.get_user(author_id)}
 
   @doc """
   Resolves a connection of stories of a user.

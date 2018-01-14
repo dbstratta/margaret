@@ -9,8 +9,7 @@ defmodule Margaret.Repo.Migrations.AddStoriesTable do
     Margaret.Stories.Story.StoryLicense.create_type()
 
     create table(:stories) do
-      add :title, :string, size: 128, null: false
-      add :body, :text, null: false
+      add :content, :map, null: false
       add :author_id, references(:users, on_delete: :delete_all), null: false
       add :unique_hash, :string, size: 32, null: false
 

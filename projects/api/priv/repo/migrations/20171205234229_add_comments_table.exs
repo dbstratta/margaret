@@ -6,7 +6,7 @@ defmodule Margaret.Repo.Migrations.AddCommentsTable do
   @doc false
   def change do
     create table(:comments) do
-      add :body, :text, null: false
+      add :content, :map, null: false
       add :author_id, references(:users), null: false
 
       add :story_id, references(:stories, on_delete: :delete_all), null: false

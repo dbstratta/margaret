@@ -24,9 +24,9 @@ defmodule MargaretWeb.Schema.CommentTypes do
   """
   node object :comment do
     @desc """
-    The body of the comment.
+    The content of the comment.
     """
-    field :body, non_null(:string)
+    field :content, non_null(:json)
 
     @desc """
     The author of the comment.
@@ -130,7 +130,7 @@ defmodule MargaretWeb.Schema.CommentTypes do
     payload field :update_comment do
       input do
         field :comment_id, non_null(:id)
-        field :body, :string
+        field :content, :json
       end
 
       output do

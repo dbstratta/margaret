@@ -19,17 +19,19 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_story(%{slug: slug}, _), do: {:ok, Stories.get_story_by_slug(slug)}
 
   @doc """
+  Resolves the title of the story.
+  """
+  def resolve_title(%Story{} = story, _, _), do: {:ok, Stories.get_title(story)}
+
+  @doc """
+  Resolves the authro of the story.
+  """
+  def resolve_author(%Story{author_id: author_id}, _, _), do: {:ok, Accounts.get_user(author_id)}
+
+  @doc """
   Resolves the slug of the story.
   """
-  def resolve_slug(%Story{title: title, unique_hash: unique_hash}, _, _) do
-    slug =
-      title
-      |> Slugger.slugify_downcase()
-      |> Kernel.<>("-")
-      |> Kernel.<>(unique_hash)
-
-    {:ok, slug}
-  end
+  def resolve_slug(%Story{} = story, _, _), do: {:ok, Stories.get_slug(story)}
 
   @doc """
   Resolves the publication of the story.
@@ -53,6 +55,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   Resolves a connection of stories.
   """
   def resolve_feed(args, _) do
+    # TODO: Implement a better feed.
     Relay.Connection.from_query(Story, &Repo.all/1, args)
   end
 
@@ -189,11 +192,9 @@ defmodule MargaretWeb.Resolvers.Stories do
     end
   end
 
-  defp do_resolve_update_story(true, %Story{} = story, attrs) do
+  defp do_resolve_update_story(true, story, attrs) do
     case Stories.update_story(story, attrs) do
       {:ok, %{story: story}} -> {:ok, %{story: story}}
-      {:ok, story} -> {:ok, %{story: story}}
-      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
       {:error, _, %Ecto.Changeset{} = changeset, _} -> {:error, changeset}
     end
   end
@@ -203,15 +204,25 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves a story deletion.
   """
-  def resolve_delete_story(%{story_id: story_id}, %{context: %{viewer: %{id: viewer_id}}}) do
-    with %Story{author_id: author_id} = story <- Stories.get_story(story_id),
-         true <- author_id === viewer_id,
-         {:ok, _} <- Stories.delete_story(story_id) do
-      {:ok, %{story: story}}
-    else
-      nil -> Helpers.GraphQLErrors.error_creator("Story with id #{story_id} doesn't exist.")
-      false -> Helpers.GraphQLErrors.unauthorized()
-      {:error, _} -> Helpers.GraphQLErrors.something_went_wrong()
+  def resolve_delete_story(%{story_id: story_id}, %{context: %{viewer: viewer}}) do
+    case Stories.get_story(story_id) do
+      %Story{} = story -> do_resolve_delete_story(story, viewer)
+      _ -> {:error, "Story doesn't exist."}
     end
   end
+
+  defp do_resolve_delete_story(story, viewer) do
+    story
+    |> Stories.can_delete_story?(viewer)
+    |> do_resolve_delete_story(story, viewer)
+  end
+
+  defp do_resolve_delete_story(true, story, viewer) do
+    case Stories.delete_story(story) do
+      {:ok, _} -> {:ok, %{story: story}}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  defp do_resolve_delete_story(false, _, _), do: Helpers.GraphQLErrors.unauthorized()
 end

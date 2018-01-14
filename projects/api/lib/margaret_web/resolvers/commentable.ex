@@ -7,22 +7,22 @@ defmodule MargaretWeb.Resolvers.Commentable do
   alias Comments.Comment
 
   def resolve_comment(
-    %{commentable_id: %{type: :comment, id: parent_id}, body: body},
+    %{commentable_id: %{type: :comment, id: parent_id}, content: content},
     %{context: %{viewer: %{id: viewer_id}}}
   ) do
     case Comments.get_comment(parent_id) do
       %Comment{story_id: story_id} ->
         do_resolve_comment(
-          %{body: body, story_id: story_id, parent_id: parent_id, author_id: viewer_id})
+          %{content: content, story_id: story_id, parent_id: parent_id, author_id: viewer_id})
       _ -> {:error, "The parent comment doesn't exist."}
     end
   end
 
   def resolve_comment(
-    %{commentable_id: %{type: :story, id: story_id}, body: body},
+    %{commentable_id: %{type: :story, id: story_id}, content: content},
     %{context: %{viewer: %{id: viewer_id}}}
   ) do
-    do_resolve_comment(%{body: body, story_id: story_id, author_id: viewer_id})
+    do_resolve_comment(%{content: content, story_id: story_id, author_id: viewer_id})
   end
 
   defp do_resolve_comment(attrs) do
