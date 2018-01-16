@@ -168,6 +168,24 @@ defmodule Margaret.Publications do
   end
 
   @doc """
+  Returns true if the user can publish stories for the publication.
+  False otherwise.
+
+  ## Examples
+
+      iex> can_publish_stories?(123, 123)
+      true
+
+      iex> can_publish_stories?(123, 456)
+      false
+
+  """
+  @spec can_publish_stories?(any, any) :: boolean
+  def can_publish_stories?(publication_id, user_id) do
+    check_role(publication_id, user_id, [:owner, :admin, :editor])
+  end
+
+  @doc """
   Returns true if the user can edit stories for the publication.
   False otherwise.
 

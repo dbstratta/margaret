@@ -52,6 +52,9 @@ defmodule Margaret.Accounts.User do
   end
 
   @doc false
+  def changeset(attrs), do: changeset(%User{}, attrs)
+
+  @doc false
   def changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, @permitted_attrs)

@@ -1,6 +1,6 @@
 FROM elixir:1.5.2
 
-LABEL name="margaret_api"
+LABEL name="margaret_api_dev"
 LABEL version="1.0.0"
 LABEL maintainer="strattadb@gmail.com"
 

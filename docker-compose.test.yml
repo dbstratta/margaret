@@ -10,6 +10,7 @@ services:
       - VIRTUAL_PORT=4000
 
       - CI
+      - MIX_ENV=test
 
   web:
     build:

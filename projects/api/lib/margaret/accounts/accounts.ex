@@ -217,8 +217,8 @@ defmodule Margaret.Accounts do
   """
   @spec insert_user(%{optional(any) => any}) :: {:error, Ecto.Changeset.t} | {:ok, User.t}
   def insert_user(attrs) do
-    %User{}
-    |> User.changeset(attrs)
+    attrs
+    |> User.changeset()
     |> Repo.insert()
   end
 
@@ -238,8 +238,8 @@ defmodule Margaret.Accounts do
   """
   @spec insert_user!(%{optional(any) => any}) :: User.t | no_return
   def insert_user!(attrs) do
-    %User{}
-    |> User.changeset(attrs)
+    attrs
+    |> User.changeset()
     |> Repo.insert!()
   end
 
@@ -296,8 +296,8 @@ defmodule Margaret.Accounts do
   @spec insert_social_login(%{optional(any) => any}) ::
     {:error, Ecto.Changeset.t} | {:ok, SocialLogin.t}
   def insert_social_login(attrs) do
-    %SocialLogin{}
-    |> SocialLogin.changeset(attrs)
+    attrs
+    |> SocialLogin.changeset()
     |> Repo.insert()
   end
 
@@ -316,8 +316,8 @@ defmodule Margaret.Accounts do
 
   """
   def insert_social_login!(attrs) do
-    %SocialLogin{}
-    |> SocialLogin.changeset(attrs)
+    attrs
+    |> SocialLogin.changeset()
     |> Repo.insert!()
   end
 
@@ -436,8 +436,8 @@ defmodule Margaret.Accounts do
   end
 
   def insert_follow(attrs) do
-    %Follow{}
-    |> Follow.changeset(attrs)
+    attrs
+    |> Follow.changeset()
     |> Repo.insert()
   end
 

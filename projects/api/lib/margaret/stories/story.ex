@@ -63,6 +63,9 @@ defmodule Margaret.Stories.Story do
   end
 
   @doc false
+  def changeset(attrs), do: changeset(%Story{}, attrs)
+
+  @doc false
   def changeset(%Story{} = story, %{tags: tags} = attrs) do
     # If the attributes map contains a %Tag{} list,
     # delete it from the map and put it in the changeset

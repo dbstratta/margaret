@@ -30,6 +30,9 @@ defmodule Margaret.Accounts.Follow do
   end
 
   @doc false
+  def changeset(attrs), do: changeset(%Follow{}, attrs)
+
+  @doc false
   def changeset(%Follow{} = follow, attrs) do
     follow
     |> cast(attrs, @permitted_attrs)

@@ -113,6 +113,14 @@ defmodule MargaretWeb.Schema.StarrableTypes do
   object :starrable_subscriptions do
     field :starrable_starred, :starrable do
       arg :starrable_id, non_null(:id)
+
+      config fn args, _ ->
+        {:ok, topic: args.starrable_id}
+      end
+
+      trigger :star, topic: fn starrable ->
+        starrable.id
+      end
     end
   end
 end

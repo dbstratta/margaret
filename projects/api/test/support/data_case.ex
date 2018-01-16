@@ -16,12 +16,20 @@ defmodule Margaret.DataCase do
 
   using do
     quote do
-      alias Margaret.Repo
-
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Margaret.DataCase
+      alias Ecto.Changeset
+
+      import Margaret.{DataCase, Factory}
+      alias Margaret.{Repo, Accounts, Stories, Comments, Publications, Stars, Bookmarks, Tags}
+      alias Accounts.{User, SocialLogin, Follow}
+      alias Stories.Story
+      alias Comments.Comment
+      alias Publications.{Publication, PublicationInvitation, PublicationMembership}
+      alias Stars.Star
+      alias Bookmarks.Bookmark
+      alias Tags.Tag
     end
   end
 
