@@ -29,7 +29,7 @@ We try to comply with the
   * **`margaret`**: Contains the business logic and storage details.
     Each folder is a context.
 
-  * **`margaret_web`**: Contains the all the modules related to the web layer.
+  * **`margaret_web`**: Contains all the modules related to the web layer.
 
     * **`channels`**: Contains Phoenix channels.
 
