@@ -1,9 +1,7 @@
 # Margaret
 
 [![Travis branch](https://img.shields.io/travis/strattadb/margaret/develop.svg?style=flat-square)](https://travis-ci.org/strattadb/margaret)
-[![devDependencies Status](https://david-dm.org/strattadb/margaret/dev-status.svg?style=flat-square)](https://david-dm.org/strattadb/margaret?type=dev)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
-[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 This is the umbrella repository of Margaret.
 
@@ -11,6 +9,7 @@ This is the umbrella repository of Margaret.
 
 * [Introduction](#introduction)
 * [Contributing](#contributing)
+* [Project structure](#project-structure)
 * [Projects](#projects)
 * [License](#license)
 
@@ -23,6 +22,8 @@ of features Medium has. In the future, we'll implement features that will set Ma
 ## Contributing
 
 Please see [CONTRIBUTING](./CONTRIBUTING.md).
+
+## Project structure
 
 ## Projects
 

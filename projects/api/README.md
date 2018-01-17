@@ -3,7 +3,7 @@
 ## Table of contents
 
 * [Introduction](#introduction)
-* [Project Structure](#project-structure)
+* [Project structure](#project-structure)
 
 ## Introduction
 
