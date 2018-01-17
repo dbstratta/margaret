@@ -4,7 +4,6 @@ services:
     build:
       context: ./projects/api
       dockerfile: dev.dockerfile
-    image: ''
     environment:
       - VIRTUAL_HOST=api.margaret.test
       - VIRTUAL_PORT=4000
@@ -16,7 +15,6 @@ services:
     build:
       context: ./projects/web
       dockerfile: dev.dockerfile
-    image: ''
     environment:
       - VIRTUAL_HOST=margaret.test
       - VIRTUAL_PORT=3000
