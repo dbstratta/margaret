@@ -11,14 +11,16 @@ readonly __root="$(cd "$(dirname "${__dir}")" && pwd)"
 
 # Build the Docker images.
 build() {
-    local -r git_sha1="${1}"; shift
+    local -r tag="${1}"; shift
+
+    docker_compose_prod=docker-compose.yml:docker-compose.prod.yml
 
     # Build and tag the containers with the last git commit hash.
-    TAG="${git_sha1}" docker-compose build --no-cache "$@"
+    COMPOSE_FILE="${docker_compose_prod}" TAG="${tag}" docker-compose build --no-cache "$@"
 
     # Build and tag the containers with "latest".
     # This second build should be much faster because it's cached.
-    TAG="latest" docker-compose build "$@"
+    COMPOSE_FILE="${docker_compose_prod}" TAG="latest" docker-compose build "$@"
 }
 
 main() {

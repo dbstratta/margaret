@@ -1,0 +1,7 @@
+version: '3'
+services:
+  api:
+    image: "mrgaret/api:${TAG}"
+
+  web:
+    image: "mrgaret/web:${TAG}"
