@@ -80,6 +80,10 @@ defmodule Margaret.Comments do
     Repo.one!(query)
   end
 
+  def get_story_comment_count(story_id), do: get_comment_count(%{story_id: story_id})
+
+  def get_comment_comment_count(comment_id), do: get_comment_count(%{comment_id: comment_id})
+
   def can_see_comment?(%Comment{story_id: story_id}, %User{} = user) do
     story_id
     |> Stories.get_story()

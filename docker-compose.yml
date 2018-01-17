@@ -11,6 +11,7 @@ services:
 
   api:
     build: ./projects/api
+    image: "mrgaret/api:${TAG}"
     depends_on:
       - postgres
     environment:
@@ -23,6 +24,7 @@ services:
 
   web:
     build: ./projects/web
+    image: "mrgaret/web:${TAG}"
     environment:
       # These env variables are necessary to let Nginx reverse proxy us.
       - VIRTUAL_HOST=margaret.com
@@ -30,8 +32,6 @@ services:
 
       # These env variables will be read from the host machine.
       - NODE_ENV
-      - WEB__PORT
-      - WEB__LOG_LEVEL
 
 
   postgres:

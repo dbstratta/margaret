@@ -27,8 +27,10 @@ jobs:
 
     - stage: test
       script:
+        # - ./scripts/test.sh
         - yarn test
         - docker-compose run --rm web yarn test:ci
 
     - stage: deploy
       script: skip
+        # - ./scripts/deploy.sh "${TRAVIS_COMMIT::12}"

@@ -60,6 +60,10 @@ defmodule Margaret.Stars do
     Repo.one!(query)
   end
 
+  def get_story_star_count(story_id), do: get_star_count(%{story_id: story_id})
+
+  def get_comment_star_count(comment_id), do: get_star_count(%{comment_id: comment_id})
+
   def get_starred_count(user_id) do
     query = from s in Star,
       where: s.user_id == ^user_id,
