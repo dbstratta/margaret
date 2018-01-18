@@ -153,6 +153,8 @@ defmodule Margaret.Stories do
 
   @doc """
   Inserts a story.
+
+  TODO: Implement insert and update like I did in Publications.
   """
   def insert_story(attrs), do: upsert_story(%Story{}, attrs)
 

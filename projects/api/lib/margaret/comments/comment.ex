@@ -37,6 +37,9 @@ defmodule Margaret.Comments.Comment do
   end
 
   @doc false
+  def changeset(attrs), do: changeset(%Comment{}, attrs)
+
+  @doc false
   def changeset(%Comment{} = comment, attrs) do
     comment
     |> cast(attrs, @permitted_attrs)

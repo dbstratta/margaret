@@ -32,6 +32,9 @@ defmodule Margaret.Bookmarks.Bookmark do
   end
 
   @doc false
+  def changeset(attrs), do: changeset(%Bookmark{}, attrs)
+
+  @doc false
   def changeset(%Bookmark{} = bookmark, attrs) do
     bookmark
     |> cast(attrs, @permitted_attrs)

@@ -21,57 +21,62 @@ We try to comply with the
 
 ## Project structure
 
-* **`config`**: Contains the configuration files for the Elixir application
+* [**`config`**](./config): Contains the configuration files for the Elixir application
   for different environments.
 
-* **`lib`**: Contains the source code.
+* [**`lib`**](./lib): Contains the source code.
 
-  * **`margaret`**: Contains the business logic and storage details.
+  * [**`margaret`**](./lib/margaret): Contains the business logic and storage details.
     Each folder is a context.
 
-  * **`margaret_web`**: Contains all the modules related to the web layer.
+  * [**`margaret_web`**](./lib/margaret_web): Contains all the modules related to the web layer.
 
-    * **`channels`**: Contains Phoenix channels.
+    * [**`channels`**](./lib/margaret_web/channels): Contains Phoenix channels.
 
-    * **`controllers`**: Contains web controllers and actions.
+    * [**`controllers`**](./lib/margaret_web/controllers): Contains web controllers and actions.
       Since we are building a GraphQL application we don't use controllers, we use resolvers.
       But some functionality has to be outside of GraphQL. Oauth2 sign in, for example.
 
-    * **`helpers`**: Contains modules with helper functions.
+    * [**`helpers`**](./lib/margaret_web/helpers): Contains modules with helper functions.
 
-    * **`middleware`**: Contains GraphQL middleware.
+    * [**`middleware`**](./lib/margaret_web/middleware): Contains GraphQL middleware.
 
-    * **`pipelines`**: Contains Plug custom pipelines.
+    * [**`pipelines`**](./lib/margaret_web/pipelines): Contains Plug custom pipelines.
 
-    * **`resolvers`**: Contains GraphQL resolvers.
+    * [**`resolvers`**](./lib/margaret_web/resolvers): Contains GraphQL resolvers.
 
-    * **`schema`**: Contains Graphql type, query, mutation and subscription definitions.
+    * [**`schema`**](./lib/margaret_web/resolvers): Contains Graphql type, query,
+      mutation and subscription definitions.
 
-    * **`views`**: Contains Phoenix views. We don't use them though.
+    * [**`views`**](./lib/margaret_web/views): Contains Phoenix views. We don't use them though.
 
-    * **`workers`**: Contains workers that perform tasks enqueued with `Exq`.
+    * [**`workers`**](./lib/margaret_web/workers): Contains workers that perform
+      tasks enqueued with `Exq`.
 
-    * `context.ex`: Builds the GraphQL context from data from each request.
+    * [`context.ex`](./lib/margaret_web/context.ex): Builds the GraphQL context
+      from data from each request.
       Here we put the user struct in the context if the viewer is logged in, for example.
 
-    * `endpoint.ex`: The Phoenix endpoint.
+    * [`endpoint.ex`](./lib/margaret_web/endpoint.ex): The Phoenix endpoint.
 
-    * `guardian.ex`: Callback module for `Guardian`.
+    * [`guardian.ex`](./lib/margaret_web/guardian.ex): Callback module for `Guardian`.
 
-    * `helpers.ex`: Helper functions.
+    * [`helpers.ex`](./lib/margaret_web/helpers.ex): Helper functions.
 
-    * `router.ex`: The Phoenix router.
+    * [`router.ex`](./lib/margaret_web/router.ex): The Phoenix router.
 
-    * `schema.ex`: The GraphQL schema definition.
+    * [`schema.ex`](./lib/margaret_web/schema.ex): The GraphQL schema definition.
 
-  * **`mix`**: Contains modules related to the Mix build system.
+  * [**`mix`**](./lib/mix): Contains modules related to the Mix build system.
 
-    * **`tasks`**: Contains custom Mix tasks.
+    * [**`tasks`**](./lib/mix/tasks): Contains custom Mix tasks.
 
-* **`priv`**:
+* [**`priv`**](./priv):
 
-  * **`repo`**: Contains all the database migration files.
+  * [**`repo`**](./priv/repo):
 
-  * `seeds.ex`: Contains the initial data to populate the database with.
+    * [**`migrations`**](./priv/repo/migrations): Contains all the database migration files.
 
-* **`test`**: Contains all the tests.
+    * [`seeds.ex`](./priv/repo/seeds.exs): Contains the initial data to populate the database with.
+
+* [**`test`**](./test): Contains all the tests.

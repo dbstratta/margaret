@@ -240,58 +240,78 @@ defmodule Margaret.Publications do
   end
 
   @doc """
-  Creates a publication.
+  Inserts a publication.
   """
-  def insert_publication(%{tags: tags} = attrs) do
+  def insert_publication(attrs) do
     Multi.new()
-    |> Multi.run(:tags, fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
-    |> do_insert_publication(attrs)
-  end
-
-  def insert_publication(attrs), do: do_insert_publication(Multi.new(), attrs)
-
-  defp do_insert_publication(multi, %{owner_id: owner_id} = attrs) do
-    multi
-    |> Multi.run(:publication, &upsert_publication_fn(%Publication{}, attrs, &1))
-    |> Multi.run(:membership, &insert_owner(&1, owner_id))
+    |> maybe_insert_tags(attrs)
+    |> insert_publication(attrs)
+    |> insert_owner(attrs)
     |> Repo.transaction()
   end
 
-  def update_publication(%Publication{} = publication, %{tags: tags} = attrs) do
-    Multi.new()
-    |> Multi.run(:tags, fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
-    |> do_update_publication(publication, attrs)
+  defp insert_publication(%Multi{} = multi, attrs) do
+    insert_publication_fn = fn changes ->
+      maybe_put_tags = fn attrs ->
+        case changes do
+          %{tags: tags} -> Map.put(attrs, :tags, tags)
+          _ -> attrs
+        end
+      end
+
+      attrs
+      |> maybe_put_tags.() 
+      |> Publication.changeset()
+      |> Repo.insert()
+    end
+
+    Multi.run(multi, :publication, insert_publication_fn)
   end
 
+  @doc """
+  Updates a publication.
+  """
   def update_publication(%Publication{} = publication, attrs) do
-    do_update_publication(Multi.new(), publication, attrs)
-  end
-
-  defp do_update_publication(multi, publication, attrs) do
-    multi
-    |> Multi.run(:publication, &upsert_publication_fn(publication, attrs, &1))
+    Multi.new()
+    |> maybe_insert_tags(attrs)
+    |> update_publication(publication, attrs)
     |> Repo.transaction()
   end
 
-  defp upsert_publication_fn(publication, attrs, %{tags: tags}) do
-    attrs_with_tags = Map.put(attrs, :tags, tags)
+  defp update_publication(%Multi{} = multi, %Publication{} = publication, attrs) do
+    update_publication_fn = fn changes ->
+      maybe_put_tags = fn {publication, attrs} ->
+        case changes do
+          %{tags: tags} -> {Repo.preload(publication, :tags), Map.put(attrs, :tags, tags)}
+          _ -> {publication, attrs}
+        end
+      end
 
-    publication
-    |> Repo.preload(:tags)
-    |> upsert_publication_fn(attrs_with_tags)
+      {publication, attrs} = maybe_put_tags.({publication, attrs})
+
+      publication
+      |> Publication.update_changeset(attrs)
+      |> Repo.update()
+    end
+
+    Multi.run(multi, :publication, update_publication_fn)
   end
 
-  defp upsert_publication_fn(publication, attrs, _), do: upsert_publication_fn(publication, attrs)
+  defp maybe_insert_tags(multi, %{tags: tags}) do
+    insert_tags_fn = fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end
 
-  defp upsert_publication_fn(publication, attrs) do
-    publication
-    |> Publication.changeset(attrs)
-    |> Repo.insert_or_update()
+    Multi.run(multi, :tags, insert_tags_fn)
   end
 
-  defp insert_owner(%{publication: %{id: publication_id}}, owner_id) do
-    insert_publication_membership(
-      %{role: :owner, member_id: owner_id, publication_id: publication_id})
+  defp maybe_insert_tags(multi, _attrs), do: multi
+
+  defp insert_owner(multi, %{owner_id: owner_id}) do
+    insert_owner_fn = fn %{publication: %{id: publication_id}} ->
+      insert_publication_membership(
+        %{role: :owner, member_id: owner_id, publication_id: publication_id})
+    end
+
+    Multi.run(multi, :owner, insert_owner_fn)
   end
 
   @doc """

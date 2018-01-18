@@ -21,6 +21,13 @@ defmodule Margaret.Publications.Publication do
     :display_name,
   ]
 
+  @update_permitted_attrs [
+    :name,
+    :display_name,
+  ]
+
+  @update_required_attrs []
+
   schema "publications" do
     field :name, :string
     field :display_name, :string
@@ -37,24 +44,38 @@ defmodule Margaret.Publications.Publication do
   end
 
   @doc false
-  def changeset(%Publication{} = publication, %{tags: tags} = attrs) do
-    # If the attributes map contains a %Tag{} list,
-    # delete it from the map and put it in the changeset
-    # with `put_assoc/4`.
-    attrs_without_tags = Map.delete(attrs, :tags)
+  def changeset(attrs), do: changeset(%Publication{}, attrs)
 
-    publication
-    |> changeset(attrs_without_tags)
-    |> put_assoc(:tags, tags)
-  end
-
+  @doc false
   def changeset(%Publication{} = publication, attrs) do
     publication
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> maybe_put_name()
+    |> maybe_put_tags(attrs)
     |> validate_length(:name, min: 2, max: 64)
     |> unique_constraint(:name)
+  end
+
+  @doc false
+  def update_changeset(%Publication{} = publication, attrs) do
+    publication
+    |> cast(attrs, @update_permitted_attrs)
+    |> validate_required(@update_required_attrs)
+    |> maybe_put_name()
+    |> maybe_put_tags(attrs)
+    |> validate_length(:name, min: 2, max: 64)
+    |> unique_constraint(:name)
+  end
+
+  defp maybe_put_tags(%Ecto.Changeset{} = changeset, %{tags: tags} = attrs) do
+    put_assoc(changeset, :tags, tags)
+  end
+
+  defp maybe_put_tags(%Ecto.Changeset{} = changeset, _attrs), do: changeset
+
+  defp maybe_put_name(%Ecto.Changeset{changes: %{name: name}} = changeset) when not is_nil(name) do
+    put_change(changeset, :name, name)
   end
 
   defp maybe_put_name(

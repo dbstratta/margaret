@@ -32,6 +32,9 @@ defmodule Margaret.Stars.Star do
   end
 
   @doc false
+  def changeset(attrs), do: changeset(%Star{}, attrs)
+
+  @doc false
   def changeset(%Star{} = star, attrs) do
     star
     |> cast(attrs, @permitted_attrs)

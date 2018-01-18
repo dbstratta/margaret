@@ -30,6 +30,16 @@ defmodule Margaret.Stories.Story do
     :audience,
     :license,
   ]
+
+  @update_permitted_attrs [
+    :content,
+    :audience,
+    :publication_id,
+    :published_at,
+    :license,
+  ]
+
+  @update_required_attrs []
   
   @unique_hash_length 16
 
@@ -66,25 +76,31 @@ defmodule Margaret.Stories.Story do
   def changeset(attrs), do: changeset(%Story{}, attrs)
 
   @doc false
-  def changeset(%Story{} = story, %{tags: tags} = attrs) do
-    # If the attributes map contains a %Tag{} list,
-    # delete it from the map and put it in the changeset
-    # with `put_assoc/4`.
-    attrs_without_tags = Map.delete(attrs, :tags)
-
-    story
-    |> changeset(attrs_without_tags)
-    |> put_assoc(:tags, tags)
-  end
-
-  def changeset(%Story{} = story, attrs) do
+  def changeset(%Story{id: nil} = story, attrs) do
     story
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> foreign_key_constraint(:author_id)
     |> foreign_key_constraint(:publication_id)
+    |> maybe_put_tags(attrs)
     |> maybe_put_unique_hash()
   end
+
+  def changeset(%Story{} = story, attrs), do: update_changeset(story, attrs)
+
+  def update_changeset(%Story{} = story, attrs) do
+    story
+    |> cast(attrs, @permitted_attrs_update)
+    |> validate_required(@required_attrs_update)
+    |> foreign_key_constraint(:publication_id)
+    |> maybe_put_tags(attrs)
+  end
+
+  defp maybe_put_tags(%Ecto.Changeset{} = changeset, %{tags: tags} = attrs) do
+    put_assoc(changeset, :tags, tags)
+  end
+
+  defp maybe_put_tags(%Ecto.Changeset{} = changeset, _attrs), do: changeset
 
   defp maybe_put_unique_hash(%Ecto.Changeset{data: %{unique_hash: nil}} = changeset) do
     put_change(changeset, :unique_hash, generate_hash())

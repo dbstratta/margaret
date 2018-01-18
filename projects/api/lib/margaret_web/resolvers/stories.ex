@@ -72,7 +72,7 @@ defmodule MargaretWeb.Resolvers.Stories do
     total_count = Stars.get_story_star_count(story_id)
 
     query
-    |> Relay.Connection.from_query(query, &Repo.all/1, args)
+    |> Relay.Connection.from_query(&Repo.all/1, args)
     |> Helpers.transform_connection(total_count: total_count)
   end
 
@@ -85,7 +85,7 @@ defmodule MargaretWeb.Resolvers.Stories do
     total_count = Comments.get_story_comment_count(story_id)
 
     query
-    |> Relay.Connection.from_query(query, &Repo.all/1, args)
+    |> Relay.Connection.from_query(&Repo.all/1, args)
     |> Helpers.transform_connection(total_count: total_count)
   end
 
