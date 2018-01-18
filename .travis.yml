@@ -33,4 +33,4 @@ jobs:
 
     - stage: deploy
       script: skip
-        # - ./scripts/deploy.sh "${TRAVIS_COMMIT::12}"
+        - ./scripts/deploy.sh "${TRAVIS_COMMIT::12}"
