@@ -10,18 +10,17 @@ defmodule MargaretWeb.Resolvers.Followable do
   @doc """
   Resolves the follow of a followable.
   """
-  def resolve_follow(
-    %{followable_id: %{type: :user, id: user_id}}, %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_follow(%{followable_id: %{type: :user, id: user_id}}, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     user_id
     |> Accounts.get_user()
     |> do_resolve_follow(viewer_id)
   end
 
-  def resolve_follow(
-    %{followable_id: %{type: :publication, id: publication_id}},
-    %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_follow(%{followable_id: %{type: :publication, id: publication_id}}, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     publication_id
     |> Publications.get_publication()
     |> do_resolve_follow(viewer_id)
@@ -31,8 +30,10 @@ defmodule MargaretWeb.Resolvers.Followable do
     case Accounts.insert_follow(%{follower_id: viewer_id, user_id: user_id}) do
       {:ok, _} ->
         {:ok, %{followable: followee}}
+
       {:error, %{errors: [follower: {"has already been taken", []}]}} ->
         {:ok, %{followable: followee}}
+
       {:error, %Ecto.Changeset{} = changeset} ->
         {:error, changeset}
     end
@@ -42,8 +43,10 @@ defmodule MargaretWeb.Resolvers.Followable do
     case Accounts.insert_follow(%{follower_id: viewer_id, publication_id: publication_id}) do
       {:ok, _} ->
         {:ok, %{followable: followee}}
+
       {:error, %{errors: [follower: {"has already been taken", []}]}} ->
         {:ok, %{followable: followee}}
+
       {:error, %Ecto.Changeset{} = changeset} ->
         {:error, changeset}
     end
@@ -54,30 +57,29 @@ defmodule MargaretWeb.Resolvers.Followable do
   @doc """
   Resolves the unfollow of a followable.
   """
-  def resolve_unfollow(
-    %{followable_id: %{type: :user, id: user_id}}, %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_unfollow(%{followable_id: %{type: :user, id: user_id}}, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     user_id
     |> Accounts.get_user()
     |> do_resolve_unfollow(viewer_id)
   end
 
-  def resolve_unfollow(
-    %{followable_id: %{type: :publication, id: publication_id}},
-    %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_unfollow(%{followable_id: %{type: :publication, id: publication_id}}, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     publication_id
     |> Publications.get_publication()
     |> do_resolve_unfollow(viewer_id)
   end
 
   defp do_resolve_unfollow(%User{id: user_id} = followable, viewer_id) do
-    Accounts.delete_follow(follower_id: viewer_id, user_id: user_id)
+    Accounts.delete_follow(%{follower_id: viewer_id, user_id: user_id})
     {:ok, %{followable: followable}}
   end
 
   defp do_resolve_unfollow(%Publication{id: publication_id} = followable, viewer_id) do
-    Accounts.delete_follow(follower_id: viewer_id, publication_id: publication_id)
+    Accounts.delete_follow(%{follower_id: viewer_id, publication_id: publication_id})
     {:ok, %{followable: followable}}
   end
 

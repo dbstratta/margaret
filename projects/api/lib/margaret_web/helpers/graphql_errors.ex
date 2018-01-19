@@ -3,7 +3,7 @@ defmodule MargaretWeb.Helpers.GraphQLErrors do
   Helper functions for generating GraphQL errors.
   """
 
-  @typep t :: Absinthe.Type.Field.error_result
+  @typep t :: Absinthe.Type.Field.error_result()
 
   @doc """
   Creates an error tuple.

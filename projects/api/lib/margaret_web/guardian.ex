@@ -20,7 +20,6 @@ defmodule MargaretWeb.Guardian do
     {:error, :unknown_resource}
 
   """
-  @spec subject_for_token(User.t, %{optional(any) => any}) :: {:ok, number} | {:error, atom}
   def subject_for_token(%User{id: user_id}, _claims), do: {:ok, user_id}
   def subject_for_token(_, _), do: {:error, :unknown_resource}
 
@@ -36,7 +35,7 @@ defmodule MargaretWeb.Guardian do
     {:error, :invalid_credentials}
 
   """
-  @spec resource_from_claims(%{optional(any) => any}) :: {:ok, User.t} | {:error, atom}
+  @spec resource_from_claims(%{optional(any) => any}) :: {:ok, User.t()} | {:error, atom}
   def resource_from_claims(%{"sub" => user_id}) do
     try do
       {:ok, Accounts.get_user!(user_id)}

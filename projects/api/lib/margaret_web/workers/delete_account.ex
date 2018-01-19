@@ -5,6 +5,5 @@ defmodule MargaretWeb.Workers.DeleteAccount do
 
   @doc false
   def perform(_) do
-
   end
 end

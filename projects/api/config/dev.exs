@@ -13,8 +13,7 @@ config :margaret, MargaretWeb.Endpoint,
   check_origin: false,
   watchers: []
 
-config :cors_plug,
-  origin: "*"
+config :cors_plug, origin: "*"
 
 # ## SSL Support
 #

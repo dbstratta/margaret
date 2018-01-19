@@ -12,19 +12,19 @@ defmodule Margaret.Accounts.SocialLogin do
   @permitted_attrs [
     :uid,
     :provider,
-    :user_id,
+    :user_id
   ]
 
   @required_attrs [
     :uid,
     :provider,
-    :user_id,
+    :user_id
   ]
 
   schema "social_logins" do
-    field :uid, :string
-    field :provider, :string
-    belongs_to :user, User
+    field(:uid, :string)
+    field(:provider, :string)
+    belongs_to(:user, User)
 
     timestamps()
   end

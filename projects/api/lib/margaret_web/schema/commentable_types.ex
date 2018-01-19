@@ -10,35 +10,35 @@ defmodule MargaretWeb.Schema.CommentableTypes do
 
   @commentable_implementations [
     :story,
-    :comment,
+    :comment
   ]
 
   interface :commentable do
-    field :id, non_null(:id)
+    field(:id, non_null(:id))
 
     @desc "The comments of the commentable."
-    field :comments, :comment_connection
+    field(:comments, :comment_connection)
 
     @desc "Check if the current viewer can comment this object."
-    field :viewer_can_comment, non_null(:boolean)
+    field(:viewer_can_comment, non_null(:boolean))
 
-    resolve_type &Resolvers.Nodes.resolve_type/2
+    resolve_type(&Resolvers.Nodes.resolve_type/2)
   end
 
   object :commentable_mutations do
     @desc "Comments a commentable."
-    payload field :comment do
+    payload field(:comment) do
       input do
-        field :commentable_id, non_null(:id)
-        field :content, non_null(:json)
+        field(:commentable_id, non_null(:id))
+        field(:content, non_null(:json))
       end
 
       output do
-        field :comment, non_null(:comment)
+        field(:comment, non_null(:comment))
       end
 
-      middleware Absinthe.Relay.Node.ParseIDs, commentable_id: @commentable_implementations
-      resolve &Resolvers.Commentable.resolve_comment/2
+      middleware(Absinthe.Relay.Node.ParseIDs, commentable_id: @commentable_implementations)
+      resolve(&Resolvers.Commentable.resolve_comment/2)
     end
   end
 end

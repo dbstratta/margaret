@@ -36,11 +36,11 @@ defmodule MargaretWeb.Resolvers.Nodes do
 
   def resolve_node(%{type: :publication_invitation, id: id}, _) do
     {:ok, Publications.get_publication_invitation(id)}
-  end 
+  end
 
   def resolve_node(%{type: :comment, id: comment_id}, %{context: %{viewer: viewer}}) do
     resolve_comment(comment_id, viewer)
-  end 
+  end
 
   def resolve_node(%{type: :tag, id: id}, _), do: {:ok, Tags.get_tag(id)}
 

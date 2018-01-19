@@ -16,22 +16,26 @@ defmodule Margaret.Comments.Comment do
     :author_id,
     :content,
     :story_id,
-    :parent_id,
+    :parent_id
   ]
 
   @required_attrs [
     :author_id,
     :content,
-    :story_id,
+    :story_id
+  ]
+
+  @update_permitted_attrs [
+    :content
   ]
 
   schema "comments" do
-    field :content, :map
-    belongs_to :author, User
-    has_many :stars, Star
+    field(:content, :map)
+    belongs_to(:author, User)
+    has_many(:stars, Star)
 
-    belongs_to :parent, Comment
-    belongs_to :story, Story
+    belongs_to(:parent, Comment)
+    belongs_to(:story, Story)
 
     timestamps()
   end
@@ -52,6 +56,6 @@ defmodule Margaret.Comments.Comment do
   @doc false
   def update_changeset(%Comment{} = comment, attrs) do
     comment
-    |> cast(attrs, [:content])
+    |> cast(attrs, @update_permitted_attrs)
   end
 end

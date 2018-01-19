@@ -20,7 +20,7 @@ defmodule Margaret.Tags do
       nil
 
   """
-  @spec get_tag(term) :: Tag.t | nil
+  @spec get_tag(term) :: Tag.t() | nil
   def get_tag(id), do: Repo.get(Tag, id)
 
   @doc """
@@ -63,21 +63,20 @@ defmodule Margaret.Tags do
       []
 
   """
-  @spec insert_and_get_all_tags([String.t]) :: [%Tag{}]
+  @spec insert_and_get_all_tags([String.t()]) :: [%Tag{}]
   def insert_and_get_all_tags([]), do: []
 
   def insert_and_get_all_tags(tags) when is_list(tags) do
     structs =
       tags
       |> Stream.map(&String.trim/1)
-      |> Stream.map(&(%{title: &1}))
+      |> Stream.map(&%{title: &1})
       |> Stream.map(&Map.put(&1, :inserted_at, NaiveDateTime.utc_now()))
       |> Enum.map(&Map.put(&1, :updated_at, NaiveDateTime.utc_now()))
 
     Repo.insert_all(Tag, structs, on_conflict: :nothing)
 
-    query = from t in Tag,
-      where: t.title in ^tags
+    query = from(t in Tag, where: t.title in ^tags)
 
     Repo.all(query)
   end

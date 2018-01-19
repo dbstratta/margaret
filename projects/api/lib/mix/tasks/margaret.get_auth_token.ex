@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Margaret.GetAuthToken do
   @switches [
     id: :string,
     email: :string,
-    username: :string,
+    username: :string
   ]
 
   @doc false
@@ -34,7 +34,7 @@ defmodule Mix.Tasks.Margaret.GetAuthToken do
         Keyword.has_key?(opts, :email) -> %{email: Keyword.get(opts, :email)}
         Keyword.has_key?(opts, :username) -> %{username: Keyword.get(opts, :username)}
       end
-    
+
     map
     |> get_user()
     |> get_token()

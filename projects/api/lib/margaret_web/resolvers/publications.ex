@@ -30,20 +30,25 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves the members of the publication.
   """
   def resolve_members(%Publication{id: publication_id}, args, _) do
-    query = from u in User,
-      join: pm in PublicationMembership, on: pm.member_id == u.id,
-      where: is_nil(u.deactivated_at),
-      where: pm.publication_id == ^publication_id,
-      select: {u, pm.role, pm.inserted_at}
+    query =
+      from(
+        u in User,
+        join: pm in PublicationMembership,
+        on: pm.member_id == u.id,
+        where: is_nil(u.deactivated_at),
+        where: pm.publication_id == ^publication_id,
+        select: {u, pm.role, pm.inserted_at}
+      )
 
     {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
 
-    transform_edges = &Enum.map &1, fn %{node: {node, role, member_since}} = edge ->
-      edge
-      |> Map.put(:role, role)
-      |> Map.put(:member_since, member_since)
-      |> Map.update!(:node, fn _ -> node end)
-    end
+    transform_edges =
+      &Enum.map(&1, fn %{node: {node, role, member_since}} = edge ->
+        edge
+        |> Map.put(:role, role)
+        |> Map.put(:member_since, member_since)
+        |> Map.update!(:node, fn _ -> node end)
+      end)
 
     connection =
       connection
@@ -57,7 +62,7 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves the stories published under the publication.
   """
   def resolve_stories(%Publication{id: publication_id}, args, _) do
-    query = from s in Story, where: s.publication_id == ^publication_id
+    query = from(s in Story, where: s.publication_id == ^publication_id)
 
     {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
 
@@ -70,19 +75,24 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves the followers of the publication.
   """
   def resolve_followers(%Publication{id: publication_id}, args, _) do
-    query = from u in User,
-      join: f in Follow, on: f.follower_id == u.id,
-      where: is_nil(u.deactivated_at),
-      where: f.publication_id == ^publication_id,
-      select: {u, f.inserted_at}
+    query =
+      from(
+        u in User,
+        join: f in Follow,
+        on: f.follower_id == u.id,
+        where: is_nil(u.deactivated_at),
+        where: f.publication_id == ^publication_id,
+        select: {u, f.inserted_at}
+      )
 
     {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
 
-    transform_edges = &Enum.map &1, fn %{node: {node, followed_at}} = edge ->
-      edge
-      |> Map.put(:followed_at, followed_at)
-      |> Map.update!(:node, fn _ -> node end)
-    end
+    transform_edges =
+      &Enum.map(&1, fn %{node: {node, followed_at}} = edge ->
+        edge
+        |> Map.put(:followed_at, followed_at)
+        |> Map.update!(:node, fn _ -> node end)
+      end)
 
     connection =
       connection
@@ -104,17 +114,16 @@ defmodule MargaretWeb.Resolvers.Publications do
   @doc """
   Resolves the invitations sent by the publication.
   """
-  def resolve_membership_invitations(
-    %Publication{id: publication_id}, args, %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_membership_invitations(%Publication{id: publication_id}, args, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     publication_id
     |> Publications.can_see_invitations?(viewer_id)
     |> do_resolve_membership_invitations(publication_id, args)
   end
 
   defp do_resolve_membership_invitations(true, publication_id, args) do
-    query = from pi in PublicationInvitation,
-      where: pi.publication_id == ^publication_id
+    query = from(pi in PublicationInvitation, where: pi.publication_id == ^publication_id)
 
     Relay.Connection.from_query(query, &Repo.all/1, args)
   end
@@ -143,10 +152,10 @@ defmodule MargaretWeb.Resolvers.Publications do
   @doc """
   Resolves whether the user has followd the publication.
   """
-  def resolve_viewer_has_followed(
-    %Publication{id: publication_id}, _, %{context: %{viewer: %{id: viewer_id}}}
-  ) do
-    {:ok, Accounts.get_follow(follower_id: viewer_id, publication_id: publication_id)}
+  def resolve_viewer_has_followed(%Publication{id: publication_id}, _, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
+    {:ok, Accounts.get_follow(%{follower_id: viewer_id, publication_id: publication_id})}
   end
 
   @doc """
@@ -166,9 +175,9 @@ defmodule MargaretWeb.Resolvers.Publications do
   @doc """
   Resolves the update of a publication.
   """
-  def resolve_update_publication(
-    %{publication_id: publication_id} = args, %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_update_publication(%{publication_id: publication_id} = args, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     args = Map.delete(args, :publication_id)
 
     publication_id
@@ -192,7 +201,7 @@ defmodule MargaretWeb.Resolvers.Publications do
   end
 
   defp do_resolve_update_publication(nil, _), do: Helpers.GraphQLErrors.publication_doesnt_exist()
-  
+
   @doc """
   Resolves the kick of a publication member.
   """
@@ -202,16 +211,13 @@ defmodule MargaretWeb.Resolvers.Publications do
     |> resolve_kick_member(resolution)
   end
 
-  def resolve_kick_member(
-    %{member_id: member_id}, %{context: %{viewer: %{id: member_id}}}
-  ) do
+  def resolve_kick_member(%{member_id: member_id}, %{context: %{viewer: %{id: member_id}}}) do
     {:error, "You can't kick yourself."}
   end
 
-  def resolve_kick_member(
-    %{member_id: member_id, publication_id: publication_id}, 
-    %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_kick_member(%{member_id: member_id, publication_id: publication_id}, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     publication_id
     |> Publications.publication_admin?(viewer_id)
     |> do_resolve_kick_member(publication_id, member_id)
@@ -222,9 +228,9 @@ defmodule MargaretWeb.Resolvers.Publications do
       {:ok, _} -> {:ok, %{publication: Publications.get_publication(publication_id)}}
       {:error, reason} -> {:error, reason}
     end
-  end 
+  end
 
-  defp do_resolve_kick_member(_, _, _), do: Helpers.GraphQLErrors.unauthorized() 
+  defp do_resolve_kick_member(_, _, _), do: Helpers.GraphQLErrors.unauthorized()
 
   def resolve_delete_publication(_, _) do
     Helpers.GraphQLErrors.not_implemented()
@@ -233,17 +239,15 @@ defmodule MargaretWeb.Resolvers.Publications do
   @doc """
   Resolves the leave of the viewer from the publication.
   """
-  def resolve_leave_publication(
-    %{publication_id: publication_id},
-    %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_leave_publication(%{publication_id: publication_id}, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     publication_id
     |> Publications.publication_owner?(viewer_id)
     |> do_resolve_leave_publication(publication_id, viewer_id)
   end
 
   defp do_resolve_leave_publication(true, _publication_id, _member_id) do
-
   end
 
   defp do_resolve_leave_publication(false, publication_id, member_id) do

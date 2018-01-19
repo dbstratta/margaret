@@ -14,8 +14,8 @@ defmodule Margaret.Application do
       MargaretWeb.Endpoint,
       %{
         id: Absinthe.Subscription,
-        start: {Absinthe.Subscription, :start_link, [MargaretWeb.Endpoint]},
-      },
+        start: {Absinthe.Subscription, :start_link, [MargaretWeb.Endpoint]}
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

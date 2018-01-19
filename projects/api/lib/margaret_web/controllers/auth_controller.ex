@@ -8,7 +8,7 @@ defmodule MargaretWeb.AuthController do
   alias Margaret.Accounts
   alias Accounts.User
 
-  plug Ueberauth
+  plug(Ueberauth)
 
   @doc """
   We don't need this function, but we need it to reference it in the router.
@@ -25,7 +25,7 @@ defmodule MargaretWeb.AuthController do
     json(conn, %{token: get_token(conn, to_string(provider), to_string(uid))})
   end
 
-  @spec get_token(%Plug.Conn{} | String.t, String.t, String.t) :: Guardian.Token.token
+  @spec get_token(%Plug.Conn{} | String.t(), String.t(), String.t()) :: Guardian.Token.token()
   defp get_token(%Plug.Conn{} = conn, provider, uid) do
     %{"email" => email} = conn.assigns.ueberauth_auth.extra.raw_info.user
 
@@ -52,20 +52,18 @@ defmodule MargaretWeb.AuthController do
     token
   end
 
-  @spec get_or_create_user(String.t) :: User.t
+  @spec get_or_create_user(String.t()) :: User.t()
   defp get_or_create_user(email) do
     {:ok, user} =
       case Accounts.get_user_by_email(email, include_deactivated: true) do
         %User{} = user -> {:ok, activate_user(user)}
         nil -> Accounts.insert_user(%{username: UUID.uuid4(), email: email})
       end
-    
+
     user
   end
 
-  defp activate_user(
-    %User{deactivated_at: deactivated_at} = user
-  ) when not is_nil(deactivated_at) do
+  defp activate_user(%User{deactivated_at: deactivated_at} = user) when not is_nil(deactivated_at) do
     {:ok, user} = Accounts.update_user(user, %{deactivated_at: nil})
 
     user

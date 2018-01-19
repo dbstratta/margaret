@@ -15,8 +15,8 @@ defmodule MargaretWeb.Schema.DeletableTypes do
     @desc """
     Indicates whether the viewer can delete this deletable.
     """
-    field :viewer_can_delete, non_null(:boolean)
+    field(:viewer_can_delete, non_null(:boolean))
 
-    resolve_type &Resolvers.Nodes.resolve_type/2
+    resolve_type(&Resolvers.Nodes.resolve_type/2)
   end
 end

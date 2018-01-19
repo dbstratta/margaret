@@ -3,11 +3,11 @@ defmodule Margaret.Repo.Migrations.AddTagsTable do
 
   def change do
     create table(:tags) do
-      add :title, :string, size: 64, null: false
+      add(:title, :string, size: 64, null: false)
 
       timestamps()
     end
 
-    create unique_index(:tags, [:title])
+    create(unique_index(:tags, [:title]))
   end
 end

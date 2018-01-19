@@ -1,10 +1,11 @@
 {
   "jest.rootPath": "/projects/web",
-  "elixirLS.projectDir": "/projects/api",
+  "elixirLS.projectDir": "projects/api",
   "[elixir]": {
     "editor.quickSuggestions": true
   },
   "elixir.projectPath": "/projects/api",
   "codemetrics.basics.CodeLensHiddenUnder": 8,
-  "jest.autoEnable": false
+  "jest.autoEnable": false,
+  "elixirLS.dialyzerEnabled": false
 }

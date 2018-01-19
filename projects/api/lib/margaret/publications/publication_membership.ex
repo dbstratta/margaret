@@ -15,34 +15,47 @@ defmodule Margaret.Publications.PublicationMembership do
   @permitted_attrs [
     :role,
     :member_id,
-    :publication_id,
+    :publication_id
   ]
 
   @required_attrs [
     :role,
     :member_id,
-    :publication_id,
+    :publication_id
   ]
 
-  defenum PublicationMembershipRole,
-    :publication_membership_role,
-    [:owner, :admin, :writer, :editor]
+  @update_permitted_attrs [
+    :role
+  ]
+
+  defenum(PublicationMembershipRole, :publication_membership_role, [
+    :owner,
+    :admin,
+    :writer,
+    :editor
+  ])
 
   schema "publication_memberships" do
-    field :role, PublicationMembershipRole
-    belongs_to :member, User
-    belongs_to :publication, Publication
+    field(:role, PublicationMembershipRole)
+    belongs_to(:member, User)
+    belongs_to(:publication, Publication)
 
     timestamps()
   end
 
   @doc false
-  def changeset(%PublicationMembership{} = publication_membership, attrs) do
-    publication_membership
+  def changeset(attrs) do
+    %PublicationMembership{}
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> foreign_key_constraint(:member_id)
     |> foreign_key_constraint(:publication_id)
     |> unique_constraint(:member_id)
+  end
+
+  @doc false
+  def update_changeset(%PublicationMembership{} = publication_membership, attrs) do
+    publication_membership
+    |> cast(attrs, @update_permitted_attrs)
   end
 end

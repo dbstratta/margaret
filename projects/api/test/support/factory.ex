@@ -38,16 +38,16 @@ defmodule Margaret.Factory do
     :publication_membership,
     :star,
     :bookmark,
-    :tag,
+    :tag
   ]
 
   @content %{"blocks" => [%{"text" => "Title"}]}
 
-  Enum.each @names, fn name ->
+  Enum.each(@names, fn name ->
     def unquote(:"build_#{name}")(fields \\ []) do
       build(unquote(name), fields)
     end
-  end
+  end)
 
   # Factories
 
@@ -55,14 +55,14 @@ defmodule Margaret.Factory do
   def build(:user) do
     %User{
       username: "user#{System.unique_integer()}",
-      email: "user#{System.unique_integer()}@example.com",
+      email: "user#{System.unique_integer()}@example.com"
     }
   end
 
   def build(:social_login) do
     %SocialLogin{
       uid: "uid_#{System.unique_integer()}",
-      provider: :github,
+      provider: :github
     }
   end
 
@@ -74,19 +74,19 @@ defmodule Margaret.Factory do
     %Story{
       content: @content,
       audience: :all,
-      license: :all_rights_reserved,
+      license: :all_rights_reserved
     }
   end
 
   def build(:comment) do
     %Comment{
-      content: @content,
+      content: @content
     }
   end
 
   def build(:publication) do
     %Publication{
-      display_name: "Publication",
+      display_name: "Publication"
     }
   end
 
@@ -96,7 +96,7 @@ defmodule Margaret.Factory do
 
   def build(:publication_membership) do
     %PublicationMembership{
-      role: :writer,
+      role: :writer
     }
   end
 

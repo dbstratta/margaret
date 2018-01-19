@@ -9,8 +9,8 @@ defmodule MargaretWeb.Schema.TagTypes do
   @desc """
   A story tag.
   """
-  node object :tag do
+  node object(:tag) do
     @desc "The title of the tag."
-    field :title, non_null(:string)
+    field(:title, non_null(:string))
   end
 end
