@@ -62,9 +62,9 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@playlyfe/gql@2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@playlyfe/gql/-/gql-2.4.0.tgz#0de605904a49e9a57e82695660188c4f08ddad42"
+"@playlyfe/gql@2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@playlyfe/gql/-/gql-2.5.0.tgz#3e726661a8d85d3d9a176a022031c4523ff5922a"
   dependencies:
     apollo-codegen "0.10.13"
     babel-runtime "6.23.0"
