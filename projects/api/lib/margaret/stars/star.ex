@@ -32,11 +32,8 @@ defmodule Margaret.Stars.Star do
   end
 
   @doc false
-  def changeset(attrs), do: changeset(%Star{}, attrs)
-
-  @doc false
-  def changeset(%Star{} = star, attrs) do
-    star
+  def changeset(attrs) do
+    %Star{}
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> foreign_key_constraint(:user_id)

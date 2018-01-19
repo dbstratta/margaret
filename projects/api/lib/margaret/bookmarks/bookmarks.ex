@@ -25,8 +25,8 @@ defmodule Margaret.Bookmarks do
   Inserts a bookmark.
   """
   def insert_bookmark(attrs) do
-    %Bookmark{}
-    |> Bookmark.changeset(attrs)
+    attrs
+    |> Bookmark.changeset()
     |> Repo.insert()
   end
 

@@ -339,10 +339,12 @@ defmodule Margaret.Publications do
 
   def get_publication_owner(publication_id) do
     query =
-      from u in User,
+      from(
+        u in User,
         join: pm in PublicationMembership,
         on: pm.member_id == u.id,
         where: pm.publication_id == ^publication_id and pm.role == ^:owner
+      )
 
     Repo.one!(query)
   end
@@ -376,14 +378,14 @@ defmodule Margaret.Publications do
   Creates a publication invitation.
   """
   def insert_publication_invitation(attrs) do
-    %PublicationInvitation{}
-    |> PublicationInvitation.changeset(attrs)
+    attrs
+    |> PublicationInvitation.changeset()
     |> Repo.insert()
   end
 
   def update_publication_invitation(%PublicationInvitation{} = invitation, attrs) do
     invitation
-    |> PublicationInvitation.changeset(attrs)
+    |> PublicationInvitation.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -392,7 +394,8 @@ defmodule Margaret.Publications do
   Rejects all other invitations to the invitee.
   """
   def accept_publication_invitation(%PublicationInvitation{} = invitation) do
-    invitation_changeset = PublicationInvitation.changeset(invitation, %{status: :accepted})
+    invitation_changeset =
+      PublicationInvitation.update_changeset(invitation, %{status: :accepted})
 
     reject_others_invitations =
       from(

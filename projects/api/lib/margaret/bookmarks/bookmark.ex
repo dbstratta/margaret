@@ -32,11 +32,8 @@ defmodule Margaret.Bookmarks.Bookmark do
   end
 
   @doc false
-  def changeset(attrs), do: changeset(%Bookmark{}, attrs)
-
-  @doc false
-  def changeset(%Bookmark{} = bookmark, attrs) do
-    bookmark
+  def changeset(attrs) do
+    %Bookmark{}
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> foreign_key_constraint(:user_id)

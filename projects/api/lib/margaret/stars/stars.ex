@@ -26,8 +26,8 @@ defmodule Margaret.Stars do
   Inserts a star.
   """
   def insert_star(attrs) do
-    %Star{}
-    |> Star.changeset(attrs)
+    attrs
+    |> Star.changeset()
     |> Repo.insert()
   end
 

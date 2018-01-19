@@ -27,6 +27,10 @@ defmodule Margaret.Publications.PublicationInvitation do
     :role
   ]
 
+  @update_permitted_attrs [
+    :status
+  ]
+
   defenum(PublicationInvitationStatus, :publication_invitation_status, [
     :accepted,
     :pending,
@@ -47,12 +51,18 @@ defmodule Margaret.Publications.PublicationInvitation do
   end
 
   @doc false
-  def changeset(%PublicationInvitation{} = publication_invitation, attrs) do
-    publication_invitation
+  def changeset(attrs) do
+    %PublicationInvitation{}
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> foreign_key_constraint(:invitee_id)
     |> foreign_key_constraint(:inviter_id)
     |> foreign_key_constraint(:publication_id)
+  end
+
+  @doc false
+  def update_changeset(%PublicationInvitation{} = publication_invitation, attrs) do
+    publication_invitation
+    |> cast(attrs, @update_permitted_attrs)
   end
 end

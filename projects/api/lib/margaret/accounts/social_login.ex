@@ -30,11 +30,8 @@ defmodule Margaret.Accounts.SocialLogin do
   end
 
   @doc false
-  def changeset(attrs), do: changeset(%SocialLogin{}, attrs)
-
-  @doc false
-  def changeset(%SocialLogin{} = social_login, attrs) do
-    social_login
+  def changeset(attrs) do
+    %SocialLogin{}
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> unique_constraint(:uid, name: :social_logins_uid_provider_index)

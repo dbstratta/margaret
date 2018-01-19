@@ -30,11 +30,8 @@ defmodule Margaret.Accounts.Follow do
   end
 
   @doc false
-  def changeset(attrs), do: changeset(%Follow{}, attrs)
-
-  @doc false
-  def changeset(%Follow{} = follow, attrs) do
-    follow
+  def changeset(attrs) do
+    %Follow{}
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> foreign_key_constraint(:follower_id)
