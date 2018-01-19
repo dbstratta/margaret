@@ -9,7 +9,7 @@ defmodule MargaretWeb.Middleware.RequireActive do
   middleware MargaretWeb.Middleware.RequireActive
   resolve &resolver/2
   ```
-  
+
   """
 
   @behaviour Absinthe.Middleware

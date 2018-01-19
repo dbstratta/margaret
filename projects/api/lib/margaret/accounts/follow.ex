@@ -14,17 +14,17 @@ defmodule Margaret.Accounts.Follow do
   @permitted_attrs [
     :follower_id,
     :user_id,
-    :publication_id,
+    :publication_id
   ]
 
   @required_attrs [
-    :follower_id,
+    :follower_id
   ]
 
   schema "follows" do
-    belongs_to :follower, User
-    belongs_to :user, User
-    belongs_to :publication, Publication
+    belongs_to(:follower, User)
+    belongs_to(:user, User)
+    belongs_to(:publication, Publication)
 
     timestamps()
   end

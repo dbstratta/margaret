@@ -13,9 +13,9 @@ defmodule MargaretWeb.Helpers do
   end
 
   defp format_changeset_error({msg, opts}) do
-    Enum.reduce opts, msg, fn {key, value}, acc ->
+    Enum.reduce(opts, msg, fn {key, value}, acc ->
       String.replace(acc, "%{#{key}}", to_string(value), global: true)
-    end
+    end)
   end
 
   @doc """

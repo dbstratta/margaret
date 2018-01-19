@@ -7,5 +7,4 @@ defmodule MargaretWeb.Schema.SearchTypes do
   # use Absinthe.Relay.Schema.Notation, :modern
 
   # alias MargaretWeb.Resolvers
-
 end

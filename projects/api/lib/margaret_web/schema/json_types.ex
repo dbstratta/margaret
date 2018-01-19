@@ -5,8 +5,8 @@ defmodule MargaretWeb.Schema.JSONTypes do
   The JSON type.
   """
   scalar :json, name: "JSON" do
-    parse &parse_json/1
-    serialize &Poison.encode!/1
+    parse(&parse_json/1)
+    serialize(&Poison.encode!/1)
   end
 
   defp parse_json(%{value: value}) do

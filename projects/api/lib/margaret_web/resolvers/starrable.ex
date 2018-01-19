@@ -10,17 +10,17 @@ defmodule MargaretWeb.Resolvers.Starrable do
   @doc """
   Resolves the star of a starrable.
   """
-  def resolve_star(
-    %{starrable_id: %{type: :story, id: story_id}}, %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_star(%{starrable_id: %{type: :story, id: story_id}}, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     story_id
     |> Stories.get_story()
     |> do_resolve_star(viewer_id)
   end
 
-  def resolve_star(
-    %{starrable_id: %{type: :comment, id: comment_id}}, %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_star(%{starrable_id: %{type: :comment, id: comment_id}}, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     comment_id
     |> Comments.get_comment()
     |> do_resolve_star(viewer_id)
@@ -41,17 +41,17 @@ defmodule MargaretWeb.Resolvers.Starrable do
   @doc """
   Resolves the unstar of a starrable.
   """
-  def resolve_unstar(
-    %{starrable_id: %{type: :story, id: story_id}}, %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_unstar(%{starrable_id: %{type: :story, id: story_id}}, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     story_id
     |> Stories.get_story()
     |> do_resolve_unstar(viewer_id)
   end
 
-  def resolve_unstar(
-    %{starrable_id: %{type: :comment, id: comment_id}}, %{context: %{viewer: %{id: viewer_id}}}
-  ) do
+  def resolve_unstar(%{starrable_id: %{type: :comment, id: comment_id}}, %{
+        context: %{viewer: %{id: viewer_id}}
+      }) do
     comment_id
     |> Comments.get_comment()
     |> do_resolve_unstar(viewer_id)

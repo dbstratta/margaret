@@ -10,7 +10,8 @@ defmodule Margaret.Accounts do
   alias Accounts.{User, SocialLogin, Follow}
   alias Publications.PublicationMembership
 
-  @seconds_before_user_deletion 60 * 60 * 24 * 15 # 15 days.
+  # 15 days.
+  @seconds_before_user_deletion 60 * 60 * 24 * 15
 
   @doc """
   Gets a single user.
@@ -24,7 +25,7 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user(String.t | non_neg_integer, Keyword.t) :: User.t | nil
+  @spec get_user(String.t() | non_neg_integer, Keyword.t()) :: User.t() | nil
   def get_user(id, opts \\ []) do
     User
     |> maybe_include_deactivated(opts)
@@ -45,7 +46,7 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user!(String.t | non_neg_integer, Keyword.t) :: User.t | no_return
+  @spec get_user!(String.t() | non_neg_integer, Keyword.t()) :: User.t() | no_return
   def get_user!(id, opts \\ []) do
     User
     |> maybe_include_deactivated(opts)
@@ -64,10 +65,9 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user_by_username(String.t, Keyword.t) :: User.t | nil
+  @spec get_user_by_username(String.t(), Keyword.t()) :: User.t() | nil
   def get_user_by_username(username, opts \\ []) do
-    query = from u in User,
-      where: u.username == ^username
+    query = from(u in User, where: u.username == ^username)
 
     query
     |> maybe_include_deactivated(opts)
@@ -88,10 +88,9 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_username!(String.t, Keyword.t) :: User.t | no_return
+  @spec get_user_by_username!(String.t(), Keyword.t()) :: User.t() | no_return
   def get_user_by_username!(username, opts \\ []) do
-    query = from u in User,
-      where: u.username == ^username
+    query = from(u in User, where: u.username == ^username)
 
     query
     |> maybe_include_deactivated(opts)
@@ -110,10 +109,9 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user_by_email(String.t, Keyword.t) :: User.t | nil
+  @spec get_user_by_email(String.t(), Keyword.t()) :: User.t() | nil
   def get_user_by_email(email, opts \\ []) do
-    query = from u in User,
-      where: u.email == ^email
+    query = from(u in User, where: u.email == ^email)
 
     query
     |> maybe_include_deactivated(opts)
@@ -134,10 +132,9 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_email!(String.t, Keyword.t) :: User.t | no_return
+  @spec get_user_by_email!(String.t(), Keyword.t()) :: User.t() | no_return
   def get_user_by_email!(email, opts \\ []) do
-    query = from u in User,
-      where: u.email == ^email
+    query = from(u in User, where: u.email == ^email)
 
     query
     |> maybe_include_deactivated(opts)
@@ -158,11 +155,15 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_social_login!({atom, String.t}) :: User.t | nil
+  @spec get_user_by_social_login!({atom, String.t()}) :: User.t() | nil
   def get_user_by_social_login!({provider, uid}, opts \\ []) do
-    query = from u in User,
-      join: s in SocialLogin, on: s.user_id == u.id,
-      where: s.provider == ^provider and s.uid == ^uid
+    query =
+      from(
+        u in User,
+        join: s in SocialLogin,
+        on: s.user_id == u.id,
+        where: s.provider == ^provider and s.uid == ^uid
+      )
 
     query
     |> maybe_include_deactivated(opts)
@@ -180,14 +181,12 @@ defmodule Margaret.Accounts do
   """
   @spec get_user_count :: non_neg_integer
   def get_user_count(opts \\ []) do
-    query = from u in User,
-      select: count(u.id)
+    query = from(u in User, select: count(u.id))
 
     query
     |> maybe_include_deactivated(opts)
     |> Repo.one!()
   end
-
 
   defp maybe_include_deactivated(query, opts) do
     opts
@@ -196,7 +195,7 @@ defmodule Margaret.Accounts do
   end
 
   defp do_maybe_include_deactivated(false, query) do
-    from u in query, where: is_nil(u.deactivated_at)
+    from(u in query, where: is_nil(u.deactivated_at))
   end
 
   defp do_maybe_include_deactivated(true, query), do: query
@@ -215,7 +214,7 @@ defmodule Margaret.Accounts do
     {:error, %Ecto.Changeset{}}
 
   """
-  @spec insert_user(%{optional(any) => any}) :: {:error, Ecto.Changeset.t} | {:ok, User.t}
+  @spec insert_user(%{optional(any) => any}) :: {:error, Ecto.Changeset.t()} | {:ok, User.t()}
   def insert_user(attrs) do
     attrs
     |> User.changeset()
@@ -236,7 +235,7 @@ defmodule Margaret.Accounts do
     ** (Ecto.InvalidChangesetError)
 
   """
-  @spec insert_user!(%{optional(any) => any}) :: User.t | no_return
+  @spec insert_user!(%{optional(any) => any}) :: User.t() | no_return
   def insert_user!(attrs) do
     attrs
     |> User.changeset()
@@ -248,7 +247,7 @@ defmodule Margaret.Accounts do
   """
   def update_user(%User{} = user, attrs) do
     user
-    |> User.changeset(attrs)
+    |> User.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -269,7 +268,7 @@ defmodule Margaret.Accounts do
   after the specified time has passed.
   """
   def mark_user_for_deletion(%User{id: user_id} = user, seconds \\ @seconds_before_user_deletion) do
-    user_changeset = User.changeset(user, %{})
+    user_changeset = User.update_changeset(user, %{})
 
     schedule_deletion = fn _ ->
       Exq.enqueue_in(Exq, "user_deletion", seconds, MargaretWeb.Workers.DeleteAccount, [user_id])
@@ -294,7 +293,7 @@ defmodule Margaret.Accounts do
 
   """
   @spec insert_social_login(%{optional(any) => any}) ::
-    {:error, Ecto.Changeset.t} | {:ok, SocialLogin.t}
+          {:error, Ecto.Changeset.t()} | {:ok, SocialLogin.t()}
   def insert_social_login(attrs) do
     attrs
     |> SocialLogin.changeset()
@@ -333,11 +332,14 @@ defmodule Margaret.Accounts do
     0
 
   """
-  @spec get_publication_count(String.t | non_neg_integer) :: non_neg_integer
+  @spec get_publication_count(String.t() | non_neg_integer) :: non_neg_integer
   def get_publication_count(user_id) do
-    query = from pm in PublicationMembership,
-      where: pm.member_id == ^user_id,
-      select: count(pm.id)
+    query =
+      from(
+        pm in PublicationMembership,
+        where: pm.member_id == ^user_id,
+        select: count(pm.id)
+      )
 
     Repo.one!(query)
   end
@@ -360,9 +362,10 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_follow(String.t | non_neg_integer) :: Follow.t | nil
+  @spec get_follow(String.t() | non_neg_integer) :: Follow.t() | nil
   def get_follow(id) when is_integer(id) or is_binary(id), do: Repo.get(Follow, id)
 
+  @spec get_follow(%{optional(atom) => any}) :: Follow.t() | nil
   def get_follow(%{follower_id: follower_id, user_id: user_id}) do
     Repo.get_by(Follow, follower_id: follower_id, user_id: user_id)
   end
@@ -381,7 +384,7 @@ defmodule Margaret.Accounts do
 
   """
   def get_followee_count(user_id) do
-    Repo.one!(from f in Follow, where: f.follower_id == ^user_id, select: count(f.id))
+    Repo.one!(from(f in Follow, where: f.follower_id == ^user_id, select: count(f.id)))
   end
 
   @doc """
@@ -397,11 +400,11 @@ defmodule Margaret.Accounts do
 
   """
   def get_follower_count(%{user_id: user_id}) do
-    Repo.one!(from f in Follow, where: f.user_id == ^user_id, select: count(f.id))
+    Repo.one!(from(f in Follow, where: f.user_id == ^user_id, select: count(f.id)))
   end
 
   def get_follower_count(%{publication_id: publication_id}) do
-    Repo.one!(from f in Follow, where: f.publication_id == ^publication_id, select: count(f.id))
+    Repo.one!(from(f in Follow, where: f.publication_id == ^publication_id, select: count(f.id)))
   end
 
   @doc """

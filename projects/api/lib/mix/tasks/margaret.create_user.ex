@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Margaret.CreateUser do
     email: :string,
     username: :string,
     admin: :boolean,
-    employee: :boolean,
+    employee: :boolean
   ]
 
   @doc false
@@ -53,7 +53,8 @@ defmodule Mix.Tasks.Margaret.CreateUser do
           |> shell().prompt()
           |> String.trim()
 
-        email -> email
+        email ->
+          email
       end
 
     put_email(tuple, email)
@@ -71,14 +72,15 @@ defmodule Mix.Tasks.Margaret.CreateUser do
             username -> username
           end
 
-        username -> username
+        username ->
+          username
       end
-    
+
     put_username(tuple, username)
   end
 
   defp get_is_admin({opts, _attrs} = tuple) do
-    is_admin = 
+    is_admin =
       case Keyword.get(opts, :admin) do
         nil -> shell().yes?("Admin?")
         is_admin -> is_admin
@@ -114,7 +116,7 @@ defmodule Mix.Tasks.Margaret.CreateUser do
   end
 
   defp create_user(attrs), do: Accounts.insert_user!(attrs)
-  
+
   defp get_token(%User{} = user) do
     {:ok, token, _} = MargaretWeb.Guardian.encode_and_sign(user)
 

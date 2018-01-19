@@ -9,8 +9,8 @@ defmodule MargaretWeb.Schema.UpdatableTypes do
   alias MargaretWeb.Resolvers
 
   interface :updatable do
-    field :viewer_can_update, non_null(:boolean)
+    field(:viewer_can_update, non_null(:boolean))
 
-    resolve_type &Resolvers.Nodes.resolve_type/2
+    resolve_type(&Resolvers.Nodes.resolve_type/2)
   end
 end

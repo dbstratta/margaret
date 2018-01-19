@@ -17,31 +17,31 @@ defmodule Margaret.Publications.PublicationInvitation do
     :inviter_id,
     :publication_id,
     :role,
-    :status,
+    :status
   ]
 
   @required_attrs [
     :invitee_id,
     :inviter_id,
     :publication_id,
-    :role,
+    :role
   ]
 
-  defenum PublicationInvitationStatus,
-    :publication_invitation_status,
-    [:accepted, :pending, :rejected]
+  defenum(PublicationInvitationStatus, :publication_invitation_status, [
+    :accepted,
+    :pending,
+    :rejected
+  ])
 
-  defenum PublicationInvitationRole,
-    :publication_invitation_role,
-    [:writer, :editor, :admin]
+  defenum(PublicationInvitationRole, :publication_invitation_role, [:writer, :editor, :admin])
 
   schema "publication_invitations" do
-    belongs_to :invitee, User
-    belongs_to :inviter, User
-    belongs_to :publication, Publication
+    belongs_to(:invitee, User)
+    belongs_to(:inviter, User)
+    belongs_to(:publication, Publication)
 
-    field :role, PublicationInvitationRole
-    field :status, PublicationInvitationStatus
+    field(:role, PublicationInvitationRole)
+    field(:status, PublicationInvitationStatus)
 
     timestamps()
   end

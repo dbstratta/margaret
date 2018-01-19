@@ -18,7 +18,7 @@ defmodule MargaretWeb.Middleware.RequireAuthenticated do
   middleware MargaretWeb.Middleware.RequireAuthenticated, resolve: false
   resolve &resolver/2
   ```
-  
+
   """
 
   @behaviour Absinthe.Middleware

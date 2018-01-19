@@ -25,13 +25,13 @@ defmodule MargaretWeb.ChannelCase do
     end
   end
 
-
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Margaret.Repo)
+
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Margaret.Repo, {:shared, self()})
     end
+
     :ok
   end
-
 end

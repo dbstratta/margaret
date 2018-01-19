@@ -1,13 +1,12 @@
 defmodule MargaretWeb.UserSocket do
   use Phoenix.Socket
-  use Absinthe.Phoenix.Socket,
-    schema: MargaretWeb.Schema
+  use Absinthe.Phoenix.Socket, schema: MargaretWeb.Schema
 
   ## Channels
-  channel "starred:*", MargaretWeb.StarredChannel
+  channel("starred:*", MargaretWeb.StarredChannel)
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket
+  transport(:websocket, Phoenix.Transports.WebSocket)
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can
@@ -22,7 +21,7 @@ defmodule MargaretWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(params, socket) do
-    IO.inspect params
+    IO.inspect(params)
     {:ok, socket}
   end
 

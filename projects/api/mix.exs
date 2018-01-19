@@ -5,12 +5,12 @@ defmodule Margaret.Mixfile do
     [
       app: :margaret,
       version: "0.0.1",
-      elixir: "~> 1.5",
-      elixirc_paths: elixirc_paths(Mix.env),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers,
-      start_permanent: Mix.env == :prod,
+      elixir: "~> 1.6",
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps(),
+      deps: deps()
     ]
   end
 
@@ -20,13 +20,13 @@ defmodule Margaret.Mixfile do
   def application do
     [
       mod: {Margaret.Application, []},
-      extra_applications: [:crypto, :logger, :runtime_tools],
+      extra_applications: [:crypto, :logger, :runtime_tools]
     ]
   end
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
   #
@@ -56,7 +56,7 @@ defmodule Margaret.Mixfile do
       {:uuid, "~> 1.1.8"},
       {:slugger, "~> 0.2.0"},
       {:credo, "~> 0.8.10", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 0.5.1", only: [:dev], runtime: false},
+      {:dialyxir, "~> 0.5.1", only: [:dev], runtime: false}
     ]
   end
 
@@ -70,7 +70,7 @@ defmodule Margaret.Mixfile do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      "test": ["ecto.create --quiet", "ecto.migrate", "test"],
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end

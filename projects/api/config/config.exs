@@ -6,27 +6,24 @@
 use Mix.Config
 
 # General application configuration
-config :margaret,
-  ecto_repos: [Margaret.Repo]
+config :margaret, ecto_repos: [Margaret.Repo]
 
 # Configures the endpoint
 config :margaret, MargaretWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "5FHUpeKAme+nsDLYD9OvooYr6AKyzQppZegTzAG1xI8m1Ljko+11ztUdOR3IFC0u",
   render_errors: [view: MargaretWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: Margaret.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Margaret.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures CORSPlug
-config :cors_plug,
-  methods: ["GET", "POST"]
+config :cors_plug, methods: ["GET", "POST"]
 
 # Configures Ueberauth
 config :ueberauth, Ueberauth,
   providers: [
     github: {Ueberauth.Strategy.Github, []},
     google: {Ueberauth.Strategy.Google, []},
-    facebook: {Ueberauth.Strategy.Facebook, []},
+    facebook: {Ueberauth.Strategy.Facebook, []}
   ]
 
 # Configures Github's Oauth2
@@ -66,4 +63,4 @@ config :logger, :console,
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

@@ -21,7 +21,7 @@ defmodule Margaret.Stories do
       nil
 
   """
-  @spec get_story(String.t) :: Story.t | nil
+  @spec get_story(String.t()) :: Story.t() | nil
   def get_story(id), do: Repo.get(Story, id)
 
   @doc """
@@ -38,7 +38,7 @@ defmodule Margaret.Stories do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_story!(String.t) :: Story.t
+  @spec get_story!(String.t()) :: Story.t()
   def get_story!(id), do: Repo.get!(Story, id)
 
   def get_story_by_slug(slug) do
@@ -60,7 +60,7 @@ defmodule Margaret.Stories do
       nil
 
   """
-  @spec get_story_by_unique_hash(String.t) :: Story.t | nil
+  @spec get_story_by_unique_hash(String.t()) :: Story.t() | nil
   def get_story_by_unique_hash(unique_hash), do: Repo.get_by(Story, unique_hash: unique_hash)
 
   def get_title(%Story{content: %{"blocks" => [%{"text" => title} | _]}}) do
@@ -95,7 +95,7 @@ defmodule Margaret.Stories do
       false
 
   """
-  @spec story_public?(Story.t) :: boolean
+  @spec story_public?(Story.t()) :: boolean
   def story_public?(%Story{audience: :all} = story), do: has_been_published?(story)
 
   def story_public?(_), do: false
@@ -116,12 +116,11 @@ defmodule Margaret.Stories do
       false
 
   """
-  @spec can_see_story?(Story.t, User.t) :: boolean
+  @spec can_see_story?(Story.t(), User.t()) :: boolean
   def can_see_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
 
-  def can_see_story?(
-    %Story{publication_id: publication_id}, %User{id: user_id}
-  ) when not is_nil(publication_id) do
+  def can_see_story?(%Story{publication_id: publication_id}, %User{id: user_id})
+      when not is_nil(publication_id) do
     Publications.can_edit_stories?(publication_id, user_id)
   end
 
@@ -140,9 +139,8 @@ defmodule Margaret.Stories do
   """
   def can_update_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
 
-  def can_update_story?(
-    %Story{publication_id: publication_id}, %User{id: user_id}
-  ) when not is_nil(publication_id) do
+  def can_update_story?(%Story{publication_id: publication_id}, %User{id: user_id})
+      when not is_nil(publication_id) do
     Publications.can_edit_stories?(publication_id, user_id)
   end
 
@@ -153,39 +151,68 @@ defmodule Margaret.Stories do
 
   @doc """
   Inserts a story.
-
-  TODO: Implement insert and update like I did in Publications.
   """
-  def insert_story(attrs), do: upsert_story(%Story{}, attrs)
-
-  defp upsert_story(story, %{tags: tags} = attrs) do
-    upsert_story_fn = fn %{tags: tag_structs} ->
-      attrs_with_tags = Map.put(attrs, :tags, tag_structs)
-
-      story
-      |> Repo.preload(:tags)
-      |> Story.changeset(attrs_with_tags)
-      |> Repo.insert_or_update()
-    end
-
+  def insert_story(attrs) do
     Multi.new()
-    |> Multi.run(:tags, fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end)
-    |> Multi.run(:story, upsert_story_fn)
+    |> maybe_insert_tags(attrs)
+    |> insert_story(attrs)
     |> Repo.transaction()
   end
 
-  defp upsert_story(story, attrs) do
-    story_changeset = Story.changeset(story, attrs)
+  defp insert_story(multi, attrs) do
+    insert_story_fn = fn changes ->
+      maybe_put_tags = fn attrs ->
+        case changes do
+          %{tags: tags} -> Map.put(attrs, :tags, tags)
+          _ -> attrs
+        end
+      end
 
-    Multi.new()
-    |> Multi.insert_or_update(:story, story_changeset)
-    |> Repo.transaction()
+      attrs
+      |> maybe_put_tags.()
+      |> Story.changeset()
+      |> Repo.insert()
+    end
+
+    Multi.run(multi, :story, insert_story_fn)
   end
 
   @doc """
   Updates a story.
   """
-  def update_story(%Story{} = story, attrs), do: upsert_story(story, attrs)
+  def update_story(%Story{} = story, attrs) do
+    Multi.new()
+    |> maybe_insert_tags(attrs)
+    |> update_story(story, attrs)
+    |> Repo.transaction()
+  end
+
+  defp update_story(multi, %Story{} = story, attrs) do
+    update_story_fn = fn changes ->
+      maybe_put_tags = fn {story, attrs} ->
+        case changes do
+          %{tags: tags} -> {Repo.preload(story, :tags), Map.put(attrs, :tags, tags)}
+          _ -> {story, attrs}
+        end
+      end
+
+      {story, attrs} = maybe_put_tags.({story, attrs})
+
+      story
+      |> Story.update_changeset(attrs)
+      |> Repo.update()
+    end
+
+    Multi.run(multi, :story, update_story_fn)
+  end
+
+  defp maybe_insert_tags(multi, %{tags: tags}) do
+    insert_tags_fn = fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end
+
+    Multi.run(multi, :tags, insert_tags_fn)
+  end
+
+  defp maybe_insert_tags(multi, _attrs), do: multi
 
   @doc """
   Deletes a story.

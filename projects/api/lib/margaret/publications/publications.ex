@@ -64,9 +64,12 @@ defmodule Margaret.Publications do
   Returns the member count of the publication.
   """
   def get_member_count(publication_id) do
-    query = from pm in PublicationMembership,
-      where: pm.publication_id == ^publication_id,
-      select: count(pm.id)
+    query =
+      from(
+        pm in PublicationMembership,
+        where: pm.publication_id == ^publication_id,
+        select: count(pm.id)
+      )
 
     Repo.one!(query)
   end
@@ -75,9 +78,12 @@ defmodule Margaret.Publications do
   Returns the story count of the publication.
   """
   def get_story_count(publication_id) do
-    query = from s in Story,
-      where: s.publication_id == ^publication_id,
-      select: count(s.id)
+    query =
+      from(
+        s in Story,
+        where: s.publication_id == ^publication_id,
+        select: count(s.id)
+      )
 
     Repo.one!(query)
   end
@@ -250,7 +256,7 @@ defmodule Margaret.Publications do
     |> Repo.transaction()
   end
 
-  defp insert_publication(%Multi{} = multi, attrs) do
+  defp insert_publication(multi, attrs) do
     insert_publication_fn = fn changes ->
       maybe_put_tags = fn attrs ->
         case changes do
@@ -260,7 +266,7 @@ defmodule Margaret.Publications do
       end
 
       attrs
-      |> maybe_put_tags.() 
+      |> maybe_put_tags.()
       |> Publication.changeset()
       |> Repo.insert()
     end
@@ -278,7 +284,7 @@ defmodule Margaret.Publications do
     |> Repo.transaction()
   end
 
-  defp update_publication(%Multi{} = multi, %Publication{} = publication, attrs) do
+  defp update_publication(multi, %Publication{} = publication, attrs) do
     update_publication_fn = fn changes ->
       maybe_put_tags = fn {publication, attrs} ->
         case changes do
@@ -307,8 +313,11 @@ defmodule Margaret.Publications do
 
   defp insert_owner(multi, %{owner_id: owner_id}) do
     insert_owner_fn = fn %{publication: %{id: publication_id}} ->
-      insert_publication_membership(
-        %{role: :owner, member_id: owner_id, publication_id: publication_id})
+      insert_publication_membership(%{
+        role: :owner,
+        member_id: owner_id,
+        publication_id: publication_id
+      })
     end
 
     Multi.run(multi, :owner, insert_owner_fn)
@@ -318,8 +327,8 @@ defmodule Margaret.Publications do
   Creates a publication membership.
   """
   def insert_publication_membership(attrs) do
-    %PublicationMembership{}
-    |> PublicationMembership.changeset(attrs)
+    attrs
+    |> PublicationMembership.changeset()
     |> Repo.insert()
   end
 
@@ -329,9 +338,11 @@ defmodule Margaret.Publications do
   def get_publication_membership(id), do: Repo.get(PublicationMembership, id)
 
   def get_publication_owner(publication_id) do
-    query = from u in User,
-      join: pm in PublicationMembership, on: pm.member_id == u.id,
-      where: pm.publication_id == ^publication_id and pm.role == ^:owner
+    query =
+      from u in User,
+        join: pm in PublicationMembership,
+        on: pm.member_id == u.id,
+        where: pm.publication_id == ^publication_id and pm.role == ^:owner
 
     Repo.one!(query)
   end
@@ -382,19 +393,22 @@ defmodule Margaret.Publications do
   """
   def accept_publication_invitation(%PublicationInvitation{} = invitation) do
     invitation_changeset = PublicationInvitation.changeset(invitation, %{status: :accepted})
-    reject_others_invitations = from i in PublicationInvitation,
-      where: i.invitee_id == ^invitation.invitee_id and i.id != ^invitation.id,
-      where: i.status == ^:pending,
-      update: [set: [status: ^:rejected]]
-    
+
+    reject_others_invitations =
+      from(
+        i in PublicationInvitation,
+        where: i.invitee_id == ^invitation.invitee_id and i.id != ^invitation.id,
+        where: i.status == ^:pending,
+        update: [set: [status: ^:rejected]]
+      )
+
     membership_attrs = %{
       role: invitation.role,
       publication_id: invitation.publication_id,
-      member_id: invitation.invitee_id,
+      member_id: invitation.invitee_id
     }
-    membership_changeset = PublicationMembership.changeset(
-      %PublicationMembership{}, membership_attrs)
 
+    membership_changeset = PublicationMembership.changeset(membership_attrs)
 
     Multi.new()
     |> Multi.update(:invitation, invitation_changeset)

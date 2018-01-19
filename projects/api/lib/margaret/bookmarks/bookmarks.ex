@@ -40,6 +40,6 @@ defmodule Margaret.Bookmarks do
   end
 
   def get_bookmarked_count(user_id) do
-    Repo.all(from b in Bookmark, where: b.user_id == ^user_id, select: count(b.id))
+    Repo.all(from(b in Bookmark, where: b.user_id == ^user_id, select: count(b.id)))
   end
 end
