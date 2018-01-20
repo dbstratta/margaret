@@ -5,15 +5,17 @@ set -o pipefail
 set -o nounset
 [[ "${DEBUG:-false}" == "true" ]] && set -o xtrace
 
-readonly __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+readonly __script_path="${BASH_SOURCE[0]}"
+readonly __dir="$(cd "$(dirname "${__script_path}")" && pwd)"
+readonly __file="${__dir}/$(basename "${__script_path}")"
+readonly __base="$(basename ${__file} .sh)"
 readonly __root="$(cd "$(dirname "${__dir}")" && pwd)"
 
 # Build the Docker images.
 build() {
     local -r tag="${1}"; shift
 
-    docker_compose_prod=docker-compose.yml:docker-compose.prod.yml
+    local -r docker_compose_prod=docker-compose.yml:docker-compose.prod.yml
 
     # Build and tag the containers with the last git commit hash.
     COMPOSE_FILE="${docker_compose_prod}" TAG="${tag}" docker-compose build --no-cache "$@"

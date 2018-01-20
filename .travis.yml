@@ -26,10 +26,8 @@ jobs:
         - docker-compose build
 
     - stage: test
-      script: skip
-        # - ./scripts/test.sh
-        # - yarn test
-        # - docker-compose run --rm web yarn test:ci
+      script:
+        - ./scripts/test.sh
 
     - stage: deploy
       script:

@@ -1,24 +1,12 @@
-# defmodule Margaret.Factory.Injector do
-#   defmacro inject_factories(names) do
-#     Enum.map(names, fn name ->
-#       quote do
-#         def unquote(:"build_#{name}")(fields \\ []) do
-#           unquote do
-#             build(name, fields)
-#           end
-#         end
-#       end
-#     end)
-#   end
-
-#   defmacro __before_compile__(_env) do
-#     inject_factories [
-#     ]
-#   end
-# end
-
 defmodule Margaret.Factory do
-  alias Margaret.{Accounts, Stories, Comments, Publications, Stars, Bookmarks, Tags}
+  @moduledoc """
+  Factory functions to build and insert structs.
+
+  TODO: In the future, it would be pretty nice to
+  insert changesets instead of structs directly.
+  """
+
+  alias Margaret.{Repo, Accounts, Stories, Comments, Publications, Stars, Bookmarks, Tags}
   alias Accounts.{User, SocialLogin, Follow}
   alias Stories.Story
   alias Comments.Comment
@@ -43,14 +31,31 @@ defmodule Margaret.Factory do
 
   @content %{"blocks" => [%{"text" => "Title"}]}
 
+  # Generates the `build_*` functions.
   Enum.each(@names, fn name ->
     def unquote(:"build_#{name}")(fields \\ []) do
       build(unquote(name), fields)
     end
   end)
 
+  # Generates the `insert_*!` functions.
+  Enum.each(@names, fn name ->
+    def unquote(:"insert_#{name}!")(fields \\ []) do
+      Repo.insert!(build(unquote(name), fields))
+    end
+  end)
+
   # Factories
 
+  @doc """
+  Builds a struct for the given entity.
+
+  ## Examples
+
+    iex> build(:user)
+    %User{}
+
+  """
   @spec build(atom) :: any
   def build(:user) do
     %User{
@@ -62,7 +67,7 @@ defmodule Margaret.Factory do
   def build(:social_login) do
     %SocialLogin{
       uid: "uid_#{System.unique_integer()}",
-      provider: :github
+      provider: "github"
     }
   end
 

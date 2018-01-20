@@ -35,8 +35,12 @@ defmodule Margaret.Accounts.User do
   ]
 
   @username_regex ~r/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){1,64}$/
+  @username_min_length 2
+  @username_max_length 64
 
   @email_regex ~r/@/
+  @email_min_length 3
+  @email_max_length 254
 
   schema "users" do
     field(:username, :string)
@@ -76,9 +80,9 @@ defmodule Margaret.Accounts.User do
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> validate_format(:username, @username_regex)
-    |> validate_length(:username, min: 2, max: 64)
+    |> validate_length(:username, min: @username_min_length, max: @username_max_length)
     |> validate_format(:email, @email_regex)
-    |> validate_length(:email, min: 3, max: 254)
+    |> validate_length(:email, min: @email_min_length, max: @email_max_length)
     |> unique_constraint(:username)
     |> unique_constraint(:email)
   end
@@ -88,9 +92,9 @@ defmodule Margaret.Accounts.User do
     user
     |> cast(attrs, @update_permitted_attrs)
     |> validate_format(:username, @username_regex)
-    |> validate_length(:username, min: 2, max: 64)
+    |> validate_length(:username, min: @username_min_length, max: @username_max_length)
     |> validate_format(:email, @email_regex)
-    |> validate_length(:email, min: 3, max: 254)
+    |> validate_length(:email, min: @email_min_length, max: @email_max_length)
     |> unique_constraint(:username)
     |> unique_constraint(:email)
   end

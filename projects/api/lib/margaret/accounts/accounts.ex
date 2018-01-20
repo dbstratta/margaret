@@ -167,7 +167,7 @@ defmodule Margaret.Accounts do
 
     query
     |> maybe_include_deactivated(opts)
-    |> Repo.one()
+    |> Repo.one!()
   end
 
   @doc """
