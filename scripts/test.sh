@@ -9,7 +9,7 @@ set -o nounset
 run_tests() {
     # Code style checks
 
-    docker-compose run api mix format --check-formatted
+    docker-compose run --rm api mix format --check-formatted
 
     # Tests
 

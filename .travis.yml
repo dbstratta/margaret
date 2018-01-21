@@ -7,6 +7,9 @@ node_js:
 services:
   - docker
 
+env:
+  - DOCKER_COMPOSE_VERSION=1.18.0
+
 before_install:
   # Install latest version of Docker.
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -14,24 +17,22 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y install docker-ce
   # Install latest version of Docker Compose.
-  - sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-  - sudo chmod +x /usr/local/bin/docker-compose
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/"${DOCKER_COMPOSE_VERSION}"/docker-compose-$(uname -s)-$(uname -m) > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
 
 stages:
-  - build
   - test
   - name: deploy
     if: branch = master
 
 jobs:
   include:
-    - stage: build
-      script:
-        - docker-compose build
-
     - stage: test
       script:
+        - docker-compose build
         - ./scripts/test.sh
 
     - stage: deploy
