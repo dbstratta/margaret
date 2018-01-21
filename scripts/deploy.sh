@@ -26,5 +26,6 @@ main() {
     deploy "$@"
 }
 
-# If executed as a script calls `main`, it doesn't otherwise.
-[[ "${0}" == "${BASH_SOURCE}" ]] && main "$@"
+if [[ "${0}" == "${BASH_SOURCE[0]}" ]]; then
+    main "$@"
+fi
