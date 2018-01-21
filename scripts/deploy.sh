@@ -9,7 +9,7 @@ set -o nounset
 deploy() {
     local -r tag="${1}"; shift
 
-    build tag
+    build "${tag}"
     push
 }
 

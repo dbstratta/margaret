@@ -20,8 +20,7 @@ WORKDIR /usr/src/app
 
 # Install dependencies.
 COPY mix.exs mix.lock ./
-RUN mix deps.get
-RUN mix deps.compile
+RUN mix deps.get && mix compile
 
 # Bundle app source.
 COPY . .
