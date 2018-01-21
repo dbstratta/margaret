@@ -12,18 +12,16 @@ readonly __base="$(basename ${__file} .sh)"
 readonly __root="$(cd "$(dirname "${__dir}")" && pwd)"
 
 test() {
-    local -r docker_compose_test=docker-compose.yml:docker-compose.test.yml
-
     # Code style checks
 
-    COMPOSE_FILE="${docker_compose_test}" docker-compose run api mix format --check-formatted
+    docker-compose run api mix format --check-formatted
 
     # Tests
 
     yarn test
 
-    COMPOSE_FILE="${docker_compose_test}" docker-compose run api mix test
-    COMPOSE_FILE="${docker_compose_test}" docker-compose run web yarn test
+    docker-compose run api mix test
+    docker-compose run web yarn test
 }
 
 main() {

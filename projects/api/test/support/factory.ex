@@ -91,7 +91,8 @@ defmodule Margaret.Factory do
 
   def build(:publication) do
     %Publication{
-      display_name: "Publication"
+      display_name: "Publication #{System.unique_integer()}",
+      name: "publication#{System.unique_integer()}"
     }
   end
 

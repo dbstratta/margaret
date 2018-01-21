@@ -307,10 +307,10 @@ defmodule Margaret.Accounts do
 
   ## Examples
 
-    iex> insert_social_login(attrs)
+    iex> insert_social_login!(attrs)
     {:ok, %SocialLogin{}}
 
-    iex> insert_social_login(bad_attrs)
+    iex> insert_social_login!(bad_attrs)
     ** (Ecto.InvalidChangesetError)
 
   """

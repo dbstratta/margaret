@@ -319,4 +319,22 @@ defmodule Margaret.UsersTest do
       assert Accounts.get_user_count(include_deactivated: true) == total_user_count
     end
   end
+
+  describe "delete_user/1" do
+    test "when user exists deletes the user" do
+      %User{id: user_id} = user = Factory.insert_user!()
+
+      assert {:ok, %User{}} = Accounts.delete_user(user)
+      assert is_nil(Accounts.get_user(user_id))
+    end
+  end
+
+  describe "delete_user!/1" do
+    test "when user exists deletes the user" do
+      %User{id: user_id} = user = Factory.insert_user!()
+
+      assert %User{} = Accounts.delete_user!(user)
+      assert is_nil(Accounts.get_user(user_id))
+    end
+  end
 end

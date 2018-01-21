@@ -29,6 +29,7 @@ defmodule Margaret.Accounts.Follow do
     timestamps()
   end
 
+  # TODO: Create contraint at the db level to check if user_id == follower_id.
   @doc false
   def changeset(attrs) do
     %Follow{}

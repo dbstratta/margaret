@@ -13,6 +13,7 @@ services:
     build: ./projects/api
     depends_on:
       - postgres
+      - redis
     environment:
       # These env variables are necessary to let Nginx reverse proxy us.
       - VIRTUAL_HOST=api.margaret.com
