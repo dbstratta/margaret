@@ -6,7 +6,7 @@ set -o nounset
 [[ "${DEBUG:-false}" == "true" ]] && set -o xtrace
 
 # Pushes the Docker images to the registry (Docker Hub).
-push() {
+push_images() {
     docker login --username "${DOCKER_USERNAME}" --password "${DOCKER_PASSWORD}"
 
     docker-compose push
@@ -19,7 +19,7 @@ main() {
     local -r __base="$(basename ${__file} .sh)"
     local -r __root="$(cd "$(dirname "${__dir}")" && pwd)"
 
-    push "$@"
+    push_images "$@"
 }
 
 # If executed as a script calls `main`, it doesn't otherwise.

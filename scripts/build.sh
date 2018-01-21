@@ -6,7 +6,7 @@ set -o nounset
 [[ "${DEBUG:-false}" == "true" ]] && set -o xtrace
 
 # Build the Docker images.
-build() {
+build_images() {
     local -r tag="${1}"; shift
 
     local -r docker_compose_prod=docker-compose.yml:docker-compose.prod.yml
@@ -26,8 +26,8 @@ main() {
     local -r __base="$(basename ${__file} .sh)"
     local -r __root="$(cd "$(dirname "${__dir}")" && pwd)"
 
-    build "$@"
+    build_images "$@"
 }
 
 # If executed as a script calls `main`, it doesn't otherwise.
-[[ "$0" == "$BASH_SOURCE" ]] && main "$@"
+[[ "$0" == "${BASH_SOURCE[0]}" ]] && main "$@"

@@ -5,11 +5,18 @@ set -o pipefail
 set -o nounset
 [[ "${DEBUG:-false}" == "true" ]] && set -o xtrace
 
-# Pushes the Docker images to the registry (Docker Hub).
-push() {
-    docker login --username "${DOCKER_USERNAME}" --password "${DOCKER_PASSWORD}"
+# Run tests.
+run_tests() {
+    # Code style checks
 
-    docker-compose push
+    docker-compose run api mix format --check-formatted
+
+    # Tests
+
+    yarn test
+
+    docker-compose run --rm api mix test
+    docker-compose run --rm web yarn test
 }
 
 main() {
@@ -19,7 +26,7 @@ main() {
     local -r __base="$(basename ${__file} .sh)"
     local -r __root="$(cd "$(dirname "${__dir}")" && pwd)"
 
-    push "$@"
+    run_tests "$@"
 }
 
 # If executed as a script calls `main`, it doesn't otherwise.

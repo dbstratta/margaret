@@ -5,9 +5,7 @@ set -o pipefail
 set -o nounset
 [[ "${DEBUG:-false}" == "true" ]] && set -o xtrace
 
-source "${__dir}/build.sh"
-source "${__dir}/push.sh"
-
+# Build images and pushes them to the registry.
 deploy() {
     local -r tag="${1}"; shift
 
@@ -21,6 +19,9 @@ main() {
     local -r __file="${__dir}/$(basename "${__script_path}")"
     local -r __base="$(basename ${__file} .sh)"
     local -r __root="$(cd "$(dirname "${__dir}")" && pwd)"
+
+    source "${__dir}/build.sh"
+    source "${__dir}/push.sh"
 
     deploy "$@"
 }
