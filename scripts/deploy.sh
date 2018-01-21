@@ -9,8 +9,8 @@ set -o nounset
 deploy() {
     local -r tag="${1}"; shift
 
-    build "${tag}"
-    push
+    build_images "${tag}"
+    push_images
 }
 
 main() {
