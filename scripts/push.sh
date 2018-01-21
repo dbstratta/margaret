@@ -7,9 +7,11 @@ set -o nounset
 
 # Pushes the Docker images to the registry (Docker Hub).
 push_images() {
-    docker login --username "${DOCKER_USERNAME}" --password "${DOCKER_PASSWORD}"
+    echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
 
-    docker-compose push
+    local -r docker_compose_prod=docker-compose.yml:docker-compose.prod.yml
+
+    COMPOSE_FILE="${docker_compose_prod}" TAG=latest docker-compose push
 }
 
 main() {
@@ -22,6 +24,6 @@ main() {
     push_images "$@"
 }
 
-if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
+if [[ "${0}" == "${BASH_SOURCE[0]}" ]]; then
     main "$@"
 fi

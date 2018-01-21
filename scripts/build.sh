@@ -12,7 +12,7 @@ build_images() {
     local -r docker_compose_prod=docker-compose.yml:docker-compose.prod.yml
 
     # Build and tag the containers with the last git commit hash.
-    COMPOSE_FILE="${docker_compose_prod}" TAG="${tag}" docker-compose build --no-cache "$@"
+    # COMPOSE_FILE="${docker_compose_prod}" TAG="${tag}" docker-compose build --no-cache "$@"
 
     # Build and tag the containers with "latest".
     # This second build should be much faster because it's cached.
@@ -29,6 +29,6 @@ main() {
     build_images "$@"
 }
 
-if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
+if [[ "${0}" == "${BASH_SOURCE[0]}" ]]; then
     main "$@"
 fi
