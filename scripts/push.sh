@@ -23,4 +23,4 @@ main() {
 }
 
 # If executed as a script calls `main`, it doesn't otherwise.
-[[ "$0" == "${BASH_SOURCE[0]}" ]] && main "$@"
+[[ "$0" == "${BASH_SOURCE}" ]] && main "$@"
