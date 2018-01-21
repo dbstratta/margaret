@@ -5,28 +5,22 @@ set -o pipefail
 set -o nounset
 [[ "${DEBUG:-false}" == "true" ]] && set -o xtrace
 
-readonly __script_path="${BASH_SOURCE[0]}"
-readonly __dir="$(cd "$(dirname "${__script_path}")" && pwd)"
-readonly __file="${__dir}/$(basename "${__script_path}")"
-readonly __base="$(basename ${__file} .sh)"
-readonly __root="$(cd "$(dirname "${__dir}")" && pwd)"
+# Pushes the Docker images to the registry (Docker Hub).
+push() {
+    docker login --username "${DOCKER_USERNAME}" --password "${DOCKER_PASSWORD}"
 
-test() {
-    # Code style checks
-
-    docker-compose run api mix format --check-formatted
-
-    # Tests
-
-    yarn test
-
-    docker-compose run api mix test
-    docker-compose run web yarn test
+    docker-compose push
 }
 
 main() {
-    test "$@"
+    local -r __script_path="${BASH_SOURCE[0]}"
+    local -r __dir="$(cd "$(dirname "${__script_path}")" && pwd)"
+    local -r __file="${__dir}/$(basename "${__script_path}")"
+    local -r __base="$(basename ${__file} .sh)"
+    local -r __root="$(cd "$(dirname "${__dir}")" && pwd)"
+
+    push "$@"
 }
 
 # If executed as a script calls `main`, it doesn't otherwise.
-[[ "$0" == "$BASH_SOURCE" ]] && main "$@"
+[[ "$0" == "${BASH_SOURCE[0]}" ]] && main "$@"
