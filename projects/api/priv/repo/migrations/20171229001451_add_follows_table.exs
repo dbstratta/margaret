@@ -27,5 +27,7 @@ defmodule Margaret.Repo.Migrations.AddFollowsTable do
         """
       )
     )
+
+    create(constraint(:follows, :cannot_follow_follower, check: "follower_id != user_id"))
   end
 end

@@ -116,7 +116,7 @@ defmodule Margaret.Factory do
 
   def build(:tag) do
     %Tag{
-      title: "tag"
+      title: "tag#{System.unique_integer([:positive])}"
     }
   end
 

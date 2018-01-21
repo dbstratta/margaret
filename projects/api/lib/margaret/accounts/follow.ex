@@ -29,7 +29,6 @@ defmodule Margaret.Accounts.Follow do
     timestamps()
   end
 
-  # TODO: Create contraint at the db level to check if user_id == follower_id.
   @doc false
   def changeset(attrs) do
     %Follow{}
@@ -41,5 +40,6 @@ defmodule Margaret.Accounts.Follow do
     |> unique_constraint(:follower, name: :follows_follower_id_user_id_index)
     |> unique_constraint(:follower, name: :follows_follower_id_publication_id_index)
     |> check_constraint(:follower, name: :only_one_not_null_followable)
+    |> check_constraint(:follower, name: :cannot_follow_follower)
   end
 end

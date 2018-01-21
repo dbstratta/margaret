@@ -1,6 +1,10 @@
 defmodule Margaret.Helpers do
+  @moduledoc false
+
   import Ecto.Changeset
 
+  @doc """
+  """
   def maybe_put_assoc(%Ecto.Changeset{} = changeset, attrs, opts \\ []) do
     key = Keyword.get(opts, :key)
 
@@ -17,6 +21,8 @@ defmodule Margaret.Helpers do
     end
   end
 
+  @doc """
+  """
   def maybe_put_tags_assoc(%Ecto.Changeset{} = changeset, attrs) do
     maybe_put_assoc(changeset, attrs, key: :tags)
   end

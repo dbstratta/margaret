@@ -1,4 +1,6 @@
 defmodule MargaretWeb.Schema.JSONTypes do
+  @moduledoc false
+
   use Absinthe.Schema.Notation
 
   @desc """

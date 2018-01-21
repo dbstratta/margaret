@@ -66,8 +66,8 @@ defmodule Margaret.UsersTest do
   describe "insert_user/1" do
     test "with valid data creates a user" do
       assert {:ok, %User{} = user} = Accounts.insert_user(@valid_attrs)
-      assert user.username == @valid_attrs.username
-      assert user.email == @valid_attrs.email
+      assert user.username === @valid_attrs.username
+      assert user.email === @valid_attrs.email
     end
 
     test "with invalid data doesn't create a user" do
@@ -113,8 +113,8 @@ defmodule Margaret.UsersTest do
 
       assert {:ok, %User{} = updated_user} = Accounts.update_user(user, attrs)
 
-      assert updated_user.email == new_email
-      assert updated_user.username == new_username
+      assert updated_user.email === new_email
+      assert updated_user.username === new_username
     end
 
     test "with invalid data doesn't update the user" do
@@ -127,7 +127,7 @@ defmodule Margaret.UsersTest do
   end
 
   describe "get_user/2" do
-    test "with valid id gets the user" do
+    test "with valid id returns the user" do
       %User{id: user_id} = Factory.insert_user!()
 
       assert %User{id: ^user_id} = Accounts.get_user(user_id)
@@ -148,7 +148,7 @@ defmodule Margaret.UsersTest do
   end
 
   describe "get_user!/2" do
-    test "with valid id gets the user" do
+    test "with valid id returns the user" do
       %User{id: user_id} = Factory.insert_user!()
 
       assert %User{id: ^user_id} = Accounts.get_user!(user_id)
@@ -174,7 +174,7 @@ defmodule Margaret.UsersTest do
   end
 
   describe "get_user_by_username/2" do
-    test "with valid username gets the user" do
+    test "with valid username returns the user" do
       %User{username: username} = Factory.insert_user!()
 
       assert %User{username: ^username} = Accounts.get_user_by_username(username)
@@ -197,7 +197,7 @@ defmodule Margaret.UsersTest do
   end
 
   describe "get_user_by_username!/2" do
-    test "with valid username gets the user" do
+    test "with valid username returns the user" do
       %User{username: username} = Factory.insert_user!()
 
       assert %User{username: ^username} = Accounts.get_user_by_username!(username)
@@ -224,7 +224,7 @@ defmodule Margaret.UsersTest do
   end
 
   describe "get_user_by_email/2" do
-    test "with valid email gets the user" do
+    test "with valid email returns the user" do
       %User{email: email} = Factory.insert_user!()
 
       assert %User{email: ^email} = Accounts.get_user_by_email(email)
@@ -246,7 +246,7 @@ defmodule Margaret.UsersTest do
   end
 
   describe "get_user_by_email!/2" do
-    test "with valid email gets the user" do
+    test "with valid email returns the user" do
       %User{email: email} = Factory.insert_user!()
 
       assert %User{email: ^email} = Accounts.get_user_by_email!(email)
@@ -272,7 +272,7 @@ defmodule Margaret.UsersTest do
   end
 
   describe "get_user_by_social_login!/2" do
-    test "with valid data gets the user" do
+    test "with valid data returns the user" do
       %User{id: user_id} = Factory.insert_user!()
       %SocialLogin{provider: provider, uid: uid} = Factory.insert_social_login!(user_id: user_id)
 
@@ -315,8 +315,8 @@ defmodule Margaret.UsersTest do
         Factory.insert_user!(deactivated_at: NaiveDateTime.utc_now())
       end)
 
-      assert Accounts.get_user_count() == active_user_count
-      assert Accounts.get_user_count(include_deactivated: true) == total_user_count
+      assert Accounts.get_user_count() === active_user_count
+      assert Accounts.get_user_count(include_deactivated: true) === total_user_count
     end
   end
 

@@ -20,8 +20,7 @@ defmodule MargaretWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(params, socket) do
-    IO.inspect(params)
+  def connect(_params, socket) do
     {:ok, socket}
   end
 

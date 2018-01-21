@@ -418,26 +418,7 @@ defmodule Margaret.Accounts do
     iex> insert_follow(attrs)
     {:error, %Ecto.Changeset{}}
 
-    iex> insert_follow(attrs)
-    {:error, reason}
-
   """
-  def insert_follow(%{user_id: user_id} = attrs) when is_binary(user_id) do
-    attrs
-    |> Map.update!(:user_id, &String.to_integer(&1))
-    |> insert_follow()
-  end
-
-  def insert_follow(%{publication_id: publication_id} = attrs) when is_binary(publication_id) do
-    attrs
-    |> Map.update!(:publication_id, &String.to_integer(&1))
-    |> insert_follow()
-  end
-
-  def insert_follow(%{follower_id: follower_id, user_id: user_id}) when follower_id === user_id do
-    {:error, "You can't follow yourself."}
-  end
-
   def insert_follow(attrs) do
     attrs
     |> Follow.changeset()
@@ -459,7 +440,7 @@ defmodule Margaret.Accounts do
     {:error, %Ecto.Changeset{}}
 
   """
-  def delete_follow(id) when is_integer(id) or is_binary(id), do: Repo.delete(%Follow{id: id})
+  def delete_follow(%Follow{} = follow), do: Repo.delete(follow)
 
   def delete_follow(args) do
     case get_follow(args) do

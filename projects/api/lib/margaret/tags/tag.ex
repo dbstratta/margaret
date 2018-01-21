@@ -28,8 +28,8 @@ defmodule Margaret.Tags.Tag do
   end
 
   @doc false
-  def changeset(%Tag{} = tag, attrs) do
-    tag
+  def changeset(attrs) do
+    %Tag{}
     |> cast(attrs, @permitted_attrs)
     |> validate_required(@required_attrs)
     |> unique_constraint(:title)

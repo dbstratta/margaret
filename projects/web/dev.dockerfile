@@ -1,6 +1,6 @@
 FROM node:9.4.0
 
-LABEL name="margaret_web"
+LABEL name="margaret_web_dev"
 LABEL version="1.0.0"
 LABEL maintainer="strattadb@gmail.com"
 
@@ -9,7 +9,7 @@ WORKDIR /usr/src/app
 
 # Install dependencies.
 COPY package.json yarn.lock ./
-RUN yarn
+RUN yarn install
 
 # Bundle app source.
 COPY . .

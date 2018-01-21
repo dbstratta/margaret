@@ -6,8 +6,11 @@ LABEL maintainer="strattadb@gmail.com"
 
 ENV MIX_ENV=${MIX_ENV:-prod}
 
+# Install the Hex package manager.
 RUN mix local.hex --force && \
+    # Install Erlang's build tool.
     mix local.rebar --force && \
+    # Install Phoenix.
     mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new.ez --force
 
 # Create and change current directory.

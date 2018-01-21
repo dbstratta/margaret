@@ -39,14 +39,14 @@ defmodule Margaret.Tags do
   """
   def get_tag!(id), do: Repo.get!(Tag, id)
 
-  def get_tag_by_name(name), do: Repo.get_by(Tag, name: name)
+  def get_tag_by_title(title), do: Repo.get_by(Tag, title: title)
 
   @doc """
-  Creates a tag.
+  Inserts a tag.
   """
-  def create_tag(attrs) do
-    %Tag{}
-    |> Tag.changeset(attrs)
+  def insert_tag(attrs) do
+    attrs
+    |> Tag.changeset()
     |> Repo.insert()
   end
 
