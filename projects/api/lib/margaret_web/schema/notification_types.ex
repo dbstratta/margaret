@@ -8,9 +8,25 @@ defmodule MargaretWeb.Schema.NotificationTypes do
 
   alias MargaretWeb.Resolvers
 
+  @desc """
+  A notification object.
+  """
+  union :notification_object do
+    types([:story, :user])
+
+    resolve_type(&Resolvers.Nodes.resolve_type/2)
+  end
+
+  enum :notification_action do
+    value(:added)
+  end
+
   connection(node_type: :notification)
 
   node object(:notification) do
+    field(:object, :notification_object)
+    field(:action, non_null(:notification_action))
+    field(:actor, :user)
     field(:read, :boolean)
   end
 
@@ -22,7 +38,7 @@ defmodule MargaretWeb.Schema.NotificationTypes do
       end
 
       output do
-        field(:user, non_null(:user))
+        field(:notification, non_null(:notification))
       end
 
       middleware(Absinthe.Relay.Node.ParseIDs, notification_id: :notification)

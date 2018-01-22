@@ -271,7 +271,7 @@ defmodule Margaret.Accounts do
     user_changeset = User.update_changeset(user, %{})
 
     schedule_deletion = fn _ ->
-      Exq.enqueue_in(Exq, "user_deletion", seconds, MargaretWeb.Workers.DeleteAccount, [user_id])
+      Exq.enqueue_in(Exq, "user_deletion", seconds, Margaret.Workers.DeleteAccount, [user_id])
     end
 
     Multi.new()

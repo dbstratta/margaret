@@ -29,6 +29,9 @@ We try to comply with the
   * [**`margaret`**](./lib/margaret): Contains the business logic and storage details.
     Each folder is a context.
 
+    * [**`workers`**](./lib/margaret/workers): Contains workers that perform
+      tasks enqueued with `Exq`.
+
   * [**`margaret_web`**](./lib/margaret_web): Contains all the modules related to the web layer.
 
     * [**`channels`**](./lib/margaret_web/channels): Contains Phoenix channels.
@@ -49,9 +52,6 @@ We try to comply with the
       mutation and subscription definitions.
 
     * [**`views`**](./lib/margaret_web/views): Contains Phoenix views. We don't use them though.
-
-    * [**`workers`**](./lib/margaret_web/workers): Contains workers that perform
-      tasks enqueued with `Exq`.
 
     * [`context.ex`](./lib/margaret_web/context.ex): Builds the GraphQL context
       from data from each request.

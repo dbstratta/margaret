@@ -1,4 +1,4 @@
-defmodule MargaretWeb.Workers.DeleteAccount do
+defmodule Margaret.Workers.DeleteAccount do
   @moduledoc """
   Worker that deletes accounts.
   """
