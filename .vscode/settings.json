@@ -4,8 +4,9 @@
   "[elixir]": {
     "editor.quickSuggestions": true
   },
-  "elixir.projectPath": "/projects/api",
   "codemetrics.basics.CodeLensHiddenUnder": 8,
   "jest.autoEnable": false,
-  "elixirLS.dialyzerEnabled": false
+  "elixirLS.dialyzerEnabled": false,
+  "python.formatting.yapfArgs": ["--style ./.style.yapf"],
+  "python.formatting.provider": "yapf"
 }

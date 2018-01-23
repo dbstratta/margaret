@@ -31,3 +31,18 @@ services:
       - VIRTUAL_PORT=3000
       - NODE_ENV=development
     env_file: .env
+
+  ml:
+    build:
+      context: ./projects/ml
+      dockerfile: dev.dockerfile
+    command: tail -f /dev/null
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./projects/ml:/usr/src/app
+    environment:
+      - VIRTUAL_HOST=ml.margaret.localhost
+      - VIRTUAL_PORT=8000
+      - PYTHONBREAKPOINT=ipdb.set_trace
+    env_file: .env

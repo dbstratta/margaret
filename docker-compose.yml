@@ -31,6 +31,9 @@ services:
 
       # These env variables will be read from the host machine.
       - NODE_ENV
+  
+  ml:
+    build: ./projects/ml
 
 
   postgres:

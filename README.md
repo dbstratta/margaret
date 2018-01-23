@@ -39,8 +39,10 @@ Please see [CONTRIBUTING](./CONTRIBUTING.md).
 
 ## Projects
 
-* [api](./projects/api): GraphQL API.
-* [web](./projects/web): React app.
+* [api](./projects/api): Margaret's main API (Elixir, Phoenix & Absinthe).
+* [ml](./projects/ml): Machine learning predictions service (Django).
+* [web](./projects/web): Web app (React).
+* [mobile](./projects/mobile): Mobile app (React Native).
 
 ## Scripts
 

@@ -2,8 +2,9 @@ version: '3'
 services:
   api:
     image: "mrgaret/api:${TAG}"
-    environment:
-      - MIX_ENV=prod
 
   web:
     image: "mrgaret/web:${TAG}"
+
+  ml:
+    image: "mrgaret/ml:${TAG}"
