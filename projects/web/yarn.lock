@@ -2185,8 +2185,8 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
     safe-buffer "^5.0.1"
 
 circular-json-es6@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/circular-json-es6/-/circular-json-es6-2.0.1.tgz#c9f4e37df74a655ced7245d31020bf5b5cd34ef6"
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/circular-json-es6/-/circular-json-es6-2.0.2.tgz#e4f4a093e49fb4b6aba1157365746112a78bd344"
 
 circular-json@^0.3.1:
   version "0.3.3"
@@ -7701,9 +7701,9 @@ react-error-overlay@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-4.0.0.tgz#d198408a85b4070937a98667f500c832f86bd5d4"
 
-react-final-form@3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/react-final-form/-/react-final-form-3.0.4.tgz#58e4713ab074e0af5f7f24e444be9f129a9d4cee"
+react-final-form@3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/react-final-form/-/react-final-form-3.0.5.tgz#6b20314bd4ba99923c5c032245ab55c153f9250c"
 
 react-fns@1.3.0:
   version "1.3.0"
