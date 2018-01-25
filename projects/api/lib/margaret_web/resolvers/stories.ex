@@ -52,6 +52,11 @@ defmodule MargaretWeb.Resolvers.Stories do
   end
 
   @doc """
+  Resolves the read time of the story.
+  """
+  def resolve_read_time(%Story{} = story, _, _), do: {:ok, Stories.get_read_time(story)}
+
+  @doc """
   Resolves a connection of stories.
   """
   def resolve_feed(args, _) do

@@ -73,6 +73,10 @@ defmodule MargaretWeb.Schema.StoryTypes do
       resolve(&Resolvers.Stories.resolve_tags/3)
     end
 
+    field :read_time, non_null(:integer) do
+      resolve(&Resolvers.Stories.resolve_read_time/3)
+    end
+
     @desc "Identifies the date and time when the story was created."
     field(:inserted_at, non_null(:naive_datetime))
 

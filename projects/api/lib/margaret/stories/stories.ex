@@ -75,6 +75,25 @@ defmodule Margaret.Stories do
     |> Kernel.<>(unique_hash)
   end
 
+  def get_word_count(%Story{content: %{"blocks" => blocks}}) do
+    blocks
+    |> Enum.map_join(" ", &Map.get(&1, "text"))
+    |> String.split()
+    |> length()
+  end
+
+  def get_read_time(%Story{} = story) do
+    avg_wpm = 275
+
+    story
+    |> get_word_count()
+    |> div(avg_wpm)
+    |> case do
+      0 -> 1
+      read_time -> read_time
+    end
+  end
+
   def has_been_published?(%Story{published_at: published_at}) do
     published_at <= NaiveDateTime.utc_now()
   end
