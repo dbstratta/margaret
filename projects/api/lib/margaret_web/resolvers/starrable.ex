@@ -58,12 +58,12 @@ defmodule MargaretWeb.Resolvers.Starrable do
   end
 
   defp do_resolve_unstar(%Story{id: story_id} = story, viewer_id) do
-    Stars.delete_star(user_id: viewer_id, story_id: story_id)
+    Stars.delete_star(%{user_id: viewer_id, story_id: story_id})
     {:ok, %{starrable: story}}
   end
 
   defp do_resolve_unstar(%Comment{id: comment_id} = comment, viewer_id) do
-    Stars.delete_star(user_id: viewer_id, comment_id: comment_id)
+    Stars.delete_star(%{user_id: viewer_id, comment_id: comment_id})
     {:ok, %{starrable: comment}}
   end
 

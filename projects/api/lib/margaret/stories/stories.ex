@@ -3,6 +3,7 @@ defmodule Margaret.Stories do
   The Stories context.
   """
 
+  import Ecto.Query
   alias Ecto.Multi
 
   alias Margaret.{Repo, Accounts, Stories, Publications, Tags}
@@ -92,6 +93,19 @@ defmodule Margaret.Stories do
       0 -> 1
       read_time -> read_time
     end
+  end
+
+  def get_story_count do
+    query =
+      from(
+        s in Story,
+        join: u in User,
+        on: u.id == s.author_id,
+        where: is_nil(u.deactivated_at),
+        select: count(s.id)
+      )
+
+    Repo.one!(query)
   end
 
   def has_been_published?(%Story{published_at: published_at}) do

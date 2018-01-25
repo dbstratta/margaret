@@ -9,7 +9,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   alias MargaretWeb.Helpers
   alias Margaret.{Repo, Accounts, Stories, Stars, Bookmarks, Publications, Comments}
   alias Accounts.User
-  alias Stories.Story
+  alias Stories.{Story, StoryView}
   alias Stars.Star
   alias Comments.Comment
 
@@ -58,10 +58,28 @@ defmodule MargaretWeb.Resolvers.Stories do
 
   @doc """
   Resolves a connection of stories.
+
+  TODO: Create a macro `get_popularity` that calculates
+  freshness, stars and views.
   """
   def resolve_feed(args, _) do
-    # TODO: Implement a better feed.
-    Relay.Connection.from_query(Story, &Repo.all/1, args)
+    query =
+      from(
+        story in Story,
+        left_join: star in Star,
+        on: star.story_id == story.id,
+        left_join: view in StoryView,
+        on: view.story_id == story.id,
+        group_by: story.id,
+        order_by: [desc: count(star.id)]
+      )
+
+    # TODO: Only count stories in that feed.
+    total_count = Stories.get_story_count()
+
+    query
+    |> Relay.Connection.from_query(&Repo.all/1, args)
+    |> Helpers.transform_connection(total_count: total_count)
   end
 
   @doc """

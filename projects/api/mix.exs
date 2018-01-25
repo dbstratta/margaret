@@ -50,7 +50,7 @@ defmodule Margaret.Mixfile do
       {:absinthe, "~> 1.4.6"},
       {:absinthe_plug, "~> 1.4.2"},
       {:absinthe_relay, "~> 1.4.2"},
-      {:absinthe_phoenix, "~> 1.4.0"},
+      {:absinthe_phoenix, "~> 1.4.2"},
       {:exq, "~> 0.9.1"},
       {:cors_plug, "~> 1.5.0"},
       {:uuid, "~> 1.1.8"},

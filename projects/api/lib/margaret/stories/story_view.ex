@@ -20,7 +20,7 @@ defmodule Margaret.Stories.StoryView do
     :story_id
   ]
 
-  schema "story_view" do
+  schema "story_views" do
     belongs_to(:story, Story)
     belongs_to(:viewer, User)
 

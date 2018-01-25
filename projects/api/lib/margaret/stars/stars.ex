@@ -31,7 +31,7 @@ defmodule Margaret.Stars do
     |> Repo.insert()
   end
 
-  def delete_star(id) when not is_list(id), do: Repo.delete(%Star{id: id})
+  def delete_star(id) when not is_map(id), do: Repo.delete(%Star{id: id})
 
   def delete_star(args) do
     case get_star(args) do

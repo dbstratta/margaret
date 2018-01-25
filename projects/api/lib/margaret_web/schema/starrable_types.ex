@@ -121,7 +121,7 @@ defmodule MargaretWeb.Schema.StarrableTypes do
 
       trigger(
         :star,
-        topic: fn starrable ->
+        topic: fn %{starrable: starrable} ->
           starrable.id
         end
       )
