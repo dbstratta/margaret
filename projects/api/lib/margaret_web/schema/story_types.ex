@@ -65,14 +65,17 @@ defmodule MargaretWeb.Schema.StoryTypes do
     @desc "The summary of the story."
     field(:summary, :string)
 
+    @desc "The publication of the story, if it has one."
     field :publication, :publication do
       resolve(&Resolvers.Stories.resolve_publication/3)
     end
 
+    @desc "The tags of the story."
     field :tags, list_of(:tag) do
       resolve(&Resolvers.Stories.resolve_tags/3)
     end
 
+    @desc "The read time of the story."
     field :read_time, non_null(:integer) do
       resolve(&Resolvers.Stories.resolve_read_time/3)
     end

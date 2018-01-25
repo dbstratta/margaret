@@ -6,8 +6,9 @@ defmodule Margaret.Stories.Story do
   import EctoEnum, only: [defenum: 3]
 
   alias __MODULE__
-  alias Margaret.{Accounts, Stars, Comments, Publications, Tags, Helpers}
+  alias Margaret.{Accounts, Stories, Stars, Comments, Publications, Tags, Helpers}
   alias Accounts.User
+  alias Stories.Story
   alias Stars.Star
   alias Comments.Comment
   alias Publications.Publication
@@ -58,6 +59,7 @@ defmodule Margaret.Stories.Story do
 
     has_many(:stars, Star)
     has_many(:comments, Comment)
+    has_many(:views, StoryView)
 
     belongs_to(:publication, Publication)
 
