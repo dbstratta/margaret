@@ -8,7 +8,7 @@ defmodule Margaret.Stories.Story do
   alias __MODULE__
   alias Margaret.{Accounts, Stories, Stars, Comments, Publications, Tags, Helpers}
   alias Accounts.User
-  alias Stories.Story
+  alias Stories.StoryView
   alias Stars.Star
   alias Comments.Comment
   alias Publications.Publication
