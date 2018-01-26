@@ -46,6 +46,9 @@ config :margaret, MargaretWeb.Guardian,
   issuer: "Margaret",
   secret_key: "Cs+SatzTr/4GlMDYRn+lHQCu+iP7b0hIhr71xDT62J3G+gDb5wlma/UMuxJWOdea"
 
+# Configures Swoosh
+config :margaret, Margaret.Mailer, adapter: Swoosh.Adapters.Local
+
 # Configures Exq
 config :exq,
   name: Exq,

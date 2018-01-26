@@ -14,8 +14,8 @@ defmodule Margaret.Repo.Migrations.AddStarsTable do
       timestamps()
     end
 
-    create(unique_index(:stars, [:user_id, :story_id]))
-    create(unique_index(:stars, [:user_id, :comment_id]))
+    create(unique_index(:stars, [:user_id, :story_id], where: "story_id is not null"))
+    create(unique_index(:stars, [:user_id, :comment_id], where: "comment_id is not null"))
 
     create(
       constraint(

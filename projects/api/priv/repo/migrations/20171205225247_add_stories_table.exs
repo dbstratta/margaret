@@ -24,5 +24,15 @@ defmodule Margaret.Repo.Migrations.AddStoriesTable do
     end
 
     create(unique_index(:stories, [:unique_hash]))
+    create(index(:stories, [:author_id]))
+
+    create(
+      index(
+        :stories,
+        [:author_id],
+        where: "publication_id is not null",
+        name: :publication_stories
+      )
+    )
   end
 end
