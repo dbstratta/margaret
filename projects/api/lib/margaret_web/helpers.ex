@@ -42,13 +42,21 @@ defmodule MargaretWeb.Helpers do
     Map.update!(connection, :edges, &Enum.map(&1, fn edge -> put_edge_fields(edge) end))
   end
 
-  defp put_edge_fields(%{node: {node, fields}} = edge) do
+  defp put_edge_fields(%{node: {nodes, fields}} = edge) when is_list(nodes) do
+    node = Enum.find(nodes, &(not is_nil(&1)))
+
+    do_put_edge_fields(edge, node, fields)
+  end
+
+  defp put_edge_fields(%{node: {node, fields}} = edge), do: do_put_edge_fields(edge, node, fields)
+
+  defp put_edge_fields(edge), do: edge
+
+  defp do_put_edge_fields(edge, node, fields) do
     edge
     |> Map.merge(fields)
     |> Map.put(:node, node)
   end
-
-  defp put_edge_fields(edge), do: edge
 
   @doc """
   """

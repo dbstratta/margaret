@@ -6,7 +6,7 @@ defmodule Margaret.Accounts do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Publications}
+  alias Margaret.{Repo, Accounts, Publications, Notifications}
   alias Accounts.{User, SocialLogin, Follow}
   alias Publications.PublicationMembership
 
@@ -419,10 +419,22 @@ defmodule Margaret.Accounts do
     {:error, %Ecto.Changeset{}}
 
   """
-  def insert_follow(attrs) do
-    attrs
-    |> Follow.changeset()
-    |> Repo.insert()
+  def insert_follow(%{follower_id: follower_id} = attrs) do
+    follow_changeset = Follow.changeset(attrs)
+
+    notification_attrs =
+      attrs
+      |> case do
+        %{user_id: user_id} -> %{user_id: user_id}
+        %{publication_id: publication_id} -> %{publication_id: publication_id}
+      end
+      |> Map.put(:actor_id, follower_id)
+      |> Map.put(:action, :followed)
+
+    Multi.new()
+    |> Multi.insert(:follow, follow_changeset)
+    |> Multi.run(:notification, Notifications.insert_notification_fn(notification_attrs))
+    |> Repo.transaction()
   end
 
   @doc """

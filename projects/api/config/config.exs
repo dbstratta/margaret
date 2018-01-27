@@ -49,6 +49,14 @@ config :margaret, MargaretWeb.Guardian,
 # Configures Swoosh
 config :margaret, Margaret.Mailer, adapter: Swoosh.Adapters.Local
 
+# Configures Sentry
+config :sentry,
+  dsn: System.get_env("API__SENRTY_DSN"),
+  included_environments: [:prod],
+  environment_name: Mix.env(),
+  enable_source_code_context: true,
+  root_source_code_path: File.cwd!()
+
 # Configures Exq
 config :exq,
   name: Exq,

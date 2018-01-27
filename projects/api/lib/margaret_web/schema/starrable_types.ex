@@ -22,7 +22,8 @@ defmodule MargaretWeb.Schema.StarrableTypes do
     @desc """
     The stargazers of the starrable.
     """
-    field(:stargazers, :stargazer_connection)
+    connection field(:stargazers, node_type: :user, connection: :stargazer) do
+    end
 
     @desc """
     Indicates whether the viewer can star this starrable.

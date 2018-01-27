@@ -15,14 +15,16 @@ defmodule MargaretWeb.AuthController do
   The Ueberauth strategies intercept the connection before it reaches this action
   and redirect to the Authorization Server.
   """
-  def request(_conn, _params), do: nil
+  def request(conn, _params), do: send_resp(conn, 400, "")
 
   def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
-    conn
+    send_resp(conn, 500, "")
   end
 
   def callback(%{assigns: %{ueberauth_auth: %{provider: provider, uid: uid}}} = conn, _params) do
-    json(conn, %{token: get_token(conn, to_string(provider), to_string(uid))})
+    token = get_token(conn, to_string(provider), to_string(uid))
+
+    json(conn, %{token: token})
   end
 
   @spec get_token(%Plug.Conn{} | String.t(), String.t(), String.t()) :: Guardian.Token.token()
@@ -63,11 +65,30 @@ defmodule MargaretWeb.AuthController do
     user
   end
 
-  defp activate_user(%User{deactivated_at: deactivated_at} = user) when not is_nil(deactivated_at) do
+  defp activate_user(%User{deactivated_at: deactivated_at} = user)
+       when not is_nil(deactivated_at) do
     {:ok, user} = Accounts.update_user(user, %{deactivated_at: nil})
 
     user
   end
 
   defp activate_user(user), do: user
+
+  @doc """
+  Refreshes a JWT token.
+  """
+  def refresh(conn, %{token: token}) do
+    token
+    |> MargaretWeb.Guardian.refresh()
+    |> do_refresh(conn)
+  end
+
+  defp do_refresh({:ok, _old, {new_token, _new_claims}}, conn) do
+    json(conn, %{token: new_token})
+  end
+
+  defp do_refresh({:error, reason}, conn) do
+    IO.inspect(reason, label: "REASON")
+    send_resp(conn, 401, reason)
+  end
 end

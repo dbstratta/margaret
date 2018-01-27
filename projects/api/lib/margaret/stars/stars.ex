@@ -4,8 +4,9 @@ defmodule Margaret.Stars do
   """
 
   import Ecto.Query
+  alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stars}
+  alias Margaret.{Repo, Accounts, Stars, Notifications}
   alias Accounts.User
   alias Stars.Star
 
@@ -25,10 +26,22 @@ defmodule Margaret.Stars do
   @doc """
   Inserts a star.
   """
-  def insert_star(attrs) do
-    attrs
-    |> Star.changeset()
-    |> Repo.insert()
+  def insert_star(%{user_id: user_id} = attrs) do
+    star_changeset = Star.changeset(attrs)
+
+    notification_attrs =
+      attrs
+      |> case do
+        %{story_id: story_id} -> %{story_id: story_id}
+        %{comment_id: comment_id} -> %{comment_id: comment_id}
+      end
+      |> Map.put(:actor_id, user_id)
+      |> Map.put(:action, :starred)
+
+    Multi.new()
+    |> Multi.insert(:star, star_changeset)
+    |> Multi.run(:notification, Notifications.insert_notification_fn(notification_attrs))
+    |> Repo.transaction()
   end
 
   def delete_star(id) when not is_map(id), do: Repo.delete(%Star{id: id})

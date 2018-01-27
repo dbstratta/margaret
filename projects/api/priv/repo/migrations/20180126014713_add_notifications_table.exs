@@ -15,13 +15,12 @@ defmodule Margaret.Repo.Migrations.AddNotificationsTable do
       add(:comment_id, references(:comments, on_delete: :delete_all))
       add(:publication_id, references(:publications, on_delete: :delete_all))
       add(:user_id, references(:users, on_delete: :delete_all))
-      add(:follow_id, references(:follows, on_delete: :delete_all))
-      add(:star_id, references(:stars, on_delete: :delete_all))
 
       timestamps()
     end
 
     create(
+      # Check that only one object reference is not null.
       constraint(
         :notifications,
         :only_one_not_null_object,
@@ -31,8 +30,6 @@ defmodule Margaret.Repo.Migrations.AddNotificationsTable do
           (comment_id is not null)::integer +
           (publication_id is not null)::integer +
           (user_id is not null)::integer +
-          (follow_id is not null)::integer +
-          (star_id is not null)::integer
         ) = 1
         """
       )

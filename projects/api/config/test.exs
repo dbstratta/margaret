@@ -9,6 +9,8 @@ config :margaret, MargaretWeb.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
+config :margaret, MargaretWeb.Mailer, adapter: Swoosh.Adapters.Test
+
 # Configure your database
 config :margaret, Margaret.Repo,
   adapter: Ecto.Adapters.Postgres,

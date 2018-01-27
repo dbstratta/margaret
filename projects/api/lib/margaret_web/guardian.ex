@@ -35,7 +35,6 @@ defmodule MargaretWeb.Guardian do
     {:error, :invalid_credentials}
 
   """
-  @spec resource_from_claims(%{optional(any) => any}) :: {:ok, User.t()} | {:error, atom}
   def resource_from_claims(%{"sub" => user_id}) do
     try do
       {:ok, Accounts.get_user!(user_id)}

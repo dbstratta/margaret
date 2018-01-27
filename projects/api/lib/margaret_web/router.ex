@@ -15,6 +15,8 @@ defmodule MargaretWeb.Router do
   scope "/auth", MargaretWeb do
     pipe_through(:api)
 
+    post("/refresh", AuthController, :refresh)
+
     get("/:provider", AuthController, :request)
     get("/:provider/callback", AuthController, :callback)
   end

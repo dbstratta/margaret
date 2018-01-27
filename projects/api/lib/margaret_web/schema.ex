@@ -6,7 +6,9 @@ defmodule MargaretWeb.Schema do
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
 
-  alias MargaretWeb.Schema.{
+  alias MargaretWeb.{Schema, Middleware}
+
+  alias Schema.{
     JSONTypes,
     NodeTypes,
     AccountTypes,
@@ -24,17 +26,7 @@ defmodule MargaretWeb.Schema do
     DeletableTypes
   }
 
-  @middleware [
-    MargaretWeb.Middleware.HandleChangesetErrors
-  ]
-
-  @query_middlware @middleware ++ []
-
-  @mutation_middleware @middleware ++
-                         [
-                           MargaretWeb.Middleware.RequireAuthenticated,
-                           MargaretWeb.Middleware.RequireActive
-                         ]
+  alias Middleware.{RequireAuthenticated, RequireActive, HandleChangesetErrors}
 
   import_types(Absinthe.Type.Custom)
 
@@ -75,11 +67,23 @@ defmodule MargaretWeb.Schema do
     import_fields(:commentable_mutations)
   end
 
-  subscription do
-    import_fields(:starrable_subscriptions)
+  # TODO: See why subscriptions don't work.
+  # subscription do
+  #   import_fields(:starrable_subscriptions)
+  # end
+
+  # middleware/3 callback
+  def middleware(middleware, _, %{identifier: :mutation}) do
+    Enum.concat([
+      [RequireAuthenticated, RequireActive],
+      middleware,
+      [HandleChangesetErrors]
+    ])
   end
 
-  def middleware(middleware, _, %{identifier: :mutation}), do: middleware ++ @mutation_middleware
-  def middleware(middleware, _, %{identifier: :query}), do: middleware ++ @query_middlware
-  def middleware(middleware, _, _), do: middleware ++ @middleware
+  def middleware(middleware, _, %{identifier: :query}) do
+    middleware
+  end
+
+  def middleware(middleware, _, _), do: middleware
 end
