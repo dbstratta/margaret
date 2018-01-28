@@ -145,9 +145,9 @@ defmodule MargaretWeb.Schema.StoryTypes do
   end
 
   object :story_queries do
-    @desc "Lookup a story by its slug."
+    @desc "Lookup a story by its unique hash."
     field :story, :story do
-      arg(:slug, non_null(:string))
+      arg(:unique_hash, non_null(:string))
 
       resolve(&Resolvers.Stories.resolve_story/2)
     end

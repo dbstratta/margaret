@@ -1,3 +1,7 @@
+/**
+ * Auth related API functions.
+ */
+
 const { REACT_APP__API_URL: API_URL } = process.env;
 
 const AUTH_ENDPOINT = `${API_URL}/auth`;
@@ -10,14 +14,23 @@ const getCallbackUrl = (provider, code) => `${AUTH_ENDPOINT}/${provider}/callbac
 /**
  * Requests the auth token from our API using a provider code.
  */
-// eslint-disable-next-line import/prefer-default-export
-export async function sendSocialLoginCode(provider, code) {
+export async function getAuthToken(provider, code) {
   const res = await fetch(getCallbackUrl(provider, code));
-  const data = await res.json();
+  const { token } = await res.json();
 
-  if (!res.ok) {
-    throw new Error(data);
-  }
+  return token;
+}
 
-  return data.token;
+/**
+ * Refreshes the auth token and gets a new one.
+ */
+export async function refreshAuthToken(oldAuthToken) {
+  const url = `${AUTH_ENDPOINT}/refresh`;
+  const body = JSON.stringify({ token: oldAuthToken });
+  const headers = new Headers({ 'Content-Type': 'application/json' });
+
+  const res = await fetch(url, { method: 'POST', body, headers });
+  const { token } = await res.json();
+
+  return token;
 }

@@ -14,9 +14,10 @@ defmodule MargaretWeb.Resolvers.Stories do
   alias Comments.Comment
 
   @doc """
-  Resolves a story by its slug.
+  Resolves a story by its unique hash.
   """
-  def resolve_story(%{slug: slug}, _), do: {:ok, Stories.get_story_by_slug(slug)}
+  def resolve_story(%{unique_hash: unique_hash}, _),
+    do: {:ok, Stories.get_story_by_unique_hash(unique_hash)}
 
   @doc """
   Resolves the title of the story.

@@ -88,7 +88,6 @@ defmodule MargaretWeb.AuthController do
   end
 
   defp do_refresh({:error, reason}, conn) do
-    IO.inspect(reason, label: "REASON")
     send_resp(conn, 401, reason)
   end
 end
