@@ -6,7 +6,7 @@ defmodule Margaret.Accounts do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Publications, Notifications}
+  alias Margaret.{Repo, Accounts, Publications, Notifications, Workers}
   alias Accounts.{User, SocialLogin, Follow}
   alias Publications.PublicationMembership
 
@@ -433,7 +433,7 @@ defmodule Margaret.Accounts do
 
     Multi.new()
     |> Multi.insert(:follow, follow_changeset)
-    |> Multi.run(:notification, Notifications.insert_notification_fn(notification_attrs))
+    |> Workers.Notifications.enqueue_notification_insertion(notification_attrs)
     |> Repo.transaction()
   end
 
@@ -456,7 +456,7 @@ defmodule Margaret.Accounts do
 
   def delete_follow(args) do
     case get_follow(args) do
-      %Follow{id: id} -> delete_follow(id)
+      %Follow{} = follow -> delete_follow(follow)
       nil -> nil
     end
   end

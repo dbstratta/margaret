@@ -29,7 +29,7 @@ defmodule Margaret.Repo.Migrations.AddNotificationsTable do
           (story_id is not null)::integer +
           (comment_id is not null)::integer +
           (publication_id is not null)::integer +
-          (user_id is not null)::integer +
+          (user_id is not null)::integer
         ) = 1
         """
       )

@@ -30,7 +30,7 @@ defmodule Margaret.FollowsTest do
 
       attrs = %{follower_id: follower_id, user_id: user_id}
 
-      assert {:ok, %Follow{} = follow} = Accounts.insert_follow(attrs)
+      assert {:ok, %{follow: %Follow{} = follow}} = Accounts.insert_follow(attrs)
       assert follow.follower_id == follower_id
       assert follow.user_id == user_id
       refute follow.publication_id
@@ -42,7 +42,7 @@ defmodule Margaret.FollowsTest do
 
       attrs = %{follower_id: follower_id, publication_id: publication_id}
 
-      assert {:ok, %Follow{} = follow} = Accounts.insert_follow(attrs)
+      assert {:ok, %{follow: %Follow{} = follow}} = Accounts.insert_follow(attrs)
       assert follow.follower_id == follower_id
       assert follow.publication_id == publication_id
       refute follow.user_id
@@ -54,7 +54,7 @@ defmodule Margaret.FollowsTest do
 
       attrs = %{follower_id: follower_id, user_id: user_id}
 
-      assert {:error, _} = Accounts.insert_follow(attrs)
+      assert {:error, _, _, _} = Accounts.insert_follow(attrs)
     end
 
     test "when following a user with invalid publication_id fails" do
@@ -63,7 +63,7 @@ defmodule Margaret.FollowsTest do
 
       attrs = %{follower_id: follower_id, publication_id: publication_id}
 
-      assert {:error, _} = Accounts.insert_follow(attrs)
+      assert {:error, _, _, _} = Accounts.insert_follow(attrs)
     end
 
     test "when the follower already follows the user fails" do
@@ -73,7 +73,7 @@ defmodule Margaret.FollowsTest do
       attrs = %{follower_id: follower_id, user_id: user_id}
       assert {:ok, _} = Accounts.insert_follow(attrs)
 
-      assert {:error, _} = Accounts.insert_follow(attrs)
+      assert {:error, _, _, _} = Accounts.insert_follow(attrs)
     end
 
     test "when the follower already follows the publication fails" do
@@ -83,7 +83,7 @@ defmodule Margaret.FollowsTest do
       attrs = %{follower_id: follower_id, publication_id: publication_id}
       assert {:ok, _} = Accounts.insert_follow(attrs)
 
-      assert {:error, _} = Accounts.insert_follow(attrs)
+      assert {:error, _, _, _} = Accounts.insert_follow(attrs)
     end
 
     test "when providing user_id and publication_id at the same time fails" do
@@ -92,14 +92,14 @@ defmodule Margaret.FollowsTest do
       %Publication{id: publication_id} = Factory.insert_publication!()
 
       attrs = %{follower_id: follower_id, user_id: user_id, publication_id: publication_id}
-      assert {:error, _} = Accounts.insert_follow(attrs)
+      assert {:error, _, _, _} = Accounts.insert_follow(attrs)
     end
 
     test "when the follower tries to follow themselves" do
       %User{id: user_id} = Factory.insert_user!()
 
       attrs = %{follower_id: user_id, user_id: user_id}
-      assert {:error, _} = Accounts.insert_follow(attrs)
+      assert {:error, _, _, _} = Accounts.insert_follow(attrs)
     end
   end
 

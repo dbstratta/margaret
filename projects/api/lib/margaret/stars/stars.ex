@@ -6,7 +6,7 @@ defmodule Margaret.Stars do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stars, Notifications}
+  alias Margaret.{Repo, Accounts, Stars, Notifications, Workers}
   alias Accounts.User
   alias Stars.Star
 
@@ -21,6 +21,8 @@ defmodule Margaret.Stars do
     Repo.get_by(Star, user_id: user_id, comment_id: comment_id)
   end
 
+  @doc """
+  """
   def has_starred(args), do: !!get_star(args)
 
   @doc """
@@ -40,7 +42,7 @@ defmodule Margaret.Stars do
 
     Multi.new()
     |> Multi.insert(:star, star_changeset)
-    |> Multi.run(:notification, Notifications.insert_notification_fn(notification_attrs))
+    |> Workers.Notifications.enqueue_notification_insertion(notification_attrs)
     |> Repo.transaction()
   end
 

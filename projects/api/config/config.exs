@@ -63,9 +63,10 @@ config :exq,
   host: "redis",
   port: 6379,
   namespace: "exq",
-  concurrency: 500,
-  queues: ["user_deletion", "story_publication"],
-  scheduler_enable: true
+  concurrency: 10,
+  queues: ~w(notifications user_deletion),
+  scheduler_enable: true,
+  max_retries: 0
 
 # Configures Elixir's Logger
 config :logger, :console,

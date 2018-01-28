@@ -31,11 +31,11 @@ defmodule MargaretWeb.Resolvers.Followable do
       {:ok, _} ->
         {:ok, %{followable: followee}}
 
-      {:error, %{errors: [follower: {"has already been taken", []}]}} ->
+      {:error, :follow, %{errors: [follower: {"has already been taken", []}]}, _} ->
         {:ok, %{followable: followee}}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:error, changeset}
+      {:error, _, reason, _} ->
+        {:error, reason}
     end
   end
 

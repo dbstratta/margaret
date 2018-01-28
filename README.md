@@ -25,63 +25,61 @@ of features Medium has. In the future, we'll implement features that will set Ma
 * Authentication
 
   * [x] Users can sign up and sign in using their Facebook, Google and/or GitHub accounts
-  
+
   * [ ] Users can sign in by clicking a magic link sent to their emails
 
 * Stories
 
   * [x] Basic functionality
-  
+
   * [ ] Views are counted
-  
-  * [ ] Users can create stories that only members can read
-  
-  * [ ] Users can published monetized stories
-  
+
+  * [ ] Users can publish monetized stories that only members can read
+
 * Memberships
 
   * [ ] Users can opt in to our membership program
-  
+
   * [ ] Members have access to a wider selection of stories
 
 * Notifications
 
   * [x] Basic functionality
-  
+
   * [x] Users can see only their notifications
-  
+
   * [x] Users can mark a notification as read
-  
+
   * [ ] Some notifications send emails
-  
+
   * [ ] Real-time functionality
-  
+
 * Publications
 
   * [x] Basic functionality
-    
+
   * [x] Admins can invite users to the publication
-  
+
   * [x] Members of the publication can have different roles (writer, editor, etc)
-  
+
   * [x] Writers can create drafts under the publication
-  
+
   * [x] Editors can edit and publish drafts under the publication
-  
+
 * Recommendation system
 
   * [ ] The users' feeds are personalized based on their interests thanks to machine learning
-  
+
 * Follow system
 
   * [x] Basic functionality
-  
+
   * [x] Users can follow other users and publications
-  
+
 * Star system
 
   * [x] Users can star stories and comments
-  
+
 * Bookmark system
 
   * [x] Users can bookmark stories and comments to read later

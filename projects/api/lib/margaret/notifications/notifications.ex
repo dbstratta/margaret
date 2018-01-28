@@ -6,10 +6,11 @@ defmodule Margaret.Notifications do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Notifications, Accounts, Stories, Comments}
+  alias Margaret.{Repo, Notifications, Accounts, Stories, Publications, Comments}
   alias Notifications.{Notification, UserNotification}
   alias Accounts.User
   alias Stories.Story
+  alias Publications.PublicationMembership
   alias Comments.Comment
 
   @doc """
@@ -27,7 +28,14 @@ defmodule Margaret.Notifications do
   @doc """
   Inserts a notification.
   """
-  def insert_notification(%{story_id: story_id, action: :starred} = attrs) do
+  def insert_notification(attrs) do
+    Multi.new()
+    |> notify_users(attrs)
+    |> insert_notification(attrs)
+    |> Repo.transaction()
+  end
+
+  defp notify_users(multi, %{story_id: story_id, action: :starred}) do
     notified_users_fn = fn _ ->
       query =
         from(
@@ -43,13 +51,10 @@ defmodule Margaret.Notifications do
       end
     end
 
-    Multi.new()
-    |> Multi.run(:notified_users, notified_users_fn)
-    |> insert_notification(attrs)
-    |> Repo.transaction()
+    do_notify_users(multi, notified_users_fn)
   end
 
-  def insert_notification(%{comment_id: comment_id, action: :starred} = attrs) do
+  defp notify_users(multi, %{comment_id: comment_id, action: :starred}) do
     notified_users_fn = fn _ ->
       query =
         from(
@@ -65,13 +70,10 @@ defmodule Margaret.Notifications do
       end
     end
 
-    Multi.new()
-    |> Multi.run(:notified_users, notified_users_fn)
-    |> insert_notification(attrs)
-    |> Repo.transaction()
+    do_notify_users(multi, notified_users_fn)
   end
 
-  def insert_notification(%{user_id: user_id, action: :followed} = attrs) do
+  defp notify_users(multi, %{user_id: user_id, action: :followed}) do
     notified_users_fn = fn _ ->
       case Accounts.get_user(user_id) do
         %User{} = user -> {:ok, [user]}
@@ -79,11 +81,45 @@ defmodule Margaret.Notifications do
       end
     end
 
-    Multi.new()
-    |> Multi.run(:notified_users, notified_users_fn)
-    |> insert_notification(attrs)
-    |> Repo.transaction()
+    do_notify_users(multi, notified_users_fn)
   end
+
+  defp notify_users(multi, %{actor_id: author_id, story_id: story_id, action: :added}) do
+    notification_object_fn = fn _ ->
+      case Stories.get_story(story_id) do
+        %Story{} = story -> {:ok, story}
+        nil -> {:error, nil}
+      end
+    end
+
+    notified_users_fn = fn %{notification_object: %Story{publication_id: publication_id}} ->
+      query =
+        from(
+          u in User,
+          join: f in Follow,
+          on: f.user_id == u.id,
+          where: f.user_id == ^author_id
+        )
+
+      query =
+        if not is_nil(publication_id) do
+          or_where(query, [user, follow], follow.publication == ^publication_id)
+        else
+          query
+        end
+
+      users = Repo.all(query)
+
+      {:ok, users}
+    end
+
+    # Get the story inside the transaction before notifying users.
+    multi
+    |> Multi.run(:notification_object, notification_object_fn)
+    |> do_notify_users(notified_users_fn)
+  end
+
+  defp do_notify_users(multi, cb), do: Multi.run(multi, :notified_users, cb)
 
   defp insert_notification(multi, attrs) do
     insert_notification_fn = fn %{notified_users: notified_users} ->
@@ -94,15 +130,6 @@ defmodule Margaret.Notifications do
     end
 
     Multi.run(multi, :notification, insert_notification_fn)
-  end
-
-  def insert_notification_fn(attrs) do
-    fn _ ->
-      case insert_notification(attrs) do
-        {:ok, %{notification: notification}} -> {:ok, notification}
-        {:error, _, reason, _} -> {:error, reason}
-      end
-    end
   end
 
   def get_notification_count(user_id) do

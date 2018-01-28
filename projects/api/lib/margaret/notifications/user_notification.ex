@@ -26,9 +26,10 @@ defmodule Margaret.Notifications.UserNotification do
     "read_at"
   ]
 
+  @primary_key false
   schema "user_notifications" do
-    belongs_to(:user, User)
-    belongs_to(:notification, Notification)
+    belongs_to(:user, User, primary_key: true)
+    belongs_to(:notification, Notification, primary_key: true)
     field(:read_at, :naive_datetime)
   end
 

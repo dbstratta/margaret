@@ -8,26 +8,26 @@ defmodule MargaretWeb.Resolvers.Notifications do
   alias Margaret.{Repo, Notifications}
   alias Notifications.{Notification, UserNotification}
 
-  def resolve_object(%Notification{story_id: story_id} = notification, _, _)
-      when not is_nil(story_id) do
-    story =
-      notification
-      |> Repo.preload(:story)
-      |> Map.get(:story)
+  @doc """
+  """
+  def resolve_object(%Notification{} = notification, _, _) do
+    key =
+      cond do
+        not is_nil(notification.story_id) -> :story
+        not is_nil(notification.user_id) -> :user
+        not is_nil(notification.publication_id) -> :publication
+      end
 
-    {:ok, story}
+    object =
+      notification
+      |> Repo.preload(key)
+      |> Map.get(key)
+
+    {:ok, object}
   end
 
-  def resolve_object(%Notification{user_id: user_id} = notification, _, _)
-      when not is_nil(user_id) do
-    user =
-      notification
-      |> Repo.preload(:user)
-      |> Map.get(:user)
-
-    {:ok, user}
-  end
-
+  @doc """
+  """
   def resolve_actor(%Notification{} = notification, _, _) do
     actor =
       notification
@@ -37,6 +37,8 @@ defmodule MargaretWeb.Resolvers.Notifications do
     {:ok, actor}
   end
 
+  @doc """
+  """
   def resolve_read_at(%Notification{id: notification_id}, _, %{
         context: %{viewer: %{id: viewer_id}}
       }) do
