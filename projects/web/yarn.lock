@@ -3837,9 +3837,9 @@ fill-range@^2.1.0:
     repeat-element "^1.1.2"
     repeat-string "^1.5.2"
 
-final-form@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/final-form/-/final-form-4.1.0.tgz#7f9414bbef9737dbec9637d6b59b6207112b87f8"
+final-form@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/final-form/-/final-form-4.2.0.tgz#8743efbb75933ea3c7d1718b5c5ab9eb23b60026"
 
 finalhandler@1.1.0:
   version "1.1.0"
@@ -9453,8 +9453,8 @@ uglifyjs-webpack-plugin@^0.4.6:
     webpack-sources "^1.0.1"
 
 uglifyjs-webpack-plugin@^1.1.6:
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.1.7.tgz#46c00a4b28d8a3d40ac5607ddae3f72df5097072"
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.1.8.tgz#1302fb9471a7daf3d0a5174da6d65f0f415e75ad"
   dependencies:
     cacache "^10.0.1"
     find-cache-dir "^1.0.0"
