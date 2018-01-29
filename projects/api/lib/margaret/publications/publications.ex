@@ -112,8 +112,8 @@ defmodule Margaret.Publications do
     |> do_publication_member?()
   end
 
-  defp do_publication_member?(role) when not is_nil(role), do: true
-  defp do_publication_member?(_), do: false
+  defp do_publication_member?(nil), do: false
+  defp do_publication_member?(_), do: true
 
   def publication_editor?(publication_id, user_id) do
     check_role(publication_id, user_id, [:editor])

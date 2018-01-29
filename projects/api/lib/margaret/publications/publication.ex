@@ -1,5 +1,7 @@
 defmodule Margaret.Publications.Publication do
-  @moduledoc false
+  @moduledoc """
+  The Publication schema and changesets.
+  """
 
   use Ecto.Schema
   import Ecto.Changeset
@@ -11,20 +13,6 @@ defmodule Margaret.Publications.Publication do
   alias Tags.Tag
 
   @type t :: %Publication{}
-
-  @permitted_attrs [
-    :name,
-    :display_name
-  ]
-
-  @required_attrs [
-    :display_name
-  ]
-
-  @update_permitted_attrs [
-    :name,
-    :display_name
-  ]
 
   schema "publications" do
     field(:name, :string)
@@ -44,27 +32,46 @@ defmodule Margaret.Publications.Publication do
     timestamps()
   end
 
-  @doc false
+  @doc """
+  Builds a changeset for inserting a publication.
+  """
   def changeset(attrs) do
+    permitted_attrs = ~w(
+      name
+      display_name
+    )a
+
+    required_attrs = ~w(
+      display_name
+    )a
+
     %Publication{}
-    |> cast(attrs, @permitted_attrs)
-    |> validate_required(@required_attrs)
+    |> cast(attrs, permitted_attrs)
+    |> validate_required(required_attrs)
     |> maybe_put_name()
-    |> Helpers.maybe_put_tags_assoc(attrs)
     |> validate_length(:name, min: 2, max: 64)
     |> unique_constraint(:name)
+    |> Helpers.maybe_put_tags_assoc(attrs)
   end
 
-  @doc false
+  @doc """
+  Builds a changeset for updating a publication.
+  """
   def update_changeset(%Publication{} = publication, attrs) do
+    update_permitted_attrs = ~w(
+      name
+      display_name
+    )a
+
     publication
-    |> cast(attrs, @update_permitted_attrs)
+    |> cast(attrs, update_permitted_attrs)
     |> maybe_put_name()
-    |> Helpers.maybe_put_tags_assoc(attrs)
     |> validate_length(:name, min: 2, max: 64)
     |> unique_constraint(:name)
+    |> Helpers.maybe_put_tags_assoc(attrs)
   end
 
+  # TODO: Refactor this function using `get_field/3`.
   defp maybe_put_name(%Ecto.Changeset{changes: %{name: name}} = changeset) when not is_nil(name) do
     put_change(changeset, :name, name)
   end

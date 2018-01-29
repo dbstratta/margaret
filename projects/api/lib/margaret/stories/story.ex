@@ -1,5 +1,10 @@
 defmodule Margaret.Stories.Story do
-  @moduledoc false
+  @moduledoc """
+  The Story schema and changesets.
+
+  TODO: In the future, it would be a good idea to validate
+  the format of the `content` field.
+  """
 
   use Ecto.Schema
   import Ecto.Changeset
@@ -16,40 +21,14 @@ defmodule Margaret.Stories.Story do
 
   @type t :: %Story{}
 
-  @permitted_attrs [
-    :content,
-    :author_id,
-    :audience,
-    :publication_id,
-    :published_at,
-    :license
-  ]
-
-  @required_attrs [
-    :content,
-    :author_id,
-    :audience,
-    :license
-  ]
-
-  @update_permitted_attrs [
-    :content,
-    :audience,
-    :publication_id,
-    :published_at,
-    :license
-  ]
-
-  @unique_hash_length 16
-
   defenum StoryAudience, :story_audience, [:all, :members, :unlisted]
-
   defenum StoryLicense, :story_license, [:all_rights_reserved, :public_domain]
 
   schema "stories" do
-    # `content` isn't plaintext, it contains metadata, so we store it as a map (JSON).
+    # `content` is rich text and contains metadata, so we store it as a map.
     field(:content, :map)
     belongs_to(:author, User)
+    # We use a unique hash to identify the story in a slug.
     field(:unique_hash, :string)
 
     field(:audience, StoryAudience)
@@ -59,6 +38,7 @@ defmodule Margaret.Stories.Story do
 
     has_many(:stars, Star)
     has_many(:comments, Comment)
+    # A view refers to a user viewing (reading) the story.
     has_many(:views, StoryView)
 
     belongs_to(:publication, Publication)
@@ -68,35 +48,69 @@ defmodule Margaret.Stories.Story do
     timestamps()
   end
 
-  @doc false
+  @doc """
+  Builds a changeset for inserting a story.
+  """
   def changeset(attrs) do
+    permitted_attrs = ~w(
+      content
+      author_id
+      audience
+      publication_id
+      published_at
+      license
+    )a
+
+    required_attrs = ~w(
+      content
+      author_id
+      audience
+      license
+    )a
+
     %Story{}
-    |> cast(attrs, @permitted_attrs)
-    |> validate_required(@required_attrs)
-    |> foreign_key_constraint(:author_id)
-    |> foreign_key_constraint(:publication_id)
+    |> cast(attrs, permitted_attrs)
+    |> validate_required(required_attrs)
+    |> assoc_constraint(:author)
+    |> assoc_constraint(:publication)
     |> Helpers.maybe_put_tags_assoc(attrs)
     |> maybe_put_unique_hash()
   end
 
+  @doc """
+  Builds a changeset for updating a story.
+  """
   def update_changeset(%Story{} = story, attrs) do
+    permitted_attrs = ~w(
+      content
+      audience
+      publication_id
+      published_at
+      license
+    )a
+
     story
-    |> cast(attrs, @update_permitted_attrs)
-    |> foreign_key_constraint(:publication_id)
+    |> cast(attrs, permitted_attrs)
+    |> assoc_constraint(:publication)
     |> Helpers.maybe_put_tags_assoc(attrs)
   end
 
+  # Only put `unique_hash` in the changeset if the story is being created.
   defp maybe_put_unique_hash(%Ecto.Changeset{data: %{unique_hash: nil}} = changeset) do
     put_change(changeset, :unique_hash, generate_hash())
   end
 
   defp maybe_put_unique_hash(changeset), do: changeset
 
-  defp generate_hash() do
+  # Generates a unique hash for a story.
+  defp generate_hash do
+    unique_hash_length = 16
+
+    # I think this is enough to guarantee uniqueness.
     :sha512
     |> :crypto.hash(UUID.uuid4())
     |> Base.encode32()
-    |> String.slice(0..@unique_hash_length)
+    |> String.slice(0..unique_hash_length)
     |> String.downcase()
   end
 end
