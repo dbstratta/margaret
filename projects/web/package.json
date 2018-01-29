@@ -63,7 +63,7 @@
     "eslint-plugin-import": "2.8.0",
     "eslint-plugin-jsx-a11y": "6.0.3",
     "eslint-plugin-prettier": "2.5.0",
-    "eslint-plugin-react": "7.6.0",
+    "eslint-plugin-react": "7.6.1",
     "jest": "22.1.4",
     "jest-enzyme": "4.0.2",
     "jest-styled-components": "4.10.0",
