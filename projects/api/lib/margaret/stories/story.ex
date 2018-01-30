@@ -11,13 +11,16 @@ defmodule Margaret.Stories.Story do
   import EctoEnum, only: [defenum: 3]
 
   alias __MODULE__
-  alias Margaret.{Accounts, Stories, Stars, Comments, Publications, Tags, Helpers}
-  alias Accounts.User
-  alias Stories.StoryView
-  alias Stars.Star
-  alias Comments.Comment
-  alias Publications.Publication
-  alias Tags.Tag
+
+  alias Margaret.{
+    Accounts.User,
+    Stories.StoryView,
+    Stars.Star,
+    Comments.Comment,
+    Publications.Publication,
+    Tags.Tag,
+    Helpers
+  }
 
   @type t :: %Story{}
 
@@ -41,6 +44,7 @@ defmodule Margaret.Stories.Story do
     # A view refers to a user viewing (reading) the story.
     has_many(:views, StoryView)
 
+    # Stories can be published under a publication.
     belongs_to(:publication, Publication)
 
     many_to_many(:tags, Tag, join_through: "story_tags", on_replace: :delete)

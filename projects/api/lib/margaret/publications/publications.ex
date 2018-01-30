@@ -11,6 +11,8 @@ defmodule Margaret.Publications do
   alias Publications.{Publication, PublicationMembership, PublicationInvitation}
   alias Accounts.User
 
+  @type role :: atom
+
   @doc """
   Gets a publication by its id.
 
@@ -45,16 +47,16 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> get_publication_member_role(123, 123)
+      iex> get_member_role(%Publication{}, %User{})
       :owner
 
-      iex> get_publication_member_role(123, 456)
+      iex> get_member_role(%Publication{}, %User{})
       nil
 
   """
-  @spec get_publication_member_role(any, any) :: atom | nil
-  def get_publication_member_role(publication_id, member_id) do
-    case get_publication_membership_by_publication_and_member(publication_id, member_id) do
+  @spec get_member_role(Publication.t(), User.t()) :: role | nil
+  def get_member_role(publication, user) do
+    case get_membership_by_publication_and_member(publication, user) do
       %PublicationMembership{role: role} -> role
       nil -> nil
     end
@@ -62,8 +64,14 @@ defmodule Margaret.Publications do
 
   @doc """
   Returns the member count of the publication.
+
+  ## Examples
+
+    iex> get_member_count(%Publication{})
+    3
+
   """
-  def get_member_count(publication_id) do
+  def get_member_count(%Publication{id: publication_id}) do
     query =
       from(
         pm in PublicationMembership,
@@ -77,7 +85,7 @@ defmodule Margaret.Publications do
   @doc """
   Returns the story count of the publication.
   """
-  def get_story_count(publication_id) do
+  def get_story_count(%Publication{id: publication_id}) do
     query =
       from(
         s in Story,
@@ -88,9 +96,25 @@ defmodule Margaret.Publications do
     Repo.one!(query)
   end
 
-  def check_role(publication_id, user_id, permitted_roles \\ []) do
-    get_publication_member_role(publication_id, user_id) in permitted_roles
+  @doc """
+  Checks that the user's role in the publication
+  is in the list of permitted roles.
+
+  ## Examples
+
+    iex> check_role(%Publication{}, %User{}, [:admin, :editor])
+    true
+
+    iex> check_role(%Publication{}, %User{}, :writer)
+    false
+
+  """
+  @spec check_role(Publication.t(), User.t(), [role, ...] | role) :: boolean
+  def check_role(publication, user, permitted_roles) when is_list(permitted_roles) do
+    get_member_role(publication, user) in permitted_roles
   end
+
+  def check_role(publication, user, role), do: get_member_role(publication, user) === role
 
   @doc """
   Returns true if the user is a member
@@ -98,26 +122,47 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> publication_member?(123, 123)
+      iex> member?(%Publication{}, %User{})
       true
 
-      iex> publication_member?(123, 456)
+      iex> member?(%Publication{}, %User{})
       false
 
   """
-  @spec publication_member?(any, any) :: boolean
-  def publication_member?(publication_id, user_id) do
-    publication_id
-    |> get_publication_member_role(user_id)
-    |> do_publication_member?()
-  end
+  @spec member?(Publication.t(), User.t()) :: boolean
+  def member?(publication, user), do: !!get_member_role(publication, user)
 
-  defp do_publication_member?(nil), do: false
-  defp do_publication_member?(_), do: true
+  @doc """
+  Returns true if the user is a editor
+  of the publication. False otherwise.
 
-  def publication_editor?(publication_id, user_id) do
-    check_role(publication_id, user_id, [:editor])
-  end
+  ## Examples
+
+      iex> editor?(%Publication{}, %User{})
+      true
+
+      iex> editor?(%Publication{}, %User{})
+      false
+
+  """
+  @spec editor?(Publication.t(), User.t()) :: boolean
+  def editor?(publication, user), do: check_role(publication, user, :editor)
+
+  @doc """
+  Returns true if the user is a writer
+  of the publication. False otherwise.
+
+  ## Examples
+
+      iex> writer?(%Publication{}, %User{})
+      true
+
+      iex> writer?(%Publication{}, %User{})
+      false
+
+  """
+  @spec writer?(Publication.t(), User.t()) :: boolean
+  def writer?(publication, user), do: check_role(publication, user, :writer)
 
   @doc """
   Returns true if the user is an admin
@@ -125,17 +170,15 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> publication_admin?(123, 123)
+      iex> admin?(%Publication{}, %User{})
       true
 
-      iex> publication_admin?(123, 456)
+      iex> admin?(%Publication{}, %User{})
       false
 
   """
-  @spec publication_admin?(any, any) :: boolean
-  def publication_admin?(publication_id, user_id) do
-    check_role(publication_id, user_id, [:owner, :admin])
-  end
+  @spec admin?(Publication.t(), User.t()) :: boolean
+  def admin?(publication, user), do: check_role(publication, user, :admin)
 
   @doc """
   Returns true if the user is the owner
@@ -143,17 +186,15 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> publication_owner?(123, 123)
+      iex> owner?(%Publication{}, %User{})
       true
 
-      iex> publication_owner?(123, 456)
+      iex> owner?(%Publication{}, %User{})
       false
 
   """
-  @spec publication_owner?(any, any) :: boolean
-  def publication_owner?(publication_id, user_id) do
-    check_role(publication_id, user_id, [:owner])
-  end
+  @spec owner?(Publication.t(), User.t()) :: boolean
+  def owner?(publication, user), do: check_role(publication, user, :owner)
 
   @doc """
   Returns true if the user can write stories for the publication.
@@ -161,16 +202,18 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> can_write_stories?(123, 123)
+      iex> can_write_stories?(%Publication{}, %User{})
       true
 
-      iex> can_write_stories?(123, 456)
+      iex> can_write_stories?(%Publication{}, %User{})
       false
 
   """
-  @spec can_write_stories?(any, any) :: boolean
-  def can_write_stories?(publication_id, user_id) do
-    check_role(publication_id, user_id, [:owner, :admin, :editor, :writer])
+  @spec can_write_stories?(Publication.t(), User.t()) :: boolean
+  def can_write_stories?(publication, user) do
+    roles = ~w(owner admin editor writer)a
+
+    check_role(publication, user, roles)
   end
 
   @doc """
@@ -179,16 +222,18 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> can_publish_stories?(123, 123)
+      iex> can_publish_stories?(%Publication{}, %User{})
       true
 
-      iex> can_publish_stories?(123, 456)
+      iex> can_publish_stories?(%Publication{}, %User{})
       false
 
   """
-  @spec can_publish_stories?(any, any) :: boolean
-  def can_publish_stories?(publication_id, user_id) do
-    check_role(publication_id, user_id, [:owner, :admin, :editor])
+  @spec can_publish_stories?(Publication.t(), User.t()) :: boolean
+  def can_publish_stories?(publication, user) do
+    roles = ~w(owner admin editor)a
+
+    check_role(publication, user, roles)
   end
 
   @doc """
@@ -197,16 +242,18 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> can_edit_stories?(123, 123)
+      iex> can_edit_stories?(%Publication{}, %User{})
       true
 
-      iex> can_edit_stories?(123, 456)
+      iex> can_edit_stories?(%Publication{}, %User{})
       false
 
   """
-  @spec can_edit_stories?(any, any) :: boolean
-  def can_edit_stories?(publication_id, user_id) do
-    check_role(publication_id, user_id, [:owner, :admin, :editor])
+  @spec can_edit_stories?(Publication.t(), User.t()) :: boolean
+  def can_edit_stories?(publication, user) do
+    roles = ~w(owner admin editor)a
+
+    check_role(publication, user, roles)
   end
 
   @doc """
@@ -215,17 +262,54 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> can_see_invitations?(123, 123)
+      iex> can_see_invitations?(%Publication{}, %User{})
       true
 
-      iex> can_see_invitations?(123, 456)
+      iex> can_see_invitations?(%Publication{}, %User{})
       false
 
   """
-  @spec can_see_invitations?(any, any) :: boolean
-  def can_see_invitations?(publication_id, user_id) do
-    check_role(publication_id, user_id, [:owner, :admin])
+  @spec can_see_invitations?(Publication.t(), User.t()) :: boolean
+  def can_see_invitations?(publication, user) do
+    roles = ~w(owner admin)a
+
+    check_role(publication, user, roles)
   end
+
+  @doc """
+  Returns true if the user can invite a
+  user with a role to the publication.
+  False otherwise.
+
+  ## Examples
+
+      iex> can_invite?(publication, inviter, invitee, :writer)
+      true
+
+      iex> can_invite?(publication, inviter, invitee, :owner)
+      false
+
+  """
+  @spec can_invite?(Publication.t(), User.t(), User.t(), role) :: boolean
+  def can_invite?(publication, inviter, invitee, role) when role in [:writer, :editor] do
+    roles = ~w(owner admin)a
+
+    publication
+    |> check_role(inviter, roles)
+    |> do_can_invite?(publication, invitee)
+  end
+
+  def can_invite?(publication, inviter, invitee, role) when role === :admin do
+    publication
+    |> check_role(inviter, :owner)
+    |> do_can_invite?(publication, invitee)
+  end
+
+  def can_invite?(_publication, _inviter, _invitee, _role), do: false
+
+  defp do_can_invite?(true, publication, invitee), do: not member?(publication, invitee)
+
+  defp do_can_invite?(false, _publication, _invitee), do: false
 
   @doc """
   Returns true if the user can update the publication information.
@@ -233,16 +317,18 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> can_update_publication?(123, 123)
+      iex> can_update_publication?(%Publication{}, %User{})
       true
 
-      iex> can_update_publication?(123, 456)
+      iex> can_update_publication?(%Publication{}, %User{})
       false
 
   """
-  @spec can_update_publication?(any, any) :: boolean
-  def can_update_publication?(publication_id, user_id) do
-    check_role(publication_id, user_id, [:owner, :admin])
+  @spec can_update_publication?(Publication.t(), User.t()) :: boolean
+  def can_update_publication?(publication, user) do
+    roles = ~w(owner admin)a
+
+    check_role(publication, user, roles)
   end
 
   @doc """
@@ -333,11 +419,14 @@ defmodule Margaret.Publications do
   end
 
   @doc """
-  Gets a publication membership.
+  Gets a publication membership by its id.
   """
-  def get_publication_membership(id), do: Repo.get(PublicationMembership, id)
+  def get_membership(id), do: Repo.get(PublicationMembership, id)
 
-  def get_publication_owner(publication_id) do
+  @doc """
+  Gets the owner of the publication.
+  """
+  def get_owner(%Publication{id: publication_id}) do
     query =
       from(
         u in User,
@@ -352,38 +441,29 @@ defmodule Margaret.Publications do
   @doc """
   Gets a publication membership by publication and member ids.
   """
-  def get_publication_membership_by_publication_and_member(publication_id, member_id) do
+  def get_membership_by_publication_and_member(publication_id, member_id) do
     Repo.get_by(PublicationMembership, publication_id: publication_id, member_id: member_id)
   end
 
-  def delete_publication_membership(id) when is_integer(id) or is_binary(id) do
-    Repo.delete(%PublicationMembership{id: id})
+  def delete_membership(%PublicationMembership{} = publication_membership) do
+    Repo.delete(publication_membership)
   end
-
-  def delete_publication_membership(publication_id, member_id) do
-    case get_publication_membership_by_publication_and_member(publication_id, member_id) do
-      %PublicationMembership{id: id} -> delete_publication_membership(id)
-      _ -> {:error, "User is not a member of the publication."}
-    end
-  end
-
-  def delete_publication_membership(publication_id, member_id)
 
   @doc """
   Gets a publication invitation.
   """
-  def get_publication_invitation(id), do: Repo.get(PublicationInvitation, id)
+  def get_invitation(id), do: Repo.get(PublicationInvitation, id)
 
   @doc """
-  Creates a publication invitation.
+  Inserts a publication invitation.
   """
-  def insert_publication_invitation(attrs) do
+  def insert_invitation(attrs) do
     attrs
     |> PublicationInvitation.changeset()
     |> Repo.insert()
   end
 
-  def update_publication_invitation(%PublicationInvitation{} = invitation, attrs) do
+  def update_invitation(%PublicationInvitation{} = invitation, attrs) do
     invitation
     |> PublicationInvitation.update_changeset(attrs)
     |> Repo.update()
@@ -393,7 +473,7 @@ defmodule Margaret.Publications do
   Accepts a publication invitation.
   Rejects all other invitations to the invitee.
   """
-  def accept_publication_invitation(%PublicationInvitation{} = invitation) do
+  def accept_invitation(%PublicationInvitation{} = invitation) do
     invitation_changeset =
       PublicationInvitation.update_changeset(invitation, %{status: :accepted})
 
@@ -423,16 +503,32 @@ defmodule Margaret.Publications do
   @doc """
   Rejects a publcation invitation.
   """
-  def reject_publication_invitation(%PublicationInvitation{} = invitation) do
-    update_publication_invitation(invitation, %{status: :rejected})
+  def reject_invitation(invitation) do
+    update_invitation(invitation, %{status: :rejected})
+  end
+
+  @doc """
+  """
+  @spec invite_user(Publication.t(), User.t(), User.t(), role) :: any
+  def invite_user(publication_id, inviter_id, invitee_id, role) do
+    attrs = %{
+      publication_id: publication_id,
+      inviter_id: inviter_id,
+      invitee_id: invitee_id,
+      role: role,
+      status: :pending
+    }
+
+    insert_invitation(attrs)
   end
 
   @doc """
   Kicks a member out of a publication.
+  TODO: Refactor this.
   """
-  def kick_publication_member(publication_id, member_id) do
-    publication_id
-    |> get_publication_membership_by_publication_and_member(member_id)
+  def kick_member(publication, member) do
+    publication
+    |> get_membership_by_publication_and_member(member)
     |> case do
       %PublicationMembership{} = membership -> Repo.delete(membership)
       _ -> {:error, "User is not a member."}

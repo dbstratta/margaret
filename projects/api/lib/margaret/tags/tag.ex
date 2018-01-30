@@ -7,9 +7,11 @@ defmodule Margaret.Tags.Tag do
   import Ecto.Changeset
 
   alias __MODULE__
-  alias Margaret.{Stories, Publications}
-  alias Stories.Story
-  alias Publications.Publication
+
+  alias Margaret.{
+    Stories.Story,
+    Publications.Publication
+  }
 
   @type t :: %Tag{}
 
@@ -22,7 +24,9 @@ defmodule Margaret.Tags.Tag do
     timestamps()
   end
 
-  @doc false
+  @doc """
+  Builds a changeset for inserting a tag.
+  """
   def changeset(attrs) do
     permitted_attrs = ~w(
       title

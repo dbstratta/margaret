@@ -7,8 +7,16 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
   alias Margaret.{Accounts, Publications}
   alias Publications.PublicationInvitation
 
-  def resolve_send_publication_invitation(args, %{context: %{viewer: %{id: viewer_id}}}) do
+  # TODO: Refactor this resolver into function calls from context.
+  def resolve_send_publication_invitation(args, %{context: %{viewer: inviter}}) do
     %{publication_id: publication_id, invitee_id: invitee_id, role: role} = args
+
+    publication_id
+    |> Publications.get_publication()
+    |> do_resolve_send_publication_invitation(inviter, invitee_id, role)
+
+    # ----------
+    if(Publications.can_invite?())
 
     attrs = %{
       publication_id: publication_id,
@@ -27,6 +35,14 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
       true -> {:error, "Invitee is already a member of the publication."}
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
+  end
+
+  defp do_resolve_send_publication_invitation(
+         %Publication{} = publication,
+         inviter,
+         invitee_id,
+         role
+       ) do
   end
 
   def resolve_publication(%PublicationInvitation{publication_id: publication_id}, _, _) do

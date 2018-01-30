@@ -1,44 +1,52 @@
 defmodule Margaret.Stars.Star do
-  @moduledoc false
+  @moduledoc """
+  The Star schema and changesets.
+  """
 
   use Ecto.Schema
   import Ecto.Changeset
 
   alias __MODULE__
-  alias Margaret.{Accounts, Stories, Comments}
-  alias Accounts.User
-  alias Stories.Story
-  alias Comments.Comment
+
+  alias Margaret.{
+    Accounts.User,
+    Stories.Story,
+    Comments.Comment
+  }
 
   @type t :: %Star{}
 
-  @permitted_attrs [
-    :user_id,
-    :story_id,
-    :comment_id
-  ]
-
-  @required_attrs [
-    :user_id
-  ]
-
   schema "stars" do
+    # The user that starred the starrable.
     belongs_to(:user, User)
 
+    # Starrables.
     belongs_to(:story, Story)
     belongs_to(:comment, Comment)
 
     timestamps()
   end
 
-  @doc false
+  @doc """
+  Builds a changeset for inserting a star.
+  """
   def changeset(attrs) do
+    permitted_attrs = ~w(
+      user_id
+      story_id
+      comment_id
+    )
+
+    required_attrs = ~w(
+      user_id
+    )
+
     %Star{}
-    |> cast(attrs, @permitted_attrs)
-    |> validate_required(@required_attrs)
-    |> foreign_key_constraint(:user_id)
-    |> foreign_key_constraint(:story_id)
-    |> foreign_key_constraint(:comment_id)
+    |> cast(attrs, permitted_attrs)
+    |> validate_required(required_attrs)
+    |> assoc_constraint(:user)
+    |> assoc_constraint(:story)
+    |> assoc_constraint(:comment)
     |> unique_constraint(:user, name: :stars_user_id_story_id_index)
     |> unique_constraint(:user, name: :stars_user_id_comment_id_index)
     |> check_constraint(:user, name: :only_one_not_null_starrable)

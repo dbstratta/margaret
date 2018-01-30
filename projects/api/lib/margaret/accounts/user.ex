@@ -1,38 +1,23 @@
 defmodule Margaret.Accounts.User do
-  @moduledoc false
+  @moduledoc """
+  The User schema and changesets.
+  """
 
   use Ecto.Schema
   import Ecto.Changeset
 
   alias __MODULE__
-  alias Margaret.{Accounts, Stories, Stars, Bookmarks}
+
+  alias Margaret.{
+    Accounts,
+    Stories.Story,
+    Stars.Star,
+    Bookmarks.Bookmark
+  }
+
   alias Accounts.{SocialLogin, Follow}
-  alias Stories.Story
-  alias Stars.Star
-  alias Bookmarks.Bookmark
 
   @type t :: %User{}
-
-  @permitted_attrs [
-    :username,
-    :email,
-    :is_admin,
-    :is_employee,
-    :deactivated_at
-  ]
-
-  @required_attrs [
-    :username,
-    :email
-  ]
-
-  @update_permitted_attrs [
-    :username,
-    :email,
-    :is_admin,
-    :is_employee,
-    :deactivated_at
-  ]
 
   @username_regex ~r/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){1,64}$/
   @username_min_length 2
@@ -51,9 +36,11 @@ defmodule Margaret.Accounts.User do
 
     field(:deactivated_at, :naive_datetime)
 
+    # A user can have many social logins associated (Facebook, GitHub, etc.).
     has_many(:social_logins, SocialLogin)
 
     has_many(:stories, Story, foreign_key: :author_id)
+
     has_many(:stars, Star)
     has_many(:bookmarks, Bookmark)
 
@@ -74,11 +61,26 @@ defmodule Margaret.Accounts.User do
     timestamps()
   end
 
-  @doc false
+  @doc """
+  Builds a changeset for inserting a user.
+  """
   def changeset(attrs) do
+    permitted_attrs = ~w(
+      username
+      email
+      is_admin
+      is_employee
+      deactivated_at
+    )a
+
+    required_attrs = ~w(
+      username,
+      email
+    )a
+
     %User{}
-    |> cast(attrs, @permitted_attrs)
-    |> validate_required(@required_attrs)
+    |> cast(attrs, permitted_attrs)
+    |> validate_required(required_attrs)
     |> validate_format(:username, @username_regex)
     |> validate_length(:username, min: @username_min_length, max: @username_max_length)
     |> validate_format(:email, @email_regex)
@@ -87,10 +89,20 @@ defmodule Margaret.Accounts.User do
     |> unique_constraint(:email)
   end
 
-  @doc false
+  @doc """
+  Builds a changeset for updating a user.
+  """
   def update_changeset(%User{} = user, attrs) do
+    permitted_attrs = ~w(
+      username
+      email
+      is_admin
+      is_employee
+      deactivated_at
+    )a
+
     user
-    |> cast(attrs, @update_permitted_attrs)
+    |> cast(attrs, permitted_attrs)
     |> validate_format(:username, @username_regex)
     |> validate_length(:username, min: @username_min_length, max: @username_max_length)
     |> validate_format(:email, @email_regex)

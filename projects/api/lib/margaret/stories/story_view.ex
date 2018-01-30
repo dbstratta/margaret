@@ -1,24 +1,24 @@
 defmodule Margaret.Stories.StoryView do
-  @moduledoc false
+  @moduledoc """
+  The StoryView schema and changesets.
+
+  A story view represents the act of a user viewing a story.
+  It is useful to store this events because we can later
+  analyse this data and calculate popular stories,
+  for example.
+  """
 
   use Ecto.Schema
   import Ecto.Changeset
 
   alias __MODULE__
-  alias Margaret.{Accounts, Stories}
-  alias Accounts.User
-  alias Stories.Story
+
+  alias Margaret.{
+    Accounts.User,
+    Stories.Story
+  }
 
   @type t :: %StoryView{}
-
-  @permitted_attrs [
-    :story_id,
-    :viewer_id
-  ]
-
-  @required_attrs [
-    :story_id
-  ]
 
   schema "story_views" do
     belongs_to(:story, Story)
@@ -27,12 +27,23 @@ defmodule Margaret.Stories.StoryView do
     timestamps()
   end
 
-  @doc false
+  @doc """
+  Builds a changeset for inserting a story view.
+  """
   def changeset(attrs) do
+    permitted_attrs = ~w(
+      story_id
+      viewer_id
+    )a
+
+    required_attrs = ~w(
+      story_id
+    )a
+
     %StoryView{}
-    |> cast(attrs, @permitted_attrs)
-    |> validate_required(@required_attrs)
-    |> foreign_key_constraint(:story_id)
-    |> foreign_key_constraint(:viewer_id)
+    |> cast(attrs, permitted_attrs)
+    |> validate_required(required_attrs)
+    |> assoc_constraint(:story)
+    |> assoc_constraint(:viewer)
   end
 end
