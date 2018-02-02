@@ -32,7 +32,9 @@ defmodule MargaretWeb.Helpers.GraphQLErrors do
   @spec not_implemented :: t
   def not_implemented, do: error_creator("Not implemented")
 
-  defp doesnt_exist(thing), do: error_creator("#{thing} doesn't exist")
+  def doesnt_exist(thing), do: error_creator("#{thing} doesn't exist")
 
-  def publication_doesnt_exist(), do: doesnt_exist("Publication")
+  def publication_doesnt_exist, do: doesnt_exist("Publication")
+  def invitation_doesnt_exist, do: doesnt_exist("Invitation")
+  def user_doesnt_exist, do: doesnt_exist("User")
 end

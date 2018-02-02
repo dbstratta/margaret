@@ -27,6 +27,7 @@ defmodule MargaretWeb.AuthController do
     json(conn, %{token: token})
   end
 
+  # TODO: Refactor!
   @spec get_token(%Plug.Conn{} | String.t(), String.t(), String.t()) :: Guardian.Token.token()
   defp get_token(%Plug.Conn{} = conn, provider, uid) do
     %{"email" => email} = conn.assigns.ueberauth_auth.extra.raw_info.user
@@ -35,7 +36,7 @@ defmodule MargaretWeb.AuthController do
       {:ok, token, _} =
         {provider, uid}
         |> Accounts.get_user_by_social_login!(include_deactivated: true)
-        |> activate_user()
+        |> Accounts.activate_user!()
         |> MargaretWeb.Guardian.encode_and_sign()
 
       token
@@ -58,21 +59,12 @@ defmodule MargaretWeb.AuthController do
   defp get_or_create_user(email) do
     {:ok, user} =
       case Accounts.get_user_by_email(email, include_deactivated: true) do
-        %User{} = user -> {:ok, activate_user(user)}
+        %User{} = user -> {:ok, Accounts.activate_user(user)}
         nil -> Accounts.insert_user(%{username: UUID.uuid4(), email: email})
       end
 
     user
   end
-
-  defp activate_user(%User{deactivated_at: deactivated_at} = user)
-       when not is_nil(deactivated_at) do
-    {:ok, user} = Accounts.update_user(user, %{deactivated_at: nil})
-
-    user
-  end
-
-  defp activate_user(user), do: user
 
   @doc """
   Refreshes a JWT token.
@@ -83,11 +75,8 @@ defmodule MargaretWeb.AuthController do
     |> do_refresh(conn)
   end
 
-  defp do_refresh({:ok, _old, {new_token, _new_claims}}, conn) do
-    json(conn, %{token: new_token})
-  end
+  defp do_refresh({:ok, _old, {new_token, _new_claims}}, conn),
+    do: json(conn, %{token: new_token})
 
-  defp do_refresh({:error, reason}, conn) do
-    send_resp(conn, 401, reason)
-  end
+  defp do_refresh({:error, reason}, conn), do: send_resp(conn, 401, reason)
 end

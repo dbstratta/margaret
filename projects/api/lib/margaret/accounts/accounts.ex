@@ -6,7 +6,7 @@ defmodule Margaret.Accounts do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Publications, Notifications, Workers}
+  alias Margaret.{Repo, Accounts, Publications, Workers}
   alias Accounts.{User, SocialLogin, Follow}
   alias Publications.PublicationMembership
 
@@ -66,13 +66,7 @@ defmodule Margaret.Accounts do
 
   """
   @spec get_user_by_username(String.t(), Keyword.t()) :: User.t() | nil
-  def get_user_by_username(username, opts \\ []) do
-    query = from(u in User, where: u.username == ^username)
-
-    query
-    |> maybe_include_deactivated(opts)
-    |> Repo.one()
-  end
+  def get_user_by_username(username, opts \\ []), do: get_user_by([username: username], opts)
 
   @doc """
   Gets a user by its username.
@@ -89,13 +83,7 @@ defmodule Margaret.Accounts do
 
   """
   @spec get_user_by_username!(String.t(), Keyword.t()) :: User.t() | no_return
-  def get_user_by_username!(username, opts \\ []) do
-    query = from(u in User, where: u.username == ^username)
-
-    query
-    |> maybe_include_deactivated(opts)
-    |> Repo.one!()
-  end
+  def get_user_by_username!(username, opts \\ []), do: get_user_by!([username: username], opts)
 
   @doc """
   Gets a user by its email.
@@ -110,13 +98,7 @@ defmodule Margaret.Accounts do
 
   """
   @spec get_user_by_email(String.t(), Keyword.t()) :: User.t() | nil
-  def get_user_by_email(email, opts \\ []) do
-    query = from(u in User, where: u.email == ^email)
-
-    query
-    |> maybe_include_deactivated(opts)
-    |> Repo.one()
-  end
+  def get_user_by_email(email, opts \\ []), do: get_user_by([email: email], opts)
 
   @doc """
   Gets a user by its email.
@@ -133,12 +115,18 @@ defmodule Margaret.Accounts do
 
   """
   @spec get_user_by_email!(String.t(), Keyword.t()) :: User.t() | no_return
-  def get_user_by_email!(email, opts \\ []) do
-    query = from(u in User, where: u.email == ^email)
+  def get_user_by_email!(email, opts \\ []), do: get_user_by!([email: email], opts)
 
-    query
+  def get_user_by(clauses, opts \\ []) do
+    User
     |> maybe_include_deactivated(opts)
-    |> Repo.one!()
+    |> Repo.get_by(clauses)
+  end
+
+  def get_user_by!(clauses, opts \\ []) do
+    User
+    |> maybe_include_deactivated(opts)
+    |> Repo.get_by!(clauses)
   end
 
   @doc """
@@ -155,13 +143,12 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_social_login!({atom, String.t()}) :: User.t() | nil
+  @spec get_user_by_social_login!({atom, String.t()}) :: User.t() | no_return
   def get_user_by_social_login!({provider, uid}, opts \\ []) do
     query =
       from(
         u in User,
-        join: s in SocialLogin,
-        on: s.user_id == u.id,
+        join: s in assoc(u, :social_logins),
         where: s.provider == ^provider and s.uid == ^uid
       )
 
@@ -194,10 +181,7 @@ defmodule Margaret.Accounts do
     |> do_maybe_include_deactivated(query)
   end
 
-  defp do_maybe_include_deactivated(false, query) do
-    from(u in query, where: is_nil(u.deactivated_at))
-  end
-
+  defp do_maybe_include_deactivated(false, query), do: User.exclude_deactivated(query)
   defp do_maybe_include_deactivated(true, query), do: query
 
   def member?(%User{}), do: false
@@ -249,6 +233,18 @@ defmodule Margaret.Accounts do
     user
     |> User.update_changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Activates a user.
+
+  If the user was not deactivated it doesn't
+  do anything.
+  """
+  def activate_user(%User{deactivated_at: nil} = user), do: {:ok, user}
+
+  def activate_user(%User{} = user) do
+    update_user(user, %{deactivated_at: nil})
   end
 
   @doc """

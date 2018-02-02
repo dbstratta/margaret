@@ -1,28 +1,40 @@
-FROM elixir:1.6.1@sha256:e3140363117014ffa718e9c05e97e7a0dc77e7efbf648bd0de760173b7e5e082
+# Build stage
+FROM elixir:1.6.1-alpine AS builder
 
 LABEL name="margaret_api"
 LABEL version="1.0.0"
 LABEL maintainer="strattadb@gmail.com"
 
-ENV MIX_ENV=${MIX_ENV:-prod}
+ARG APP_NAME=margaret
+ENV MIX_ENV=${MIX_ENV:-prod} REPLACE_OS_VARS=true
 
 # Install the Hex package manager.
 RUN mix local.hex --force && \
     # Install Erlang's build tool.
-    mix local.rebar --force && \
-    # Install Phoenix.
-    mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new.ez --force
+    mix local.rebar --force
 
 # Create and change current directory.
 WORKDIR /usr/src/app
 
 # Install dependencies.
 COPY mix.exs mix.lock ./
-RUN mix deps.get --only prod && mix deps.compile
+RUN mix do deps.get --only prod, deps.compile
 
 # Bundle app source.
 COPY . .
 
-RUN mix compile
+RUN mix do compile, release --env=prod --verbose \
+    && mv _build/prod/rel/${APP_NAME} /opt/release \
+    && mv /opt/release/bin/${APP_NAME} /opt/release/bin/start_server
 
-CMD ["mix", "phx.server"]
+# Final stage
+FROM alpine:3.7
+
+ENV MIX_ENV=${MIX_ENV:-prod} REPLACE_OS_VARS=true
+
+WORKDIR /opt/app
+
+# Copy the artifacts from the builder stage.
+COPY --from=builder /opt/release .
+
+CMD ["/opt/app/bin/start_server", "foreground"]

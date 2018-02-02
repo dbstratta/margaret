@@ -11,6 +11,9 @@ defmodule Margaret.Publications do
   alias Publications.{Publication, PublicationMembership, PublicationInvitation}
   alias Accounts.User
 
+  @typedoc """
+  The role of a member in a publication.
+  """
   @type role :: atom
 
   @doc """
@@ -42,6 +45,14 @@ defmodule Margaret.Publications do
   def get_publication_by_name(name), do: Repo.get_by(Publication, name: name)
 
   @doc """
+  """
+  def get_tags(%Publication{} = publication) do
+    publication
+    |> Repo.preload(:tags)
+    |> Map.get(:tags)
+  end
+
+  @doc """
   Gets the role of a member of a publication.
   Returns `nil` if the user is not a member.
 
@@ -56,7 +67,7 @@ defmodule Margaret.Publications do
   """
   @spec get_member_role(Publication.t(), User.t()) :: role | nil
   def get_member_role(publication, user) do
-    case get_membership_by_publication_and_member(publication, user) do
+    case get_membership(publication, user) do
       %PublicationMembership{role: role} -> role
       nil -> nil
     end
@@ -332,6 +343,18 @@ defmodule Margaret.Publications do
   end
 
   @doc """
+  """
+  def can_accept_invitation?(%PublicationInvitation{invitee_id: invitee_id}, %User{id: user_id}) do
+    invitee_id === user_id
+  end
+
+  @doc """
+  """
+  def can_reject_invitation?(%PublicationInvitation{invitee_id: invitee_id}, %User{id: user_id}) do
+    invitee_id === user_id
+  end
+
+  @doc """
   Inserts a publication.
   """
   def insert_publication(attrs) do
@@ -399,7 +422,7 @@ defmodule Margaret.Publications do
 
   defp insert_owner(multi, %{owner_id: owner_id}) do
     insert_owner_fn = fn %{publication: %{id: publication_id}} ->
-      insert_publication_membership(%{
+      insert_membership(%{
         role: :owner,
         member_id: owner_id,
         publication_id: publication_id
@@ -412,16 +435,20 @@ defmodule Margaret.Publications do
   @doc """
   Creates a publication membership.
   """
-  def insert_publication_membership(attrs) do
+  def insert_membership(attrs) do
     attrs
     |> PublicationMembership.changeset()
     |> Repo.insert()
   end
 
   @doc """
-  Gets a publication membership by its id.
+  Gets a publication membership.
   """
   def get_membership(id), do: Repo.get(PublicationMembership, id)
+
+  def get_membership(publication_id, member_id) do
+    Repo.get_by(PublicationMembership, publication_id: publication_id, member_id: member_id)
+  end
 
   @doc """
   Gets the owner of the publication.
@@ -436,13 +463,6 @@ defmodule Margaret.Publications do
       )
 
     Repo.one!(query)
-  end
-
-  @doc """
-  Gets a publication membership by publication and member ids.
-  """
-  def get_membership_by_publication_and_member(publication_id, member_id) do
-    Repo.get_by(PublicationMembership, publication_id: publication_id, member_id: member_id)
   end
 
   def delete_membership(%PublicationMembership{} = publication_membership) do
@@ -463,10 +483,33 @@ defmodule Margaret.Publications do
     |> Repo.insert()
   end
 
+  @doc """
+  Updates a publication invitation.
+  """
+  @spec update_invitation(PublicationInvitation.t(), any) ::
+          {:ok, PublicationInvitation.t()} | {:error, Ecto.Changeset.t()}
   def update_invitation(%PublicationInvitation{} = invitation, attrs) do
     invitation
     |> PublicationInvitation.update_changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Updates a publication invitation.
+  """
+  @spec update_invitation!(PublicationInvitation.t(), any) ::
+          {:ok, PublicationInvitation.t()} | {:error, Ecto.Changeset.t()} | no_return
+  def update_invitation!(%PublicationInvitation{} = invitation, attrs) do
+    case update_invitation(invitation, attrs) do
+      {:ok, invitation} ->
+        invitation
+
+      {:error, reason} ->
+        raise """
+        cannot update invitation.
+        Reason: #{inspect(reason)}
+        """
+    end
   end
 
   @doc """
@@ -503,18 +546,32 @@ defmodule Margaret.Publications do
   @doc """
   Rejects a publcation invitation.
   """
-  def reject_invitation(invitation) do
-    update_invitation(invitation, %{status: :rejected})
+  def reject_invitation(invitation), do: update_invitation(invitation, %{status: :rejected})
+
+  @doc """
+  Rejects a publcation invitation.
+  """
+  def reject_invitation!(invitation) do
+    case reject_invitation(invitation) do
+      {:ok, invitation} ->
+        invitation
+
+      {:error, reason} ->
+        raise """
+        cannot reject invitation.
+        Reason: #{inspect(reason)}
+        """
+    end
   end
 
   @doc """
   """
-  @spec invite_user(Publication.t(), User.t(), User.t(), role) :: any
-  def invite_user(publication_id, inviter_id, invitee_id, role) do
+  @spec invite_user(Publication.t(), User.t(), User.t(), role) :: {atom, any}
+  def invite_user(publication, inviter, invitee, role) do
     attrs = %{
-      publication_id: publication_id,
-      inviter_id: inviter_id,
-      invitee_id: invitee_id,
+      publication_id: publication.id,
+      inviter_id: inviter.id,
+      invitee_id: invitee.id,
       role: role,
       status: :pending
     }
@@ -524,14 +581,26 @@ defmodule Margaret.Publications do
 
   @doc """
   Kicks a member out of a publication.
-  TODO: Refactor this.
   """
-  def kick_member(publication, member) do
-    publication
-    |> get_membership_by_publication_and_member(member)
+  def kick_member(%Publication{id: publication_id}, %User{id: user_id}) do
+    publication_id
+    |> get_membership(user_id)
     |> case do
-      %PublicationMembership{} = membership -> Repo.delete(membership)
-      _ -> {:error, "User is not a member."}
+      %PublicationMembership{} = membership -> delete_membership(membership)
+      _ -> {:error, "User is not a member of the publication"}
+    end
+  end
+
+  def kick_member!(publication, user) do
+    case kick_member(publication, user) do
+      {:ok, membership} ->
+        membership
+
+      {:error, reason} ->
+        raise """
+        cannot kick member from the publication.
+        Reason: #{inspect(reason)}
+        """
     end
   end
 end

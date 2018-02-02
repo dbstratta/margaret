@@ -13,6 +13,7 @@ defmodule Margaret.Stories.Story do
   alias __MODULE__
 
   alias Margaret.{
+    Repo,
     Accounts.User,
     Stories.StoryView,
     Stars.Star,
@@ -31,6 +32,7 @@ defmodule Margaret.Stories.Story do
     # `content` is rich text and contains metadata, so we store it as a map.
     field(:content, :map)
     belongs_to(:author, User)
+
     # We use a unique hash to identify the story in a slug.
     field(:unique_hash, :string)
 
@@ -117,4 +119,22 @@ defmodule Margaret.Stories.Story do
     |> String.slice(0..unique_hash_length)
     |> String.downcase()
   end
+
+  @doc """
+  Preloads the author of a story.
+  """
+  @spec preload_author(Story.t()) :: Story.t()
+  def preload_author(%Story{} = story), do: Repo.preload(story, :author)
+
+  @doc """
+  Preloads the publication of a story.
+  """
+  @spec preload_publication(Story.t()) :: Story.t()
+  def preload_publication(%Story{} = story), do: Repo.preload(story, :publication)
+
+  @doc """
+  Preloads the tags of a story.
+  """
+  @spec preload_tags(Story.t()) :: Story.t()
+  def preload_tags(%Story{} = story), do: Repo.preload(story, :tags)
 end

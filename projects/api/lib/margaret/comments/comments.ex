@@ -70,8 +70,7 @@ defmodule Margaret.Comments do
     query =
       from(
         c in query,
-        join: u in User,
-        on: u.id == c.author_id,
+        join: u in assoc(c, :author),
         where: is_nil(u.deactivated_at),
         select: count(c.id)
       )

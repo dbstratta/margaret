@@ -47,7 +47,7 @@ defmodule Margaret.Mixfile do
       {:ueberauth_github, "~> 0.6.0"},
       {:ueberauth_google, "~> 0.7.0"},
       {:ueberauth_facebook, "~> 0.7.0"},
-      {:absinthe, "~> 1.4.6"},
+      {:absinthe, "~> 1.4.7"},
       {:absinthe_plug, "~> 1.4.2"},
       {:absinthe_relay, "~> 1.4.2"},
       {:absinthe_phoenix, "~> 1.4.2"},
@@ -60,6 +60,7 @@ defmodule Margaret.Mixfile do
       {:cors_plug, "~> 1.5.0"},
       {:uuid, "~> 1.1.8"},
       {:slugger, "~> 0.2.0"},
+      {:distillery, "~> 1.5.2", runtime: false},
       {:credo, "~> 0.8.10", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5.1", only: [:dev], runtime: false}
     ]

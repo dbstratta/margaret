@@ -40,8 +40,7 @@ defmodule Margaret.Notifications do
       query =
         from(
           u in User,
-          join: s in Story,
-          on: s.author_id == u.id,
+          join: s in assoc(u, :stories),
           where: s.id == ^story_id
         )
 
@@ -59,8 +58,7 @@ defmodule Margaret.Notifications do
       query =
         from(
           u in User,
-          join: c in Comment,
-          on: c.author_id == u.id,
+          join: c in assoc(u, :comments),
           where: c.id == ^comment_id
         )
 
@@ -96,8 +94,7 @@ defmodule Margaret.Notifications do
       query =
         from(
           u in User,
-          join: f in Follow,
-          on: f.user_id == u.id,
+          join: f in assoc(u, :followers),
           where: f.user_id == ^author_id
         )
 

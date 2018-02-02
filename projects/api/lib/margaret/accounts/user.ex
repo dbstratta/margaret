@@ -4,18 +4,21 @@ defmodule Margaret.Accounts.User do
   """
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Query, Changeset}
 
   alias __MODULE__
 
   alias Margaret.{
     Accounts,
+    Publications,
     Stories.Story,
+    Comments.Comment,
     Stars.Star,
     Bookmarks.Bookmark
   }
 
   alias Accounts.{SocialLogin, Follow}
+  alias Publications.{Publication, PublicationMembership}
 
   @type t :: %User{}
 
@@ -40,9 +43,12 @@ defmodule Margaret.Accounts.User do
     has_many(:social_logins, SocialLogin)
 
     has_many(:stories, Story, foreign_key: :author_id)
+    has_many(:comments, Comment, foreign_key: :author_id)
 
     has_many(:stars, Star)
     has_many(:bookmarks, Bookmark)
+
+    many_to_many(:publications, Publication, join_through: PublicationMembership)
 
     many_to_many(
       :followers,
@@ -110,4 +116,15 @@ defmodule Margaret.Accounts.User do
     |> unique_constraint(:username)
     |> unique_constraint(:email)
   end
+
+  @doc """
+  Excludes deactivated users from the query.
+
+  ## Examples
+
+    iex> from(u in User, where: u.is_admin) |> exclude_deactivated()
+    #Ecto.Query<...>
+
+  """
+  def exclude_deactivated(query \\ __MODULE__), do: where(query, [u], is_nil(u.deactivated_at))
 end

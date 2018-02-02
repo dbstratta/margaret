@@ -22,7 +22,7 @@ defmodule Margaret.Stories do
       nil
 
   """
-  @spec get_story(String.t()) :: Story.t() | nil
+  @spec get_story(String.t() | non_neg_integer) :: Story.t() | nil
   def get_story(id), do: Repo.get(Story, id)
 
   @doc """
@@ -39,9 +39,22 @@ defmodule Margaret.Stories do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_story!(String.t()) :: Story.t()
+  @spec get_story!(String.t() | non_neg_integer) :: Story.t() | no_return
   def get_story!(id), do: Repo.get!(Story, id)
 
+  @doc """
+  Gets a story by its slug.
+
+  ## Examples
+
+      iex> get_story_by_slug("slug-234abfe")
+      %Story{}
+
+      iex> get_story_by_slug("slug-456a3be")
+      nil
+
+  """
+  @spec get_story_by_slug(String.t()) :: Story.t() | nil
   def get_story_by_slug(slug) do
     slug
     |> String.split("-")
@@ -64,10 +77,28 @@ defmodule Margaret.Stories do
   @spec get_story_by_unique_hash(String.t()) :: Story.t() | nil
   def get_story_by_unique_hash(unique_hash), do: Repo.get_by(Story, unique_hash: unique_hash)
 
-  def get_title(%Story{content: %{"blocks" => [%{"text" => title} | _]}}) do
-    title
-  end
+  @doc """
+  Gets the title of a story.
 
+  ## Examples
+
+      iex> get_title(%Story{})
+      "Title"
+
+  """
+  @spec get_title(Story.t()) :: String.t()
+  def get_title(%Story{content: %{"blocks" => [%{"text" => title} | _]}}), do: title
+
+  @doc """
+  Gets the slug of a story.
+
+  ## Examples
+
+      iex> get_slug(%Story{})
+      "title-abc123ba"
+
+  """
+  @spec get_slug(Story.t()) :: String.t()
   def get_slug(%Story{unique_hash: unique_hash} = story) do
     story
     |> Stories.get_title()
@@ -76,6 +107,67 @@ defmodule Margaret.Stories do
     |> Kernel.<>(unique_hash)
   end
 
+  @doc """
+  Gets the author of a story.
+
+  ## Examples
+
+      iex> get_author(%Story{})
+      %User{}
+
+  """
+  @spec get_author(Story.t()) :: User.t()
+  def get_author(%Story{} = story) do
+    story
+    |> Story.preload_author()
+    |> Map.get(:author)
+  end
+
+  @doc """
+  Gets the tags of a story.
+
+  ## Examples
+
+      iex> get_tags(%Story{})
+      [%Tag{}]
+
+  """
+  @spec get_tags(Story.t()) :: [Tag.t()]
+  def get_tags(%Story{} = story) do
+    story
+    |> Story.preload_tags()
+    |> Map.get(:tags)
+  end
+
+  @doc """
+  Gets the publication of a story.
+
+  ## Examples
+
+      iex> get_publication(%Story{})
+      %Publication{}
+
+      iex> get_publication(%Story{})
+      nil
+
+  """
+  @spec get_publication(Story.t()) :: Publication.t() | nil
+  def get_publication(%Story{} = story) do
+    story
+    |> Story.preload_publication()
+    |> Map.get(:publication)
+  end
+
+  @doc """
+  Gets the word count of a story.
+
+  ## Examples
+
+      iex> get_word_count(%Story{})
+      42
+
+  """
+  @spec get_word_count(Story.t()) :: non_neg_integer
   def get_word_count(%Story{content: %{"blocks" => blocks}}) do
     blocks
     |> Enum.map_join(" ", &Map.get(&1, "text"))
@@ -83,6 +175,16 @@ defmodule Margaret.Stories do
     |> length()
   end
 
+  @doc """
+  Gets the read time of a story in minutes.
+
+  ## Examples
+
+      iex> get_read_time(%Story{})
+      12
+
+  """
+  @spec get_read_time(Story.t()) :: non_neg_integer
   def get_read_time(%Story{} = story) do
     avg_wpm = 275
 
@@ -95,12 +197,21 @@ defmodule Margaret.Stories do
     end
   end
 
+  @doc """
+  Gets the story count.
+
+  ## Examples
+
+      iex> get_story_count()
+      815
+
+  """
+  @spec get_story_count :: non_neg_integer
   def get_story_count do
     query =
       from(
         s in Story,
-        join: u in User,
-        on: u.id == s.author_id,
+        join: u in assoc(s, :author),
         where: is_nil(u.deactivated_at),
         select: count(s.id)
       )
@@ -108,6 +219,17 @@ defmodule Margaret.Stories do
     Repo.one!(query)
   end
 
+  @doc """
+  Returns `true` if the story has been published.
+  `false` otherwise.
+
+  ## Examples
+
+      iex> has_been_published(%Story{})
+      false
+
+  """
+  @spec has_been_published?(Story.t()) :: boolean
   def has_been_published?(%Story{published_at: published_at}) do
     published_at <= NaiveDateTime.utc_now()
   end
@@ -118,20 +240,20 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> story_public?(%Story{})
+      iex> public?(%Story{})
       true
 
-      iex> story_public?(123)
+      iex> public?(%Story{})
       false
 
-      iex> story_public?(nil)
+      iex> public?(nil)
       false
 
   """
-  @spec story_public?(Story.t()) :: boolean
-  def story_public?(%Story{audience: :all} = story), do: has_been_published?(story)
+  @spec public?(Story.t()) :: boolean
+  def public?(%Story{audience: :all} = story), do: has_been_published?(story)
 
-  def story_public?(_), do: false
+  def public?(_), do: false
 
   @doc """
   Returns `true` if the user can see the story.
@@ -164,7 +286,7 @@ defmodule Margaret.Stories do
     is_member and has_been_published
   end
 
-  def can_see_story?(%Story{} = story, _user), do: story_public?(story)
+  def can_see_story?(%Story{} = story, _user), do: public?(story)
 
   @doc """
   Returns `true` if the user can update the story,

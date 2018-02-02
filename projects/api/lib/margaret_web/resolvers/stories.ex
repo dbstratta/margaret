@@ -16,38 +16,50 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves a story by its unique hash.
   """
-  def resolve_story(%{unique_hash: unique_hash}, _),
-    do: {:ok, Stories.get_story_by_unique_hash(unique_hash)}
+  def resolve_story(%{unique_hash: unique_hash}, _) do
+    story = Stories.get_story_by_unique_hash(unique_hash)
+
+    {:ok, story}
+  end
 
   @doc """
   Resolves the title of the story.
   """
-  def resolve_title(%Story{} = story, _, _), do: {:ok, Stories.get_title(story)}
+  def resolve_title(story, _, _) do
+    title = Stories.get_title(story)
+
+    {:ok, title}
+  end
 
   @doc """
   Resolves the authro of the story.
   """
-  def resolve_author(%Story{author_id: author_id}, _, _), do: {:ok, Accounts.get_user(author_id)}
+  def resolve_author(story, _, _) do
+    author = Stories.get_author(story)
+
+    {:ok, author}
+  end
 
   @doc """
   Resolves the slug of the story.
   """
-  def resolve_slug(%Story{} = story, _, _), do: {:ok, Stories.get_slug(story)}
+  def resolve_slug(story, _, _) do
+    slug = Stories.get_slug(story)
+
+    {:ok, slug}
+  end
 
   @doc """
   Resolves the publication of the story.
   """
-  def resolve_publication(%Story{publication_id: nil}, _, _), do: {:ok, nil}
+  def resolve_publication(story, _, _) do
+    publication = Stories.get_publication(story)
 
-  def resolve_publication(%Story{publication_id: publication_id}, _, _) do
-    {:ok, Publications.get_publication(publication_id)}
+    {:ok, publication}
   end
 
-  def resolve_tags(%Story{} = story, _, _) do
-    tags =
-      story
-      |> Repo.preload(:tags)
-      |> Map.get(:tags)
+  def resolve_tags(story, _, _) do
+    tags = Stories.get_tags(story)
 
     {:ok, tags}
   end
@@ -55,7 +67,11 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves the read time of the story.
   """
-  def resolve_read_time(%Story{} = story, _, _), do: {:ok, Stories.get_read_time(story)}
+  def resolve_read_time(story, _, _) do
+    read_time = Stories.get_read_time(story)
+
+    {:ok, read_time}
+  end
 
   @doc """
   Resolves a connection of stories.
@@ -129,7 +145,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   Resolves whether the viewer has starred this story.
   """
   def resolve_viewer_has_starred(%Story{id: story_id}, _, %{context: %{viewer: %{id: viewer_id}}}) do
-    {:ok, Stars.has_starred(%{user_id: viewer_id, story_id: story_id})}
+    has_starred = Stars.has_starred?(%{user_id: viewer_id, story_id: story_id})
+
+    {:ok, has_starred}
   end
 
   @doc """

@@ -10,7 +10,6 @@ defmodule MargaretWeb.Middleware.HandleChangesetErrors do
 
   @behaviour Absinthe.Middleware
 
-  @doc false
   @impl true
   def call(%Absinthe.Resolution{errors: errors} = resolution, _) do
     %{resolution | errors: handle_errors(errors)}

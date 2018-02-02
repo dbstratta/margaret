@@ -23,7 +23,7 @@ defmodule Margaret.Stars do
 
   @doc """
   """
-  def has_starred(args), do: !!get_star(args)
+  def has_starred?(args), do: !!get_star(args)
 
   @doc """
   Inserts a star.
@@ -59,8 +59,7 @@ defmodule Margaret.Stars do
     query =
       from(
         s in Star,
-        join: u in User,
-        on: u.id == s.user_id,
+        join: u in assoc(s, :user),
         where: s.story_id == ^story_id,
         where: is_nil(u.deactivated_at),
         select: count(s.id)
@@ -73,8 +72,7 @@ defmodule Margaret.Stars do
     query =
       from(
         s in Star,
-        join: u in User,
-        on: u.id == s.user_id,
+        join: u in assoc(s, :user),
         where: s.comment_id == ^comment_id,
         where: is_nil(u.deactivated_at),
         select: count(s.id)
