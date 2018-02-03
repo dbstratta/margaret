@@ -6,17 +6,35 @@ defmodule Margaret.Notifications do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Notifications, Accounts, Stories, Publications, Comments}
+  alias Margaret.{Repo, Notifications, Accounts, Stories}
   alias Notifications.{Notification, UserNotification}
   alias Accounts.User
   alias Stories.Story
-  alias Publications.PublicationMembership
-  alias Comments.Comment
+
+  @type notification_object :: any
 
   @doc """
 
   """
+  @spec get_notification(String.t() | non_neg_integer) :: Notification.t() | nil
   def get_notification(id), do: Repo.get(Notification, id)
+
+  @doc """
+  Gets the actor of a notification.
+  """
+  @spec get_actor(Notification.t()) :: User.t() | nil
+  def get_actor(%Notification{} = notification) do
+    notification
+    |> Notification.preload_actor()
+    |> Map.get(:actor)
+  end
+
+  @doc """
+  Gets the object of a notification.
+  TODO: Implement this.
+  """
+  @spec get_object(Notification.t()) :: notification_object
+  def get_object(%Notification{}), do: nil
 
   @doc """
   Returns a user notification.
@@ -129,7 +147,11 @@ defmodule Margaret.Notifications do
     Multi.run(multi, :notification, insert_notification_fn)
   end
 
-  def get_notification_count(user_id) do
+  @doc """
+  Gets the notificatino count of a user.
+  """
+  @spec get_notification_count(User.t()) :: non_neg_integer
+  def get_notification_count(%User{id: user_id}) do
     query =
       from(
         n in Notification,

@@ -9,6 +9,7 @@ defmodule Margaret.Bookmarks.Bookmark do
   alias __MODULE__
 
   alias Margaret.{
+    Repo,
     Accounts.User,
     Stories.Story,
     Comments.Comment
@@ -51,4 +52,22 @@ defmodule Margaret.Bookmarks.Bookmark do
     |> unique_constraint(:user, name: :bookmarks_user_id_comment_id_index)
     |> check_constraint(:user, name: :only_one_not_null_bookmarkable)
   end
+
+  @doc """
+  Preloads the user of a bookmark.
+  """
+  @spec preload_user(t) :: t
+  def preload_user(%Bookmark{} = bookmark), do: Repo.preload(bookmark, :user)
+
+  @doc """
+  Preloads the story of a bookmark.
+  """
+  @spec preload_story(t) :: t
+  def preload_story(%Bookmark{} = bookmark), do: Repo.preload(bookmark, :story)
+
+  @doc """
+  Preloads the comment of a bookmark.
+  """
+  @spec preload_comment(t) :: t
+  def preload_comment(%Bookmark{} = bookmark), do: Repo.preload(bookmark, :comment)
 end

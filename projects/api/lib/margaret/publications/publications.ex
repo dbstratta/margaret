@@ -28,6 +28,7 @@ defmodule Margaret.Publications do
       nil
 
   """
+  @spec get_publication(String.t() | non_neg_integer) :: Publication.t() | nil
   def get_publication(id), do: Repo.get(Publication, id)
 
   @doc """
@@ -42,13 +43,21 @@ defmodule Margaret.Publications do
       nil
 
   """
-  def get_publication_by_name(name), do: Repo.get_by(Publication, name: name)
+  @spec get_publication_by_name(String.t()) :: Publication.t() | nil
+  def get_publication_by_name(name), do: get_publication_by(name: name)
+
+  @doc """
+  Gets a publication by given clauses.
+  """
+  @spec get_publication_by(Keyword.t()) :: Publication.t() | nil
+  def get_publication_by(clauses), do: Repo.get_by(Publication, clauses)
 
   @doc """
   """
+  @spec get_tags(Publication.t()) :: [Tag.t()]
   def get_tags(%Publication{} = publication) do
     publication
-    |> Repo.preload(:tags)
+    |> Publication.preload_tags()
     |> Map.get(:tags)
   end
 
@@ -397,7 +406,7 @@ defmodule Margaret.Publications do
     update_publication_fn = fn changes ->
       maybe_put_tags = fn {publication, attrs} ->
         case changes do
-          %{tags: tags} -> {Repo.preload(publication, :tags), Map.put(attrs, :tags, tags)}
+          %{tags: tags} -> {Publication.preload_tags(publication), Map.put(attrs, :tags, tags)}
           _ -> {publication, attrs}
         end
       end

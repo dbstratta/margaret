@@ -10,11 +10,11 @@ run_tests() {
     # Code style and lint checks
 
     docker-compose run --rm api mix format --check-formatted
-    # docker-compose run --rm api mix credo
+    docker-compose run --rm api mix credo
 
     # Tests
 
-    yarn test
+    # yarn test
 
     docker-compose run --rm api mix test
     docker-compose run --rm web yarn test

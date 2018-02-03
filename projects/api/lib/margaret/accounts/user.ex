@@ -9,6 +9,7 @@ defmodule Margaret.Accounts.User do
   alias __MODULE__
 
   alias Margaret.{
+    Repo,
     Accounts,
     Publications,
     Stories.Story,
@@ -23,8 +24,6 @@ defmodule Margaret.Accounts.User do
   @type t :: %User{}
 
   @username_regex ~r/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){1,64}$/
-  @username_min_length 2
-  @username_max_length 64
 
   @email_regex ~r/@/
   @email_min_length 3
@@ -80,7 +79,7 @@ defmodule Margaret.Accounts.User do
     )a
 
     required_attrs = ~w(
-      username,
+      username
       email
     )a
 
@@ -88,7 +87,6 @@ defmodule Margaret.Accounts.User do
     |> cast(attrs, permitted_attrs)
     |> validate_required(required_attrs)
     |> validate_format(:username, @username_regex)
-    |> validate_length(:username, min: @username_min_length, max: @username_max_length)
     |> validate_format(:email, @email_regex)
     |> validate_length(:email, min: @email_min_length, max: @email_max_length)
     |> unique_constraint(:username)
@@ -110,12 +108,17 @@ defmodule Margaret.Accounts.User do
     user
     |> cast(attrs, permitted_attrs)
     |> validate_format(:username, @username_regex)
-    |> validate_length(:username, min: @username_min_length, max: @username_max_length)
     |> validate_format(:email, @email_regex)
     |> validate_length(:email, min: @email_min_length, max: @email_max_length)
     |> unique_constraint(:username)
     |> unique_constraint(:email)
   end
+
+  @doc """
+  Returns `true` if the string is a valid username.
+  """
+  @spec valid_username?(String.t()) :: boolean
+  def valid_username?(username), do: String.match?(username, @username_regex)
 
   @doc """
   Excludes deactivated users from the query.
@@ -127,4 +130,7 @@ defmodule Margaret.Accounts.User do
 
   """
   def exclude_deactivated(query \\ __MODULE__), do: where(query, [u], is_nil(u.deactivated_at))
+
+  @spec preload_social_logins(t) :: t
+  def preload_social_logins(%User{} = user), do: Repo.preload(user, :social_logins)
 end

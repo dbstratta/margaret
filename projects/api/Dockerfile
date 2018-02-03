@@ -37,4 +37,4 @@ WORKDIR /opt/app
 # Copy the artifacts from the builder stage.
 COPY --from=builder /opt/release .
 
-CMD ["/opt/app/bin/start_server", "foreground"]
+CMD ["./bin/start_server", "foreground"]

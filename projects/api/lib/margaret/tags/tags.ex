@@ -20,7 +20,7 @@ defmodule Margaret.Tags do
       nil
 
   """
-  @spec get_tag(term) :: Tag.t() | nil
+  @spec get_tag(String.t() | non_neg_integer) :: Tag.t() | nil
   def get_tag(id), do: Repo.get(Tag, id)
 
   @doc """
@@ -37,8 +37,22 @@ defmodule Margaret.Tags do
       ** (Ecto.NoResultsError)
 
   """
+  @spec get_tag!(String.t() | non_neg_integer) :: Tag.t() | no_return
   def get_tag!(id), do: Repo.get!(Tag, id)
 
+  @doc """
+  Gets a tag by its title.
+
+  ## Examples
+
+      iex> get_tag_by_title("elixir")
+      %Tag{}
+
+      iex> get_tag_by_title("productivity")
+      nil
+
+  """
+  @spec get_tag_by_title(String.t()) :: Tag.t() | nil
   def get_tag_by_title(title), do: Repo.get_by(Tag, title: title)
 
   @doc """
@@ -67,12 +81,14 @@ defmodule Margaret.Tags do
   def insert_and_get_all_tags([]), do: []
 
   def insert_and_get_all_tags(tags) when is_list(tags) do
+    now = NaiveDateTime.utc_now()
+
     structs =
       tags
       |> Stream.map(&String.trim/1)
       |> Stream.map(&%{title: &1})
-      |> Stream.map(&Map.put(&1, :inserted_at, NaiveDateTime.utc_now()))
-      |> Enum.map(&Map.put(&1, :updated_at, NaiveDateTime.utc_now()))
+      |> Stream.map(&Map.put(&1, :inserted_at, now))
+      |> Enum.map(&Map.put(&1, :updated_at, now))
 
     Repo.insert_all(Tag, structs, on_conflict: :nothing)
 

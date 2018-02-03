@@ -123,18 +123,18 @@ defmodule Margaret.Stories.Story do
   @doc """
   Preloads the author of a story.
   """
-  @spec preload_author(Story.t()) :: Story.t()
+  @spec preload_author(t) :: t
   def preload_author(%Story{} = story), do: Repo.preload(story, :author)
 
   @doc """
   Preloads the publication of a story.
   """
-  @spec preload_publication(Story.t()) :: Story.t()
+  @spec preload_publication(t) :: t
   def preload_publication(%Story{} = story), do: Repo.preload(story, :publication)
 
   @doc """
   Preloads the tags of a story.
   """
-  @spec preload_tags(Story.t()) :: Story.t()
+  @spec preload_tags(t) :: t
   def preload_tags(%Story{} = story), do: Repo.preload(story, :tags)
 end

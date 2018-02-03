@@ -1,32 +1,24 @@
 defmodule Margaret.Notifications.Notification do
-  @moduledoc false
+  @moduledoc """
+  The Notification schema and changesets.
+  """
 
   use Ecto.Schema
   import Ecto.Changeset
   import EctoEnum, only: [defenum: 3]
 
   alias __MODULE__
-  alias Margaret.{Accounts, Notifications, Stories, Publications, Comments}
-  alias Accounts.User
-  alias Notifications.UserNotification
-  alias Stories.Story
-  alias Publications.Publication
-  alias Comments.Comment
+
+  alias Margaret.{
+    Repo,
+    Accounts.User,
+    Notifications.UserNotification,
+    Stories.Story,
+    Publications.Publication,
+    Comments.Comment
+  }
 
   @type t :: %Notification{}
-
-  @permitted_attrs [
-    :actor_id,
-    :action,
-    :story_id,
-    :comment_id,
-    :publication_id,
-    :user_id
-  ]
-
-  @required_attrs [
-    :action
-  ]
 
   defenum NotificationAction, :notification_action, [
     :added,
@@ -39,9 +31,12 @@ defmodule Margaret.Notifications.Notification do
 
   schema "notifications" do
     belongs_to(:actor, User)
+
     field(:action, NotificationAction)
+
     many_to_many(:notified_users, User, join_through: UserNotification)
 
+    # Notification objects.
     belongs_to(:story, Story)
     belongs_to(:comment, Comment)
     belongs_to(:publication, Publication)
@@ -50,16 +45,31 @@ defmodule Margaret.Notifications.Notification do
     timestamps()
   end
 
-  @doc false
+  @doc """
+  Builds a changeset for inserting a notification.
+  """
   def changeset(attrs) do
+    permitted_attrs = ~w(
+      actor_id
+      action
+      story_id
+      comment_id
+      publication_id
+      user_id
+    )a
+
+    required_attrs = ~w(
+      action
+    )a
+
     %Notification{}
-    |> cast(attrs, @permitted_attrs)
-    |> validate_required(@required_attrs)
-    |> foreign_key_constraint(:actor_id)
-    |> foreign_key_constraint(:story_id)
-    |> foreign_key_constraint(:comment_id)
-    |> foreign_key_constraint(:publication_id)
-    |> foreign_key_constraint(:user_id)
+    |> cast(attrs, permitted_attrs)
+    |> validate_required(required_attrs)
+    |> assoc_constraint(:actor)
+    |> assoc_constraint(:story)
+    |> assoc_constraint(:comment)
+    |> assoc_constraint(:publication)
+    |> assoc_constraint(:user)
     |> check_constraint(:action, name: :only_one_not_null_object)
     |> maybe_put_notified_users(attrs)
     |> validate_action()
@@ -75,4 +85,10 @@ defmodule Margaret.Notifications.Notification do
   end
 
   defp maybe_put_notified_users(%Ecto.Changeset{} = changeset, _attrs), do: changeset
+
+  @doc """
+  Preloads the actor of a notification.
+  """
+  @spec preload_actor(t) :: t
+  def preload_actor(%Notification{} = notification), do: Repo.preload(notification, :actor)
 end

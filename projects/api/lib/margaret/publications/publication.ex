@@ -7,10 +7,16 @@ defmodule Margaret.Publications.Publication do
   import Ecto.Changeset
 
   alias __MODULE__
-  alias Margaret.{Accounts, Publications, Tags, Helpers}
+
+  alias Margaret.{
+    Repo,
+    Accounts,
+    Publications.PublicationMembership,
+    Tags.Tag,
+    Helpers
+  }
+
   alias Accounts.{User, Follow}
-  alias Publications.PublicationMembership
-  alias Tags.Tag
 
   @type t :: %Publication{}
 
@@ -83,4 +89,10 @@ defmodule Margaret.Publications.Publication do
   end
 
   defp maybe_put_name(changeset), do: changeset
+
+  @doc """
+  Preloads the tags of a publication.
+  """
+  @spec preload_tags(t) :: t
+  def preload_tags(%Publication{} = publication), do: Repo.preload(publication, :tags)
 end

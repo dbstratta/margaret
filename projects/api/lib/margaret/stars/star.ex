@@ -35,11 +35,11 @@ defmodule Margaret.Stars.Star do
       user_id
       story_id
       comment_id
-    )
+    )a
 
     required_attrs = ~w(
       user_id
-    )
+    )a
 
     %Star{}
     |> cast(attrs, permitted_attrs)
@@ -51,4 +51,10 @@ defmodule Margaret.Stars.Star do
     |> unique_constraint(:user, name: :stars_user_id_comment_id_index)
     |> check_constraint(:user, name: :only_one_not_null_starrable)
   end
+
+  @doc """
+  Preloads the user of a star.
+  """
+  @spec preload_user(t) :: t
+  def preload_user(%Star{} = star), do: Repo.preload(star, :user)
 end

@@ -4,9 +4,12 @@ defmodule Margaret.Bookmarks do
   """
 
   import Ecto.Query
-  alias Margaret.Repo
 
-  alias Margaret.Bookmarks.Bookmark
+  alias Margaret.{
+    Repo,
+    Accounts.User,
+    Bookmarks.Bookmark
+  }
 
   @doc """
   Gets a bookmark.
@@ -19,7 +22,17 @@ defmodule Margaret.Bookmarks do
     Repo.get_by(Bookmark, user_id: user_id, comment_id: comment_id)
   end
 
-  def has_bookmarked(args), do: !!get_bookmark(args)
+  @doc """
+  Gets the user of a bookmark.
+  """
+  @spec get_user(Bookmark.t()) :: User.t()
+  def get_user(%Bookmark{} = bookmark) do
+    bookmark
+    |> Bookmark.preload_user()
+    |> Map.get(:user)
+  end
+
+  def has_bookmarked?(args), do: !!get_bookmark(args)
 
   @doc """
   Inserts a bookmark.
@@ -39,7 +52,13 @@ defmodule Margaret.Bookmarks do
     end
   end
 
-  def get_bookmarked_count(user_id) do
-    Repo.all(from(b in Bookmark, where: b.user_id == ^user_id, select: count(b.id)))
+  @doc """
+  Gets the bookmarked count of a user.
+  """
+  @spec get_bookmarked_count(User.t()) :: non_neg_integer
+  def get_bookmarked_count(%User{id: user_id}) do
+    query = from(b in Bookmark, where: b.user_id == ^user_id, select: count(b.id))
+
+    Repo.all(query)
   end
 end

@@ -75,7 +75,19 @@ defmodule Margaret.Stories do
 
   """
   @spec get_story_by_unique_hash(String.t()) :: Story.t() | nil
-  def get_story_by_unique_hash(unique_hash), do: Repo.get_by(Story, unique_hash: unique_hash)
+  def get_story_by_unique_hash(unique_hash), do: get_story_by(unique_hash: unique_hash)
+
+  @doc """
+  Gets a story by given clauses.
+
+  ## Examples
+
+      iex> get_story_by(unique_hash: "abs2375cf")
+      %Story{}
+
+  """
+  @spec get_story_by(Keyword.t()) :: Story.t() | nil
+  def get_story_by(clauses), do: Repo.get_by(Story, clauses)
 
   @doc """
   Gets the title of a story.
@@ -230,9 +242,8 @@ defmodule Margaret.Stories do
 
   """
   @spec has_been_published?(Story.t()) :: boolean
-  def has_been_published?(%Story{published_at: published_at}) do
-    published_at <= NaiveDateTime.utc_now()
-  end
+  def has_been_published?(%Story{published_at: published_at}),
+    do: published_at <= NaiveDateTime.utc_now()
 
   @doc """
   Returns `true` if the story is public,
@@ -252,7 +263,6 @@ defmodule Margaret.Stories do
   """
   @spec public?(Story.t()) :: boolean
   def public?(%Story{audience: :all} = story), do: has_been_published?(story)
-
   def public?(_), do: false
 
   @doc """
@@ -292,6 +302,7 @@ defmodule Margaret.Stories do
   Returns `true` if the user can update the story,
   `false` otherwise.
   """
+  @spec can_update_story?(Story.t(), User.t()) :: boolean
   def can_update_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
 
   def can_update_story?(%Story{publication_id: publication_id}, %User{id: user_id})
@@ -301,12 +312,14 @@ defmodule Margaret.Stories do
 
   def can_update_story?(_, _), do: false
 
+  @spec can_delete_story?(Story.t(), User.t()) :: boolean
   def can_delete_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
   def can_delete_story?(_, _), do: false
 
   @doc """
   Inserts a story.
   """
+  @spec insert_story(any) :: {:ok, any} | {:error, any, any, any}
   def insert_story(attrs) do
     Multi.new()
     |> maybe_insert_tags(attrs)
@@ -335,6 +348,7 @@ defmodule Margaret.Stories do
   @doc """
   Updates a story.
   """
+  @spec update_story(Story.t(), any) :: {:ok, any} | {:error, any, any, any}
   def update_story(%Story{} = story, attrs) do
     Multi.new()
     |> maybe_insert_tags(attrs)
@@ -370,7 +384,18 @@ defmodule Margaret.Stories do
   defp maybe_insert_tags(multi, _attrs), do: multi
 
   @doc """
+  Removes a story from its publication.
+  """
+  @spec remove_from_publication(Story.t()) :: Story.t()
+  def remove_from_publication(%Story{} = story) do
+    attrs = %{publication_id: nil}
+
+    update_story(story, attrs)
+  end
+
+  @doc """
   Deletes a story.
   """
+  @spec delete_story(Story.t()) :: {:ok, Story.t()} | {:error, Ecto.Changeset.t()}
   def delete_story(%Story{} = story), do: Repo.delete(story)
 end

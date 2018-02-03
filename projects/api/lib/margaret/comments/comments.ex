@@ -43,6 +43,16 @@ defmodule Margaret.Comments do
   def get_comment!(id), do: Repo.get!(Comment, id)
 
   @doc """
+  Gets the story of a comment.
+  """
+  @spec get_story(Comment.t()) :: Story.t()
+  def get_story(%Comment{} = comment) do
+    comment
+    |> Comment.preload_story()
+    |> Map.get(:story)
+  end
+
+  @doc """
   Gets the comment count of a commentable.
 
   ## Examples
@@ -82,18 +92,18 @@ defmodule Margaret.Comments do
 
   def get_comment_comment_count(comment_id), do: get_comment_count(%{comment_id: comment_id})
 
-  def can_see_comment?(%Comment{story_id: story_id}, %User{} = user) do
-    story_id
-    |> Stories.get_story()
+  def can_see_comment?(%Comment{} = comment, %User{} = user) do
+    comment
+    |> get_story()
     |> Stories.can_see_story?(user)
   end
 
   @doc """
-  Creates a comment.
+  Inserts a comment.
   """
-  def create_comment(attrs) do
-    %Comment{}
-    |> Comment.changeset(attrs)
+  def insert_comment(attrs) do
+    attrs
+    |> Comment.changeset()
     |> Repo.insert()
   end
 
@@ -109,7 +119,7 @@ defmodule Margaret.Comments do
   @doc """
   Deletes a comment.
   """
-  def delete_comment(id) do
-    Repo.delete(%Comment{id: id})
+  def delete_comment(%Comment{} = comment) do
+    Repo.delete(comment)
   end
 end
