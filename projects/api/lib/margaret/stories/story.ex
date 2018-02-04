@@ -7,7 +7,7 @@ defmodule Margaret.Stories.Story do
   """
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
   import EctoEnum, only: [defenum: 3]
 
   alias __MODULE__
@@ -119,6 +119,13 @@ defmodule Margaret.Stories.Story do
     |> String.slice(0..unique_hash_length)
     |> String.downcase()
   end
+
+  @doc """
+  Filters the stories in the query.
+  """
+  @spec published(Ecto.Query.t()) :: Ecto.Query.t()
+  def published(query \\ Story),
+    do: where(query, [..., s], s.published_at >= ^NaiveDateTime.utc_now())
 
   @doc """
   Preloads the author of a story.

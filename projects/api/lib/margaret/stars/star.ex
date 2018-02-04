@@ -9,6 +9,7 @@ defmodule Margaret.Stars.Star do
   alias __MODULE__
 
   alias Margaret.{
+    Repo,
     Accounts.User,
     Stories.Story,
     Comments.Comment

@@ -125,11 +125,12 @@ defmodule Margaret.Accounts.User do
 
   ## Examples
 
-    iex> from(u in User, where: u.is_admin) |> exclude_deactivated()
-    #Ecto.Query<...>
+      iex> from(u in User, where: u.is_admin) |> active()
+      #Ecto.Query<...>
 
   """
-  def exclude_deactivated(query \\ __MODULE__), do: where(query, [u], is_nil(u.deactivated_at))
+  @spec active(Ecto.Query.t()) :: Ecto.Query.t()
+  def active(query \\ User), do: where(query, [..., u], is_nil(u.deactivated_at))
 
   @spec preload_social_logins(t) :: t
   def preload_social_logins(%User{} = user), do: Repo.preload(user, :social_logins)

@@ -11,6 +11,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   alias Margaret.{
     Repo,
     Accounts,
+    Follows,
     Stories,
     Comments,
     Publications,
@@ -19,7 +20,8 @@ defmodule MargaretWeb.Resolvers.Accounts do
     Notifications
   }
 
-  alias Accounts.{User, Follow}
+  alias Accounts.User
+  alias Follows.Follow
   alias Stories.Story
   alias Comments.Comment
   alias Publications.{Publication, PublicationMembership}
@@ -35,7 +37,11 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves a user by its username.
   """
-  def resolve_user(%{username: username}, _), do: {:ok, Accounts.get_user_by_username(username)}
+  def resolve_user(%{username: username}, _) do
+    user = Accounts.get_user_by_username(username)
+
+    {:ok, user}
+  end
 
   @doc """
   Resolves a connection of stories of a user.
@@ -89,7 +95,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
         select: {u, %{followed_at: f.inserted_at}}
       )
 
-    total_count = Accounts.get_follower_count(%{user_id: user_id})
+    total_count = Follows.get_follower_count(%{user_id: user_id})
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -112,7 +118,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
         select: {[u, p], %{followed_at: f.inserted_at}}
       )
 
-    total_count = Accounts.get_followee_count(user_id)
+    total_count = Follows.get_followee_count(user_id)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -280,7 +286,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   Resolves whether the viewer has followed this user.
   """
   def resolve_viewer_has_followed(%User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}) do
-    case Accounts.get_follow(%{follower_id: viewer_id, user_id: user_id}) do
+    case Follows.get_follow(%{follower_id: viewer_id, user_id: user_id}) do
       %Follow{} -> {:ok, true}
       _ -> {:ok, false}
     end

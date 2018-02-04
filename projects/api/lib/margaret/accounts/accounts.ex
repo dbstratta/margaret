@@ -187,7 +187,7 @@ defmodule Margaret.Accounts do
     |> do_maybe_include_deactivated(query)
   end
 
-  defp do_maybe_include_deactivated(false, query), do: User.exclude_deactivated(query)
+  defp do_maybe_include_deactivated(false, query), do: User.active(query)
   defp do_maybe_include_deactivated(true, query), do: query
 
   def member?(%User{}), do: false
