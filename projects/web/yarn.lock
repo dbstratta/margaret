@@ -1823,8 +1823,8 @@ boom@5.x.x:
     hoek "4.x.x"
 
 bowser@^1.0.0, bowser@^1.7.3:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/bowser/-/bowser-1.9.1.tgz#f86ef2132e8cb10b3eb6ea5af018758c587020db"
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/bowser/-/bowser-1.9.2.tgz#d66fc868ca5f4ba895bee1363c343fe7b37d3394"
 
 boxen@^1.2.1:
   version "1.3.0"
@@ -7675,9 +7675,9 @@ react-final-form@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/react-final-form/-/react-final-form-3.1.0.tgz#79711cd54631354981562cac3f924f786be2c232"
 
-react-fns@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/react-fns/-/react-fns-1.3.0.tgz#3faa9061edfe97581de24a0498ba346d17551d1b"
+react-fns@1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/react-fns/-/react-fns-1.4.0.tgz#7b74017f9850849560dfe98f98bba3f7948495b5"
   dependencies:
     qs "^6.5.1"
     react-media "^1.6.1"
