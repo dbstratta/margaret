@@ -2064,8 +2064,8 @@ caniuse-api@^1.5.2:
     lodash.uniq "^4.5.0"
 
 caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000801"
-  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000801.tgz#a1d49def94c4e5aca5ccf1d58812e4668fac19d4"
+  version "1.0.30000802"
+  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000802.tgz#f7dca342da1c12cf84ff2c80432e24c7e1cc36d9"
 
 caniuse-lite@^1.0.30000748, caniuse-lite@^1.0.30000791, caniuse-lite@^1.0.30000792:
   version "1.0.30000792"
@@ -2625,8 +2625,8 @@ css-selector-tokenizer@^0.7.0:
     regexpu-core "^1.0.0"
 
 css-to-react-native@^2.0.3:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/css-to-react-native/-/css-to-react-native-2.1.0.tgz#671b922aa3c0bc880e09f8f00e5a4bf0803928e5"
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/css-to-react-native/-/css-to-react-native-2.1.1.tgz#ea0f6ca3cdbc37cb40f3f4f55b49d3bb28b8a43e"
   dependencies:
     css-color-keywords "^1.0.0"
     fbjs "^0.8.5"
@@ -3132,9 +3132,9 @@ enzyme-adapter-utils@^1.3.0:
     object.assign "^4.0.4"
     prop-types "^15.6.0"
 
-enzyme-matchers@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/enzyme-matchers/-/enzyme-matchers-4.1.1.tgz#ce8c177f96f05e757a2c7b5ca4040450c3beb57c"
+enzyme-matchers@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/enzyme-matchers/-/enzyme-matchers-4.2.0.tgz#38333883258da90e5414b5ac07d388aecb75227f"
   dependencies:
     circular-json-es6 "^2.0.1"
     deep-equal-ident "^1.1.1"
@@ -5284,11 +5284,11 @@ jest-environment-node@^22.1.4:
     jest-mock "^22.1.0"
     jest-util "^22.1.4"
 
-jest-enzyme@4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/jest-enzyme/-/jest-enzyme-4.1.1.tgz#db080b3ff2f93ab7161715d69801d1d5f187ed13"
+jest-enzyme@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/jest-enzyme/-/jest-enzyme-4.2.0.tgz#d284506b6d87e072bf6d2786584970bb42ea5969"
   dependencies:
-    enzyme-matchers "^4.1.1"
+    enzyme-matchers "^4.2.0"
     enzyme-to-json "^3.3.0"
 
 jest-get-type@^22.1.0:
@@ -6944,9 +6944,13 @@ podda@^1.2.2:
     babel-runtime "^6.11.6"
     immutable "^3.8.1"
 
-polished@1.9.1, polished@^1.0.0:
+polished@1.9.1:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/polished/-/polished-1.9.1.tgz#4b06b1dc3e89c5ca5e2740c6c6b4de074b392ca8"
+
+polished@^1.0.0:
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/polished/-/polished-1.9.2.tgz#d705cac66f3a3ed1bd38aad863e2c1e269baf6b6"
 
 portfinder@^1.0.9:
   version "1.0.13"
@@ -7762,8 +7766,8 @@ react-media@^1.6.1:
     prop-types "^15.5.10"
 
 react-modal@^3.1.10:
-  version "3.1.11"
-  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.1.11.tgz#95c8223fcee7013258ad2d149c38c9f870c89958"
+  version "3.1.12"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.1.12.tgz#e80ab4e553ce946a6c96faf85eb31e0f9bd07470"
   dependencies:
     exenv "^1.2.0"
     prop-types "^15.5.10"
