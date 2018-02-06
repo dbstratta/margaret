@@ -257,6 +257,10 @@
   version "2.0.47"
   resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.47.tgz#f49ba1dd1f189486beb6e1d070a850f6ab4bd521"
 
+"@types/graphql@>=0.8.6 <=0.11.7":
+  version "0.11.7"
+  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.11.7.tgz#da39a2f7c74e793e32e2bb7b3b68da1691532dd5"
+
 "@types/inline-style-prefixer@^3.0.0":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@types/inline-style-prefixer/-/inline-style-prefixer-3.0.1.tgz#8541e636b029124b747952e9a28848286d2b5bf6"
@@ -2064,12 +2068,12 @@ caniuse-api@^1.5.2:
     lodash.uniq "^4.5.0"
 
 caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000802"
-  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000802.tgz#f7dca342da1c12cf84ff2c80432e24c7e1cc36d9"
+  version "1.0.30000803"
+  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000803.tgz#3e8d2baf56c2fd5a59c82e227928a0dc2c26702d"
 
 caniuse-lite@^1.0.30000748, caniuse-lite@^1.0.30000791, caniuse-lite@^1.0.30000792:
-  version "1.0.30000792"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000792.tgz#d0cea981f8118f3961471afbb43c9a1e5bbf0332"
+  version "1.0.30000803"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000803.tgz#9939c37149d38d5f4540430490d240c03106a0f5"
 
 capture-stack-trace@^1.0.0:
   version "1.0.0"
@@ -2322,7 +2326,11 @@ commander@2.12.x:
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.12.2.tgz#0f5946c427ed9ec0d91a46bb9def53e54650e555"
 
-commander@^2.11.0, commander@^2.12.2, commander@^2.9.0, commander@~2.13.0:
+commander@^2.11.0, commander@^2.12.2, commander@^2.9.0:
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.14.0.tgz#7b25325963e6aace20d3a9285b09379b0c2208b5"
+
+commander@~2.13.0:
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.13.0.tgz#6964bca67685df7c1f1430c584f07d7597885b9c"
 
@@ -4238,9 +4246,11 @@ graphql-request@^1.4.0:
   dependencies:
     cross-fetch "1.1.1"
 
-graphql-tag@2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.6.1.tgz#4788d509f6e29607d947fc47a40c4e18f736d34a"
+graphql-tag@2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.7.0.tgz#3d4412b87a894f2c7ccd73b515f887dc67736203"
+  dependencies:
+    "@types/graphql" ">=0.8.6 <=0.11.7"
 
 graphql@0.12.3:
   version "0.12.3"
