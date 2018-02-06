@@ -6,8 +6,9 @@ defmodule Margaret.Accounts do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Publications}
+  alias Margaret.{Repo, Accounts, Publications, Stories}
   alias Accounts.{User, SocialLogin}
+  alias Stories.Story
   alias Publications.PublicationMembership
 
   @typedoc """
@@ -435,6 +436,21 @@ defmodule Margaret.Accounts do
         Reason: #{inspect(reason)}
         """
     end
+  end
+
+  @doc """
+  Gets the story count of a user.
+  """
+  def get_story_count(%User{} = author, opts \\ []) do
+    query =
+      if Keyword.get(opts, :public_only, false) do
+        Story.public()
+      else
+        Story
+      end
+      |> Story.by_author(author)
+
+    Repo.aggregate(query, :count, :id)
   end
 
   @doc """

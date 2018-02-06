@@ -88,7 +88,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   def resolve_viewer_has_starred(%Comment{id: comment_id}, _, %{
         context: %{viewer: %{id: viewer_id}}
       }) do
-    {:ok, Stars.has_starred(%{user_id: viewer_id, comment_id: comment_id})}
+    {:ok, Stars.has_starred?(%{user_id: viewer_id, comment_id: comment_id})}
   end
 
   @doc """
@@ -102,7 +102,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   def resolve_viewer_has_bookmarked(%Comment{id: comment_id}, _, %{
         context: %{viewer: %{id: viewer_id}}
       }) do
-    {:ok, Bookmarks.has_bookmarked(%{user_id: viewer_id, comment_id: comment_id})}
+    {:ok, Bookmarks.has_bookmarked?(%{user_id: viewer_id, comment_id: comment_id})}
   end
 
   @doc """

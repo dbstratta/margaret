@@ -10,19 +10,21 @@ defmodule Margaret.Publications.Publication do
 
   alias Margaret.{
     Repo,
-    Accounts,
+    Accounts.User,
     Publications.PublicationMembership,
+    Follows.Follow,
     Tags.Tag,
     Helpers
   }
-
-  alias Accounts.{User, Follow}
 
   @type t :: %Publication{}
 
   schema "publications" do
     field(:name, :string)
     field(:display_name, :string)
+
+    field(:description, :string)
+    field(:website, :string)
 
     many_to_many(:members, User, join_through: PublicationMembership)
 
@@ -45,6 +47,8 @@ defmodule Margaret.Publications.Publication do
     permitted_attrs = ~w(
       name
       display_name
+      description
+      website
     )a
 
     required_attrs = ~w(
@@ -67,6 +71,8 @@ defmodule Margaret.Publications.Publication do
     update_permitted_attrs = ~w(
       name
       display_name
+      description
+      website
     )a
 
     publication

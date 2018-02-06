@@ -7,10 +7,11 @@ defmodule MargaretWeb.Resolvers.Publications do
   alias Absinthe.Relay
 
   alias MargaretWeb.Helpers
-  alias Margaret.{Repo, Accounts, Stories, Publications}
-  alias Accounts.{User, Follow}
+  alias Margaret.{Repo, Accounts, Stories, Publications, Follows}
+  alias Accounts.User
   alias Stories.Story
   alias Publications.{Publication, PublicationMembership, PublicationInvitation}
+  alias Follows.Follow
 
   @doc """
   Resolves a publication.
@@ -72,7 +73,7 @@ defmodule MargaretWeb.Resolvers.Publications do
         select: {u, %{followed_at: f.inserted_at}}
       )
 
-    total_count = Accounts.get_follower_count(%{publication_id: publication_id})
+    total_count = Follows.get_follower_count(%{publication_id: publication_id})
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -137,7 +138,7 @@ defmodule MargaretWeb.Resolvers.Publications do
   def resolve_viewer_has_followed(%Publication{id: publication_id}, _, %{
         context: %{viewer: %{id: viewer_id}}
       }) do
-    {:ok, Accounts.get_follow(%{follower_id: viewer_id, publication_id: publication_id})}
+    {:ok, Follows.get_follow(%{follower_id: viewer_id, publication_id: publication_id})}
   end
 
   @doc """

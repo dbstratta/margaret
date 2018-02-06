@@ -75,8 +75,8 @@ defmodule Margaret.Publications do
 
   """
   @spec get_member_role(Publication.t(), User.t()) :: role | nil
-  def get_member_role(publication, user) do
-    case get_membership(publication, user) do
+  def get_member_role(%Publication{id: publication_id}, %User{id: user_id}) do
+    case get_membership(publication_id: publication_id, member_id: user_id) do
       %PublicationMembership{role: role} -> role
       nil -> nil
     end
@@ -91,29 +91,26 @@ defmodule Margaret.Publications do
     3
 
   """
-  def get_member_count(%Publication{id: publication_id}) do
-    query =
-      from(
-        pm in PublicationMembership,
-        where: pm.publication_id == ^publication_id,
-        select: count(pm.id)
-      )
+  def get_member_count(%Publication{} = publication) do
+    query = PublicationMembership.by_publication(publication)
 
-    Repo.one!(query)
+    Repo.aggregate(query, :count, :id)
   end
 
   @doc """
   Returns the story count of the publication.
   """
-  def get_story_count(%Publication{id: publication_id}) do
-    query =
-      from(
-        s in Story,
-        where: s.publication_id == ^publication_id,
-        select: count(s.id)
-      )
+  def get_story_count(%Publication{} = publication, opts \\ []) do
+    query = Story.under_publication(publication)
 
-    Repo.one!(query)
+    query =
+      if Keyword.get(opts, :published_only, false) do
+        Story.published(query)
+      else
+        query
+      end
+
+    Repo.aggregate(query, :count, :id)
   end
 
   @doc """
@@ -352,16 +349,24 @@ defmodule Margaret.Publications do
   end
 
   @doc """
+  Returns `true` if the user can accept the invitation.
+  `false` otherwise.
   """
-  def can_accept_invitation?(%PublicationInvitation{invitee_id: invitee_id}, %User{id: user_id}) do
-    invitee_id === user_id
-  end
+  @spec can_accept_invitation?(PublicationInvitation.t(), User.t()) :: boolean
+  def can_accept_invitation?(%PublicationInvitation{invitee_id: invitee_id}, %User{id: invitee_id}),
+      do: true
+
+  def can_accept_invitation?(_invitation, _user), do: false
 
   @doc """
+  Returns `true` if the user can reject the invitation.
+  `false` otherwise.
   """
-  def can_reject_invitation?(%PublicationInvitation{invitee_id: invitee_id}, %User{id: user_id}) do
-    invitee_id === user_id
-  end
+  @spec can_reject_invitation?(PublicationInvitation.t(), User.t()) :: boolean
+  def can_reject_invitation?(%PublicationInvitation{invitee_id: invitee_id}, %User{id: invitee_id}),
+      do: true
+
+  def can_reject_invitation?(_invitation, _user), do: false
 
   @doc """
   Inserts a publication.
@@ -442,7 +447,24 @@ defmodule Margaret.Publications do
   end
 
   @doc """
-  Creates a publication membership.
+  Inserts a publication.
+  """
+  @spec insert_publication!(any) :: Publication.t() | no_return
+  def insert_publication!(attrs) do
+    case insert_publication(attrs) do
+      {:ok, %{publication: publication}} ->
+        publication
+
+      {:error, _, reason, _} ->
+        raise """
+        cannot insert publication.
+        Reason: #{inspect(reason)}
+        """
+    end
+  end
+
+  @doc """
+  Inserts a publication membership.
   """
   def insert_membership(attrs) do
     attrs
@@ -453,30 +475,30 @@ defmodule Margaret.Publications do
   @doc """
   Gets a publication membership.
   """
-  def get_membership(id), do: Repo.get(PublicationMembership, id)
+  def get_membership(id) when not is_list(id), do: Repo.get(PublicationMembership, id)
 
-  def get_membership(publication_id, member_id) do
-    Repo.get_by(PublicationMembership, publication_id: publication_id, member_id: member_id)
-  end
+  def get_membership(clauses) when length(clauses) == 2,
+    do: Repo.get_by(PublicationMembership, clauses)
 
   @doc """
   Gets the owner of the publication.
   """
-  def get_owner(%Publication{id: publication_id}) do
+  @spec get_owner(Publication.t()) :: User.t()
+  def get_owner(%Publication{} = publication) do
     query =
-      from(
-        u in User,
-        join: pm in PublicationMembership,
-        on: pm.member_id == u.id,
-        where: pm.publication_id == ^publication_id and pm.role == ^:owner
-      )
+      User
+      |> join(:inner, [u], pm in assoc(u, :publication_memberships))
+      |> PublicationMembership.by_publication(publication)
+      |> PublicationMembership.owner()
 
     Repo.one!(query)
   end
 
-  def delete_membership(%PublicationMembership{} = publication_membership) do
-    Repo.delete(publication_membership)
-  end
+  @doc """
+  Deletes a publication membership.
+  """
+  def delete_membership(%PublicationMembership{} = publication_membership),
+    do: Repo.delete(publication_membership)
 
   @doc """
   Gets a publication invitation.
@@ -507,7 +529,7 @@ defmodule Margaret.Publications do
   Updates a publication invitation.
   """
   @spec update_invitation!(PublicationInvitation.t(), any) ::
-          {:ok, PublicationInvitation.t()} | {:error, Ecto.Changeset.t()} | no_return
+          PublicationInvitation.t() | no_return
   def update_invitation!(%PublicationInvitation{} = invitation, attrs) do
     case update_invitation(invitation, attrs) do
       {:ok, invitation} ->
@@ -560,6 +582,7 @@ defmodule Margaret.Publications do
   @doc """
   Rejects a publcation invitation.
   """
+  @spec reject_invitation(PublicationInvitation.t()) :: PublicationInvitation.t() | no_return
   def reject_invitation!(invitation) do
     case reject_invitation(invitation) do
       {:ok, invitation} ->
@@ -574,6 +597,7 @@ defmodule Margaret.Publications do
   end
 
   @doc """
+  Invites a user to a publication.
   """
   @spec invite_user(Publication.t(), User.t(), User.t(), role) :: {atom, any}
   def invite_user(publication, inviter, invitee, role) do
@@ -592,14 +616,17 @@ defmodule Margaret.Publications do
   Kicks a member out of a publication.
   """
   def kick_member(%Publication{id: publication_id}, %User{id: user_id}) do
-    publication_id
-    |> get_membership(user_id)
+    [publication_id: publication_id, member_id: user_id]
+    |> get_membership()
     |> case do
       %PublicationMembership{} = membership -> delete_membership(membership)
-      _ -> {:error, "User is not a member of the publication"}
+      nil -> {:error, "User is not a member of the publication"}
     end
   end
 
+  @doc """
+  Kicks a member out of a publication.
+  """
   def kick_member!(publication, user) do
     case kick_member(publication, user) do
       {:ok, membership} ->

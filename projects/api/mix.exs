@@ -58,6 +58,8 @@ defmodule Margaret.Mixfile do
       {:quantum, "~> 2.2.1"},
       {:timex, "~> 3.1.24"},
       {:cors_plug, "~> 1.5.0"},
+      {:arc, "~> 0.8.0"},
+      {:arc_ecto, "~> 0.7.0"},
       {:uuid, "~> 1.1.8"},
       {:slugger, "~> 0.2.0"},
       {:distillery, "~> 1.5.2", runtime: false},

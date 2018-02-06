@@ -24,21 +24,22 @@ defmodule Margaret.Accounts.User do
   @type t :: %User{}
 
   @username_regex ~r/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){1,64}$/
-
-  @email_regex ~r/@/
-  @email_min_length 3
-  @email_max_length 254
+  @email_regex ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,32}$/
 
   schema "users" do
     field(:username, :string)
     field(:email, :string)
+
+    field(:bio, :string)
+    field(:website, :string)
+    field(:location, :string)
 
     field(:is_admin, :boolean)
     field(:is_employee, :boolean)
 
     field(:deactivated_at, :naive_datetime)
 
-    # A user can have many social logins associated (Facebook, GitHub, etc.).
+    # A user can have many social accounts associated (Facebook, GitHub, etc.).
     has_many(:social_logins, SocialLogin)
 
     has_many(:stories, Story, foreign_key: :author_id)
@@ -47,6 +48,7 @@ defmodule Margaret.Accounts.User do
     has_many(:stars, Star)
     has_many(:bookmarks, Bookmark)
 
+    has_many(:publication_memberships, PublicationMembership, foreign_key: :member_id)
     many_to_many(:publications, Publication, join_through: PublicationMembership)
 
     many_to_many(
@@ -73,6 +75,9 @@ defmodule Margaret.Accounts.User do
     permitted_attrs = ~w(
       username
       email
+      bio
+      website
+      location
       is_admin
       is_employee
       deactivated_at
@@ -88,7 +93,6 @@ defmodule Margaret.Accounts.User do
     |> validate_required(required_attrs)
     |> validate_format(:username, @username_regex)
     |> validate_format(:email, @email_regex)
-    |> validate_length(:email, min: @email_min_length, max: @email_max_length)
     |> unique_constraint(:username)
     |> unique_constraint(:email)
   end
@@ -100,6 +104,9 @@ defmodule Margaret.Accounts.User do
     permitted_attrs = ~w(
       username
       email
+      bio
+      website
+      location
       is_admin
       is_employee
       deactivated_at
@@ -109,7 +116,6 @@ defmodule Margaret.Accounts.User do
     |> cast(attrs, permitted_attrs)
     |> validate_format(:username, @username_regex)
     |> validate_format(:email, @email_regex)
-    |> validate_length(:email, min: @email_min_length, max: @email_max_length)
     |> unique_constraint(:username)
     |> unique_constraint(:email)
   end
@@ -132,6 +138,34 @@ defmodule Margaret.Accounts.User do
   @spec active(Ecto.Query.t()) :: Ecto.Query.t()
   def active(query \\ User), do: where(query, [..., u], is_nil(u.deactivated_at))
 
+  @doc """
+  Filters out non-admin users from the query.
+
+  ## Examples
+
+      iex> User |> admin()
+      #Ecto.Query<...>
+
+  """
+  def admin(query \\ User), do: where(query, [..., u], u.is_admin)
+
+  @doc """
+  Filters out non-employee users from the query.
+
+  ## Examples
+
+      iex> User |> employee()
+      #Ecto.Query<...>
+
+  """
+  def employee(query \\ User), do: where(query, [..., u], u.is_employee)
+
+  @doc """
+  Preloads the social logins of a user.
+  """
   @spec preload_social_logins(t) :: t
   def preload_social_logins(%User{} = user), do: Repo.preload(user, :social_logins)
+
+  @spec preload_social_logins(Ecto.Query.t()) :: Ecto.Query.t()
+  def preload_social_logins(%Ecto.Query{} = query), do: preload(query, [..., u], :social_logins)
 end

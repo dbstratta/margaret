@@ -3,7 +3,7 @@ defmodule MargaretWeb.Resolvers.Followable do
   The Followable GraphQL resolvers.
   """
 
-  alias Margaret.{Accounts, Publications}
+  alias Margaret.{Accounts, Publications, Follows}
   alias Accounts.User
   alias Publications.Publication
 
@@ -27,7 +27,7 @@ defmodule MargaretWeb.Resolvers.Followable do
   end
 
   defp do_resolve_follow(%User{id: user_id} = followee, viewer_id) do
-    case Accounts.insert_follow(%{follower_id: viewer_id, user_id: user_id}) do
+    case Follows.insert_follow(%{follower_id: viewer_id, user_id: user_id}) do
       {:ok, _} ->
         {:ok, %{followable: followee}}
 
@@ -40,7 +40,7 @@ defmodule MargaretWeb.Resolvers.Followable do
   end
 
   defp do_resolve_follow(%Publication{id: publication_id} = followee, viewer_id) do
-    case Accounts.insert_follow(%{follower_id: viewer_id, publication_id: publication_id}) do
+    case Follows.insert_follow(%{follower_id: viewer_id, publication_id: publication_id}) do
       {:ok, _} ->
         {:ok, %{followable: followee}}
 
@@ -74,12 +74,12 @@ defmodule MargaretWeb.Resolvers.Followable do
   end
 
   defp do_resolve_unfollow(%User{id: user_id} = followable, viewer_id) do
-    Accounts.delete_follow(%{follower_id: viewer_id, user_id: user_id})
+    Follows.delete_follow(%{follower_id: viewer_id, user_id: user_id})
     {:ok, %{followable: followable}}
   end
 
   defp do_resolve_unfollow(%Publication{id: publication_id} = followable, viewer_id) do
-    Accounts.delete_follow(%{follower_id: viewer_id, publication_id: publication_id})
+    Follows.delete_follow(%{follower_id: viewer_id, publication_id: publication_id})
     {:ok, %{followable: followable}}
   end
 

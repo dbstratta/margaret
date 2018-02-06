@@ -49,30 +49,23 @@ defmodule MargaretWeb.Resolvers.Accounts do
   The author can see their unlisted stories and drafts,
   other users only can see their public stories.
   """
-  def resolve_stories(%User{id: author_id}, args, %{context: %{viewer: %{id: author_id}}}) do
-    query = from(s in Story, where: s.author_id == ^author_id)
+  def resolve_stories(%User{id: author_id} = user, args, %{context: %{viewer: %{id: author_id}}}) do
+    query = Story.by_author(user)
 
-    count_query = from(s in subquery(query), select: count(s.id))
-
-    total_count = Repo.one!(count_query)
+    total_count = Accounts.get_story_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
     |> Helpers.transform_connection(total_count: total_count)
   end
 
-  def resolve_stories(%User{id: author_id}, args, _) do
+  def resolve_stories(user, args, _) do
     query =
-      from(
-        s in Story,
-        where: s.author_id == ^author_id,
-        where: s.audience == ^:all,
-        where: s.published_at >= ^NaiveDateTime.utc_now()
-      )
+      user
+      |> Story.by_author()
+      |> Story.public()
 
-    count_query = from(s in subquery(query), select: count(s.id))
-
-    total_count = Repo.one!(count_query)
+    total_count = Accounts.get_story_count(user, public_only: true)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)

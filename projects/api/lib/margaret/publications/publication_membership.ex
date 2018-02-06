@@ -4,7 +4,7 @@ defmodule Margaret.Publications.PublicationMembership do
   """
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
   import EctoEnum, only: [defenum: 3]
 
   alias __MODULE__
@@ -68,6 +68,19 @@ defmodule Margaret.Publications.PublicationMembership do
     publication_membership
     |> cast(attrs, permitted_attrs)
   end
+
+  @doc """
+  Filters the publication memberships by publication.
+  """
+  @spec by_publication(Ecto.Query.t(), Publication.t()) :: Ecto.Query.t()
+  def by_publication(query \\ PublicationMembership, %Publication{id: publication_id}),
+    do: where(query, [..., pm], pm.publication_id == ^publication_id)
+
+  @doc """
+  Filters the publication memberships by owner.
+  """
+  @spec owner(Ecto.Query.t()) :: Ecto.Query.t()
+  def owner(query \\ PublicationMembership), do: where(query, [..., pm], pm.role == ^:role)
 
   @doc """
   Preloads the member of a publication_membership.

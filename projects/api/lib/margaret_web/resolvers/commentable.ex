@@ -30,7 +30,7 @@ defmodule MargaretWeb.Resolvers.Commentable do
   end
 
   defp do_resolve_comment(attrs) do
-    case Comments.create_comment(attrs) do
+    case Comments.insert_comment(attrs) do
       {:ok, comment} -> {:ok, %{comment: comment}}
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end

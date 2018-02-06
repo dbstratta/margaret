@@ -9,7 +9,7 @@ defmodule Margaret.Stories.StoryView do
   """
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
   alias __MODULE__
 
@@ -46,4 +46,11 @@ defmodule Margaret.Stories.StoryView do
     |> assoc_constraint(:story)
     |> assoc_constraint(:viewer)
   end
+
+  @doc """
+  Filters the views by story.
+  """
+  @spec by_story(Ecto.Query.t(), Story.t()) :: Ecto.Query.t()
+  def by_story(query \\ StoryView, %Story{id: story_id}),
+    do: where(query, [..., v], v.story_id == ^story_id)
 end

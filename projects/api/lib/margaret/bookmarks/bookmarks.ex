@@ -13,17 +13,26 @@ defmodule Margaret.Bookmarks do
 
   @doc """
   Gets a bookmark.
-  """
-  def get_bookmark(%{user_id: user_id, story_id: story_id}) do
-    Repo.get_by(Bookmark, user_id: user_id, story_id: story_id)
-  end
 
-  def get_bookmark(%{user_id: user_id, comment_id: comment_id}) do
-    Repo.get_by(Bookmark, user_id: user_id, comment_id: comment_id)
-  end
+  ## Examples
+
+      iex> get_bookmark(user_id: 123, story_id: 123)
+      %Bookmark{}
+
+      iex> get_bookmark(user_id: 123, comment_id: 456)
+      nil
+
+  """
+  def get_bookmark(clauses) when length(clauses) == 2, do: Repo.get_by(Bookmark, clauses)
 
   @doc """
   Gets the user of a bookmark.
+
+  ## Examples
+
+      iex> get_user(%Bookmark{})
+      %User{}
+
   """
   @spec get_user(Bookmark.t()) :: User.t()
   def get_user(%Bookmark{} = bookmark) do
@@ -32,7 +41,16 @@ defmodule Margaret.Bookmarks do
     |> Map.get(:user)
   end
 
-  def has_bookmarked?(args), do: !!get_bookmark(args)
+  @doc """
+
+  ## Examples
+
+      iex> has_bookmarked?(user_id: 123, comment_id: 123)
+      true
+
+  """
+  @spec has_bookmarked?(Keyword.t()) :: boolean
+  def has_bookmarked?(clauses), do: !!get_bookmark(clauses)
 
   @doc """
   Inserts a bookmark.
@@ -43,13 +61,11 @@ defmodule Margaret.Bookmarks do
     |> Repo.insert()
   end
 
-  def delete_bookmark(id) when is_integer(id) or is_binary(id), do: Repo.delete(%Bookmark{id: id})
-
-  def delete_bookmark(args) do
-    case get_bookmark(args) do
-      %Bookmark{id: id} -> delete_bookmark(id)
-      nil -> nil
-    end
+  @doc """
+  Deletes a bookmark.
+  """
+  def delete_bookmark(%Bookmark{} = bookmark) do
+    Repo.delete(bookmark)
   end
 
   @doc """

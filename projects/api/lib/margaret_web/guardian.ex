@@ -36,11 +36,11 @@ defmodule MargaretWeb.Guardian do
 
   """
   def resource_from_claims(%{"sub" => user_id}) do
-    try do
-      {:ok, Accounts.get_user!(user_id)}
-    rescue
-      _ -> {:error, :invalid_credentials}
-    end
+    resource = Accounts.get_user!(user_id)
+
+    {:ok, resource}
+  rescue
+    _ -> {:error, :invalid_credentials}
   end
 
   def resource_from_claims(_), do: {:error, :invalid_claims}

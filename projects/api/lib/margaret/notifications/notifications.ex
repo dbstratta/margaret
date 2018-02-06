@@ -39,9 +39,8 @@ defmodule Margaret.Notifications do
   @doc """
   Returns a user notification.
   """
-  def get_user_notification(%{user_id: user_id, notification_id: notification_id}) do
-    Repo.get_by(UserNotification, user_id: user_id, notification_id: notification_id)
-  end
+  def get_user_notification(clauses) when length(clauses) == 2,
+    do: Repo.get_by(UserNotification, clauses)
 
   @doc """
   Inserts a notification.

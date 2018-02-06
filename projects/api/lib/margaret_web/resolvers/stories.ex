@@ -102,7 +102,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves the stargazers of the story.
   """
-  def resolve_stargazers(%Story{id: story_id}, args, _) do
+  def resolve_stargazers(%Story{id: story_id} = story, args, _) do
     query =
       from(
         u in User,
@@ -113,7 +113,7 @@ defmodule MargaretWeb.Resolvers.Stories do
         select: {u, %{starred_at: s.inserted_at}}
       )
 
-    total_count = Stars.get_story_star_count(story_id)
+    total_count = Stories.get_star_count(story)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)

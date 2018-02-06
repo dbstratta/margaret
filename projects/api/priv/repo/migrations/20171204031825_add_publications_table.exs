@@ -9,6 +9,9 @@ defmodule Margaret.Repo.Migrations.AddPublicationsTable do
       add(:name, :string, size: 64, null: false)
       add(:display_name, :string, null: false)
 
+      add(:description, :string)
+      add(:website, :string)
+
       timestamps()
     end
 

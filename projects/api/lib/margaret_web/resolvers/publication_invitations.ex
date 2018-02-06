@@ -64,7 +64,7 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
         context: %{viewer: %{id: viewer_id}}
       }) do
     invitation_id
-    |> Publications.get_publication_invitation()
+    |> Publications.get_invitation()
     |> do_resolve_accept_publication_invitation(viewer_id)
   end
 
@@ -73,7 +73,7 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
          viewer_id
        )
        when invitee_id === viewer_id do
-    case Publications.accept_publication_invitation(invitation) do
+    case Publications.accept_invitation(invitation) do
       {:ok, %{invitation: invitation}} -> {:ok, %{invitation: invitation}}
       {:error, _, _, _} -> Helpers.GraphQLErrors.something_went_wrong()
     end

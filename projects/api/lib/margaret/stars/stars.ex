@@ -6,24 +6,20 @@ defmodule Margaret.Stars do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stars, Notifications, Workers}
+  alias Margaret.{Repo, Accounts, Stars, Workers}
   alias Accounts.User
   alias Stars.Star
 
   @doc """
   Gets a star.
   """
-  def get_star(%{user_id: user_id, story_id: story_id}) do
-    Repo.get_by(Star, user_id: user_id, story_id: story_id)
-  end
-
-  def get_star(%{user_id: user_id, comment_id: comment_id}) do
-    Repo.get_by(Star, user_id: user_id, comment_id: comment_id)
-  end
+  @spec get_star(Keyword.t()) :: Star.t() | nil
+  def get_star(clauses) when length(clauses) == 2, do: Repo.get_by(Star, clauses)
 
   @doc """
   """
-  def has_starred?(args), do: !!get_star(args)
+  @spec has_starred?(Keyword.t()) :: boolean
+  def has_starred?(clauses), do: !!get_star(clauses)
 
   @doc """
   Inserts a star.
@@ -46,53 +42,57 @@ defmodule Margaret.Stars do
     |> Repo.transaction()
   end
 
-  def delete_star(id) when not is_map(id), do: Repo.delete(%Star{id: id})
+  @doc """
+  Deletes a star.
+  """
+  def delete_star(%Star{} = star), do: Repo.delete(star)
 
-  def delete_star(args) do
-    case get_star(args) do
-      %Star{id: id} -> delete_star(id)
-      nil -> nil
-    end
+  @doc """
+  Gets the star count of a starrable.
+
+  ## Examples
+
+      iex> get_star_count(story: %Story{})
+      42
+
+      iex> get_star_count(comment: %Comment{})
+      0
+
+  """
+  def get_star_count(clauses) do
+    query =
+      cond do
+        Keyword.has_key?(clauses, :story) ->
+          clauses
+          |> Keyword.get(:story)
+          |> Star.by_story()
+
+        Keyword.has_key?(clauses, :comment) ->
+          clauses
+          |> Keyword.get(:comment)
+          |> Star.by_comment()
+      end
+      |> join(:inner, [star], u in assoc(star, :user))
+      |> User.active()
+
+    Repo.aggregate(query, :count, :id)
   end
 
-  def get_star_count(%{story_id: story_id}) do
-    query =
-      from(
-        s in Star,
-        join: u in assoc(s, :user),
-        where: s.story_id == ^story_id,
-        where: is_nil(u.deactivated_at),
-        select: count(s.id)
-      )
+  @doc """
+  Gets the starred count of a user.
 
-    Repo.one!(query)
-  end
+  ## Examples
 
-  def get_star_count(%{comment_id: comment_id}) do
-    query =
-      from(
-        s in Star,
-        join: u in assoc(s, :user),
-        where: s.comment_id == ^comment_id,
-        where: is_nil(u.deactivated_at),
-        select: count(s.id)
-      )
+      iex> get_starred_count(%User{})
+      42
 
-    Repo.one!(query)
-  end
+      iex> get_starred_count(%User{})
+      0
 
-  def get_story_star_count(story_id), do: get_star_count(%{story_id: story_id})
+  """
+  def get_starred_count(%User{} = user) do
+    query = Star.by_user(user)
 
-  def get_comment_star_count(comment_id), do: get_star_count(%{comment_id: comment_id})
-
-  def get_starred_count(user_id) do
-    query =
-      from(
-        s in Star,
-        where: s.user_id == ^user_id,
-        select: count(s.id)
-      )
-
-    Repo.one!(query)
+    Repo.aggregate(query, :count, :id)
   end
 end

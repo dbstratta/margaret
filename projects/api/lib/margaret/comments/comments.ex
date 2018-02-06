@@ -8,6 +8,7 @@ defmodule Margaret.Comments do
 
   alias Margaret.{Accounts, Stories, Comments}
   alias Accounts.User
+  alias Stories.Story
   alias Comments.Comment
 
   @doc """
@@ -64,16 +65,16 @@ defmodule Margaret.Comments do
       815
 
   """
-  def get_comment_count(%{story_id: story_id}) do
-    query = from(c in Comment, where: c.story_id == ^story_id)
-
-    do_get_comment_count(query)
+  def get_comment_count(story: %Story{} = story) do
+    story
+    |> Comment.by_story()
+    |> do_get_comment_count()
   end
 
-  def get_comment_count(%{comment_id: comment_id}) do
-    query = from(c in Comment, where: c.parent_id == ^comment_id)
-
-    do_get_comment_count(query)
+  def get_comment_count(parent: %Comment{} = parent) do
+    parent
+    |> Comment.by_parent()
+    |> do_get_comment_count()
   end
 
   defp do_get_comment_count(query) do
@@ -88,10 +89,13 @@ defmodule Margaret.Comments do
     Repo.one!(query)
   end
 
-  def get_story_comment_count(story_id), do: get_comment_count(%{story_id: story_id})
+  def get_story_comment_count(story), do: get_comment_count(story: story)
 
-  def get_comment_comment_count(comment_id), do: get_comment_count(%{comment_id: comment_id})
+  def get_comment_comment_count(comment), do: get_comment_count(parent: comment)
 
+  @doc """
+  """
+  @spec can_see_comment?(Comment.t(), User.t()) :: boolean
   def can_see_comment?(%Comment{} = comment, %User{} = user) do
     comment
     |> get_story()

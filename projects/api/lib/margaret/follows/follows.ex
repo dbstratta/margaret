@@ -30,22 +30,10 @@ defmodule Margaret.Follows do
 
   """
   @spec get_follow(String.t() | non_neg_integer) :: Follow.t() | nil
-  def get_follow(id), do: Repo.get(Follow, id)
+  def get_follow(id) when not is_list(id), do: Repo.get(Follow, id)
 
-  @spec get_follow(String.t() | non_neg_integer, Keyword.t()) :: Follow.t() | nil
-  def get_follow(follower_id, opts) do
-    clauses =
-      cond do
-        Keyword.has_key?(opts, :publication_id) ->
-          [publication_id: Keyword.get(opts, :publication_id)]
-
-        Keyword.has_key?(opts, :user_id) ->
-          [user_id: Keyword.get(opts, :user_id)]
-      end
-      |> Keyword.put(:follower_id, follower_id)
-
-    Repo.get_by(Follow, clauses)
-  end
+  @spec get_follow(Keyword.t()) :: Follow.t() | nil
+  def get_follow(clauses) when length(clauses) == 2, do: Repo.get_by(Follow, clauses)
 
   @doc """
   Gets the followee count of a user.
@@ -128,11 +116,4 @@ defmodule Margaret.Follows do
 
   """
   def delete_follow(%Follow{} = follow), do: Repo.delete(follow)
-
-  def delete_follow(args) do
-    case get_follow(args) do
-      %Follow{} = follow -> delete_follow(follow)
-      nil -> nil
-    end
-  end
 end

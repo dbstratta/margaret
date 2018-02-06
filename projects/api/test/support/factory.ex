@@ -6,13 +6,25 @@ defmodule Margaret.Factory do
   insert changesets instead of structs directly.
   """
 
-  alias Margaret.{Repo, Accounts, Stories, Comments, Publications, Stars, Bookmarks, Tags}
-  alias Accounts.{User, SocialLogin, Follow}
+  alias Margaret.{
+    Repo,
+    Accounts,
+    Stories,
+    Comments,
+    Publications,
+    Stars,
+    Bookmarks,
+    Follows,
+    Tags
+  }
+
+  alias Accounts.{User, SocialLogin}
   alias Stories.Story
   alias Comments.Comment
   alias Publications.{Publication, PublicationInvitation, PublicationMembership}
   alias Stars.Star
   alias Bookmarks.Bookmark
+  alias Follows.Follow
   alias Tags.Tag
 
   @names [

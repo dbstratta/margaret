@@ -35,7 +35,7 @@ defmodule MargaretWeb.Resolvers.Nodes do
   def resolve_node(%{type: :publication, id: id}, _), do: {:ok, Publications.get_publication(id)}
 
   def resolve_node(%{type: :publication_invitation, id: id}, _) do
-    {:ok, Publications.get_publication_invitation(id)}
+    {:ok, Publications.get_invitation(id)}
   end
 
   def resolve_node(%{type: :comment, id: comment_id}, %{context: %{viewer: viewer}}) do

@@ -3,12 +3,11 @@ defmodule Margaret.Stories do
   The Stories context.
   """
 
-  import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stories, Publications, Tags}
+  alias Margaret.{Repo, Accounts, Stories, Stars, Publications, Tags}
   alias Accounts.User
-  alias Stories.Story
+  alias Stories.{Story, StoryView}
 
   @doc """
   Gets a single story by its id.
@@ -220,15 +219,25 @@ defmodule Margaret.Stories do
   """
   @spec get_story_count :: non_neg_integer
   def get_story_count do
-    query =
-      from(
-        s in Story,
-        join: u in assoc(s, :author),
-        where: is_nil(u.deactivated_at),
-        select: count(s.id)
-      )
+    query = Story
 
-    Repo.one!(query)
+    Repo.aggregate(query, :count, :id)
+  end
+
+  @doc """
+  Gets the star count of a story.
+  """
+  @spec get_star_count(Story.t()) :: non_neg_integer
+  def get_star_count(%Story{} = story), do: Stars.get_star_count(story: story)
+
+  @doc """
+  Gets the view count of a story.
+  """
+  @spec get_view_count(Story.t()) :: non_neg_integer
+  def get_view_count(%Story{} = story) do
+    query = StoryView.by_story(story)
+
+    Repo.aggregate(query, :count, :id)
   end
 
   @doc """
@@ -257,9 +266,6 @@ defmodule Margaret.Stories do
       iex> public?(%Story{})
       false
 
-      iex> public?(nil)
-      false
-
   """
   @spec public?(Story.t()) :: boolean
   def public?(%Story{audience: :all} = story), do: has_been_published?(story)
@@ -271,14 +277,8 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> story_public?(%Story{})
+      iex> can_see_story?(%Story{}, %User{})
       true
-
-      iex> story_public?(123)
-      false
-
-      iex> story_public?(nil)
-      false
 
   """
   @spec can_see_story?(Story.t(), User.t()) :: boolean
@@ -386,7 +386,7 @@ defmodule Margaret.Stories do
   @doc """
   Removes a story from its publication.
   """
-  @spec remove_from_publication(Story.t()) :: Story.t()
+  @spec remove_from_publication(Story.t()) :: {:ok, Story.t()} | any
   def remove_from_publication(%Story{} = story) do
     attrs = %{publication_id: nil}
 
