@@ -28,16 +28,20 @@ defmodule Margaret.DataCase do
         Stories,
         Comments,
         Publications,
+        Notifications,
+        Follows,
         Stars,
         Bookmarks,
         Tags,
         Factory
       }
 
-      alias Accounts.{User, SocialLogin, Follow}
+      alias Accounts.{User, SocialLogin}
       alias Stories.Story
       alias Comments.Comment
       alias Publications.{Publication, PublicationInvitation, PublicationMembership}
+      alias Notifications.{Notification, UserNotification}
+      alias Follows.Follow
       alias Stars.Star
       alias Bookmarks.Bookmark
       alias Tags.Tag

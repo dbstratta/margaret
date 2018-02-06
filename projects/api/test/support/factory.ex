@@ -1,17 +1,16 @@
 defmodule Margaret.Factory do
   @moduledoc """
-  Factory functions to build and insert structs.
-
-  TODO: In the future, it would be pretty nice to
-  insert changesets instead of structs directly.
+  Factory functions to use in tests.
   """
 
+  use ExMachina.Ecto, repo: Margaret.Repo
+
   alias Margaret.{
-    Repo,
     Accounts,
     Stories,
     Comments,
     Publications,
+    Notifications,
     Stars,
     Bookmarks,
     Follows,
@@ -19,122 +18,131 @@ defmodule Margaret.Factory do
   }
 
   alias Accounts.{User, SocialLogin}
-  alias Stories.Story
+  alias Stories.{Story, StoryView}
   alias Comments.Comment
   alias Publications.{Publication, PublicationInvitation, PublicationMembership}
+  alias Notifications.{Notification, UserNotification}
   alias Stars.Star
   alias Bookmarks.Bookmark
   alias Follows.Follow
   alias Tags.Tag
 
-  @names [
-    :user,
-    :social_login,
-    :follow,
-    :story,
-    :comment,
-    :publication,
-    :publication_invitation,
-    :publication_membership,
-    :star,
-    :bookmark,
-    :tag
-  ]
-
-  @content %{"blocks" => [%{"text" => "Title"}]}
-
-  # Generates the `build_*` functions.
-  Enum.each(@names, fn name ->
-    def unquote(:"build_#{name}")(fields \\ []) do
-      build(unquote(name), fields)
-    end
-  end)
-
-  # Generates the `insert_*!` functions.
-  Enum.each(@names, fn name ->
-    def unquote(:"insert_#{name}!")(fields \\ []) do
-      Repo.insert!(build(unquote(name), fields))
-    end
-  end)
-
-  # Factories
-
-  @doc """
-  Builds a struct for the given entity.
-
-  ## Examples
-
-    iex> build(:user)
-    %User{}
-
-  """
-  @spec build(atom) :: any
-  def build(:user) do
+  def user_factory do
     %User{
-      username: "user#{System.unique_integer()}",
-      email: "user#{System.unique_integer()}@example.com"
+      username: sequence(:username, &"user-#{&1}"),
+      email: sequence(:email, &"user-#{&1}@margaret.test"),
+      bio: "Test user.",
+      website: "https://margaret.test"
     }
   end
 
-  def build(:social_login) do
+  def social_login_factory do
     %SocialLogin{
-      uid: "uid_#{System.unique_integer()}",
-      provider: "github"
+      uid: sequence(:uid, &"uid-#{&1}"),
+      provider: "github",
+      user: build(:user)
     }
   end
 
-  def build(:follow) do
-    %Follow{}
-  end
-
-  def build(:story) do
+  def story_factory do
     %Story{
-      content: @content,
+      content: %{"blocks" => [%{"text" => "test"}]},
+      author: build(:user),
+      unique_hash: sequence(:unique_hash, &"unique_hash-#{&1}"),
       audience: :all,
-      license: :all_rights_reserved
+      license: :all_rights_reserved,
+      comments: build_list(3, :comment),
+      stars: build_list(1, :star),
+      views: build_list(3, :story_view),
+      tags: build_pair(:tag)
     }
   end
 
-  def build(:comment) do
+  def story_view_factory do
+    %StoryView{
+      story: build(:story),
+      viewer: build(:user)
+    }
+  end
+
+  def comment_factory do
     %Comment{
-      content: @content
+      content: %{"blocks" => [%{"text" => "test"}]},
+      author: build(:user),
+      stars: build_list(1, :star),
+      story: build(:story)
     }
   end
 
-  def build(:publication) do
+  def publication_factory do
     %Publication{
-      display_name: "Publication #{System.unique_integer()}",
-      name: "publication#{System.unique_integer()}"
+      name: sequence(:name, &"publication-#{&1}"),
+      display_name: sequence(:display_name, &"Publication #{&1}"),
+      description: "Test publication.",
+      website: "https://margaret.test",
+      publication_memberships: [build(:publication_membership, %{role: :owner})],
+      followers: build_list(3, :user),
+      tags: build_list(1, :tag)
     }
   end
 
-  def build(:publication_invitation) do
-    %PublicationInvitation{}
+  def publication_invitation_factory do
+    %PublicationInvitation{
+      invitee: build(:user),
+      inviter: build(:user),
+      publication: build(:publication),
+      role: :writer,
+      status: :pending
+    }
   end
 
-  def build(:publication_membership) do
+  def publication_membership_factory do
     %PublicationMembership{
-      role: :writer
+      role: :writer,
+      member: build(:user),
+      publication: build(:publication)
     }
   end
 
-  def build(:star) do
-    %Star{}
+  def notification_factory do
+    %Notification{
+      actor: build(:user),
+      action: :followed,
+      user: build(:user)
+    }
   end
 
-  def build(:bookmark) do
-    %Bookmark{}
+  def user_notification_factory do
+    %UserNotification{
+      user: build(:user),
+      notification: build(:notification)
+    }
   end
 
-  def build(:tag) do
+  def star_factory do
+    %Star{
+      user: build(:user),
+      story: build(:story)
+    }
+  end
+
+  def bookmark_factory do
+    %Bookmark{
+      user: build(:user),
+      story: build(:story)
+    }
+  end
+
+  def follow_factory do
+    %Follow{
+      follower: build(:user),
+      user: build(:user)
+    }
+  end
+
+  def tag_factory do
     %Tag{
-      title: "tag#{System.unique_integer([:positive])}"
+      title: sequence(:title, &"tag-#{&1}")
     }
-  end
-
-  def build(name, fields \\ []) do
-    name
-    |> build()
-    |> struct(fields)
   end
 end

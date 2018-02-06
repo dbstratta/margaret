@@ -8,6 +8,7 @@ alias Margaret.{
   Stories,
   Comments,
   Publications,
+  Follows,
   Stars,
   Bookmarks,
   Tags,
@@ -15,10 +16,11 @@ alias Margaret.{
   Factory
 }
 
-alias Accounts.{User, SocialLogin, Follow}
+alias Accounts.{User, SocialLogin}
 alias Stories.{Story, StoryView}
 alias Comments.Comment
 alias Publications.{Publication, PublicationInvitation, PublicationMembership}
+alias Follows.Follow
 alias Stars.Star
 alias Bookmarks.Bookmark
 alias Tags.Tag

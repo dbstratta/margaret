@@ -26,6 +26,7 @@ defmodule Margaret.Publications.Publication do
     field(:description, :string)
     field(:website, :string)
 
+    has_many(:publication_memberships, PublicationMembership)
     many_to_many(:members, User, join_through: PublicationMembership)
 
     many_to_many(

@@ -8,7 +8,7 @@ defmodule Margaret.SocialLoginsTest do
 
   describe "changeset/1" do
     test "with valid attributes" do
-      %User{id: user_id} = Factory.insert_user!()
+      %User{id: user_id} = Factory.insert(:user)
 
       attrs = Map.put(@valid_attrs, :user_id, user_id)
       %Changeset{valid?: changeset_valid?} = SocialLogin.changeset(attrs)
@@ -26,8 +26,8 @@ defmodule Margaret.SocialLoginsTest do
     end
 
     test "when data is not unique" do
-      %User{id: user_id} = Factory.insert_user!()
-      %SocialLogin{provider: provider, uid: uid} = Factory.insert_social_login!(user_id: user_id)
+      %User{id: user_id} = user = Factory.insert(:user)
+      %SocialLogin{provider: provider, uid: uid} = Factory.insert_social_login!(user: user)
 
       attrs = Map.put(%{@valid_attrs | provider: provider, uid: uid}, :user_id, user_id)
       %Changeset{valid?: changeset_valid?} = User.changeset(attrs)

@@ -3,8 +3,7 @@ defmodule Margaret.FollowsTest do
 
   describe "changeset/1" do
     test "when following a user with valid attributes" do
-      %User{id: follower_id} = Factory.insert_user!()
-      %User{id: user_id} = Factory.insert_user!()
+      [%User{id: follower_id}, %User{id: user_id}] = Factory.insert_pair(:user)
 
       attrs = %{follower_id: follower_id, user_id: user_id}
       %Changeset{valid?: changeset_valid?} = Follow.changeset(attrs)
@@ -13,8 +12,8 @@ defmodule Margaret.FollowsTest do
     end
 
     test "when following a publication with valid attributes" do
-      %User{id: follower_id} = Factory.insert_user!()
-      %Publication{id: publication_id} = Factory.insert_publication!()
+      %User{id: follower_id} = Factory.insert(:user)
+      %Publication{id: publication_id} = Factory.insert(:publication)
 
       attrs = %{follower_id: follower_id, publication_id: publication_id}
       %Changeset{valid?: changeset_valid?} = Follow.changeset(attrs)

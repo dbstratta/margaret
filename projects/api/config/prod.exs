@@ -15,8 +15,10 @@ use Mix.Config
 # which you typically run after static files are built.
 config :margaret, MargaretWeb.Endpoint,
   load_from_system_env: true,
-  url: [host: "example.com", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  secret_key_base: "${SECRET_KEY_BASE}",
+  http: [port: "${PORT}"],
+  url: [host: "${HOST}", port: "${PORT}"],
+  server: true
 
 # Do not print debug messages in production
 config :logger, level: :info
@@ -59,14 +61,18 @@ config :logger, level: :info
 #     config :margaret, MargaretWeb.Endpoint, server: true
 #
 
+# Configures the database
+config :margaret, Margaret.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
+  database: "margaret_prod",
+  pool_size: 15
+
 # Configures Sentry
 config :sentry,
-  dsn: System.get_env("API__SENRTY_DSN"),
+  dsn: "{API__SENRTY_DSN}",
   environment_name: :prod,
   enable_source_code_context: true,
   root_source_code_path: File.cwd!(),
   tags: %{env: "production"}
-
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-import_config "prod.secret.exs"
