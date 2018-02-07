@@ -6,7 +6,7 @@ defmodule Margaret.Publications do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stories, Publications, Tags}
+  alias Margaret.{Repo, Accounts, Stories, Publications, Follows, Tags}
   alias Stories.Story
   alias Publications.{Publication, PublicationMembership, PublicationInvitation}
   alias Accounts.User
@@ -91,6 +91,7 @@ defmodule Margaret.Publications do
     3
 
   """
+  @spec get_member_count(Publication.t()) :: non_neg_integer
   def get_member_count(%Publication{} = publication) do
     query = PublicationMembership.by_publication(publication)
 
@@ -100,6 +101,7 @@ defmodule Margaret.Publications do
   @doc """
   Returns the story count of the publication.
   """
+  @spec get_story_count(Publication.t(), Keyword.t()) :: non_neg_integer
   def get_story_count(%Publication{} = publication, opts \\ []) do
     query = Story.under_publication(publication)
 
@@ -112,6 +114,13 @@ defmodule Margaret.Publications do
 
     Repo.aggregate(query, :count, :id)
   end
+
+  @doc """
+  Gets the follower count of a publication.
+  """
+  @spec get_follower_count(Publication.t()) :: non_neg_integer
+  def get_follower_count(%Publication{} = publication),
+    do: Follows.get_follower_count(publication: publication)
 
   @doc """
   Checks that the user's role in the publication

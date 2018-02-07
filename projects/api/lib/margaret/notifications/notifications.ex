@@ -11,9 +11,18 @@ defmodule Margaret.Notifications do
   alias Accounts.User
   alias Stories.Story
 
-  @type notification_object :: any
+  @type notification_object :: Story.t() | Comment.t() | Publication.t() | User.t()
 
   @doc """
+  Gets a notification.
+
+  ## Examples
+
+      iex> get_notification(123)
+      %Notification{}
+
+      iex> get_notification(456)
+      nil
 
   """
   @spec get_notification(String.t() | non_neg_integer) :: Notification.t() | nil
@@ -21,6 +30,15 @@ defmodule Margaret.Notifications do
 
   @doc """
   Gets the actor of a notification.
+
+  ## Examples
+
+      iex> get_actor(%Notification{})
+      %User{}
+
+      iex> get_actor(%Notification{})
+      nil
+
   """
   @spec get_actor(Notification.t()) :: User.t() | nil
   def get_actor(%Notification{} = notification) do
@@ -31,20 +49,63 @@ defmodule Margaret.Notifications do
 
   @doc """
   Gets the object of a notification.
-  TODO: Implement this.
+
+  ## Examples
+
+      iex> get_object(%Notification{})
+      %Story{}
+
+      iex> get_object(%Notification{})
+      %Publication{}
+
   """
   @spec get_object(Notification.t()) :: notification_object
-  def get_object(%Notification{}), do: nil
+  def get_object(%Notification{story_id: story_id} = notification) when not is_nil(story_id) do
+    notification
+    |> Notification.preload_story()
+    |> Map.get(:story)
+  end
+
+  def get_object(%Notification{comment_id: comment_id} = notification)
+      when not is_nil(comment_id) do
+    notification
+    |> Notification.preload_comment()
+    |> Map.get(:comment)
+  end
+
+  def get_object(%Notification{publication_id: publication_id} = notification)
+      when not is_nil(publication_id) do
+    notification
+    |> Notification.preload_publication()
+    |> Map.get(:publication)
+  end
+
+  def get_object(%Notification{user_id: user_id} = notification) when not is_nil(user_id) do
+    notification
+    |> Notification.preload_user()
+    |> Map.get(:user)
+  end
 
   @doc """
   Returns a user notification.
+
+  ## Examples
+
+      iex> get_user_notification([user_id: 123, notification_id: 123])
+      %UserNotification{}
+
+      iex> get_user_notification([user_id: 123, notification_id: 456])
+      nil
+
   """
+  @spec get_user_notification(Keyword.t()) :: UserNotification.t()
   def get_user_notification(clauses) when length(clauses) == 2,
     do: Repo.get_by(UserNotification, clauses)
 
   @doc """
   Inserts a notification.
   """
+  @spec insert_notification(any) :: {:ok, any} | {:error, any, any, any}
   def insert_notification(attrs) do
     Multi.new()
     |> notify_users(attrs)
@@ -150,16 +211,12 @@ defmodule Margaret.Notifications do
   Gets the notificatino count of a user.
   """
   @spec get_notification_count(User.t()) :: non_neg_integer
-  def get_notification_count(%User{id: user_id}) do
+  def get_notification_count(%User{} = user) do
     query =
-      from(
-        n in Notification,
-        join: un in UserNotification,
-        on: un.notification_id == n.id,
-        where: un.user_id == ^user_id,
-        select: count(n.id)
-      )
+      Notification
+      |> join(:inner, [n], un in assoc(n, :user_notifications))
+      |> UserNotification.by_user(user)
 
-    Repo.one!(query)
+    Repo.aggregate(query, :count, :id)
   end
 end

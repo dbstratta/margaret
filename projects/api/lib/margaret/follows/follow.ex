@@ -4,7 +4,7 @@ defmodule Margaret.Follows.Follow do
   """
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
   alias __MODULE__
 
@@ -51,6 +51,27 @@ defmodule Margaret.Follows.Follow do
     |> check_constraint(:follower, name: :only_one_not_null_followable)
     |> check_constraint(:follower, name: :cannot_follow_follower)
   end
+
+  @doc """
+  Filters the follows by follower.
+  """
+  @spec by_follower(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  def by_follower(query \\ Follow, %User{id: follower_id}),
+    do: where(query, [..., f], f.follower_id == ^follower_id)
+
+  @doc """
+  Filters the follows by followed user.
+  """
+  @spec by_user(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  def by_user(query \\ Follow, %User{id: user_id}),
+    do: where(query, [..., f], f.user_id == ^user_id)
+
+  @doc """
+  Filters the follows by followed publication.
+  """
+  @spec by_publication(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  def by_publication(query \\ Follow, %Publication{id: publication_id}),
+    do: where(query, [..., f], f.publication_id == ^publication_id)
 
   @doc """
   Preloads the follower of a follow.

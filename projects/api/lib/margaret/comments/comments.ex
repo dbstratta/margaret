@@ -58,42 +58,37 @@ defmodule Margaret.Comments do
 
   ## Examples
 
-      iex> get_comment_count(%{story_id: 123})
-      42
-
-      iex> get_comment_count(%{comment_id: 234})
+      iex> get_comment_count([story: %Story{}])
       815
 
+      iex> get_comment_count([comment: %Comment{}])
+      42
+
   """
-  def get_comment_count(story: %Story{} = story) do
-    story
-    |> Comment.by_story()
-    |> do_get_comment_count()
-  end
-
-  def get_comment_count(parent: %Comment{} = parent) do
-    parent
-    |> Comment.by_parent()
-    |> do_get_comment_count()
-  end
-
-  defp do_get_comment_count(query) do
+  @spec get_comment_count(Keyword.t()) :: non_neg_integer
+  def get_comment_count(clauses) do
     query =
-      from(
-        c in query,
-        join: u in assoc(c, :author),
-        where: is_nil(u.deactivated_at),
-        select: count(c.id)
-      )
+      cond do
+        Keyword.has_key?(clauses, :story) ->
+          clauses
+          |> Keyword.get(:story)
+          |> Comment.by_story()
 
-    Repo.one!(query)
+        Keyword.has_key?(clauses, :comment) ->
+          clauses
+          |> Keyword.get(:comment)
+          |> Comment.by_parent()
+      end
+
+    query
+    |> join(:inner, [c], u in assoc(c, :author))
+    |> User.active()
+    |> Repo.aggregate(:count, :id)
   end
-
-  def get_story_comment_count(story), do: get_comment_count(story: story)
-
-  def get_comment_comment_count(comment), do: get_comment_count(parent: comment)
 
   @doc """
+  Returns `true` if the user can see the comment.
+  `false` otherwise.
   """
   @spec can_see_comment?(Comment.t(), User.t()) :: boolean
   def can_see_comment?(%Comment{} = comment, %User{} = user) do
@@ -123,7 +118,5 @@ defmodule Margaret.Comments do
   @doc """
   Deletes a comment.
   """
-  def delete_comment(%Comment{} = comment) do
-    Repo.delete(comment)
-  end
+  def delete_comment(%Comment{} = comment), do: Repo.delete(comment)
 end

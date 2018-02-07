@@ -6,7 +6,7 @@ defmodule Margaret.Accounts do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Publications, Stories}
+  alias Margaret.{Repo, Accounts, Publications, Stories, Follows}
   alias Accounts.{User, SocialLogin}
   alias Stories.Story
   alias Publications.PublicationMembership
@@ -443,8 +443,8 @@ defmodule Margaret.Accounts do
   """
   def get_story_count(%User{} = author, opts \\ []) do
     query =
-      if Keyword.get(opts, :public_only, false) do
-        Story.public()
+      if Keyword.get(opts, :published_only, false) do
+        Story.published()
       else
         Story
       end
@@ -452,6 +452,12 @@ defmodule Margaret.Accounts do
 
     Repo.aggregate(query, :count, :id)
   end
+
+  @doc """
+  Gets the follower count of a user.
+  """
+  @spec get_follower_count(User.t()) :: non_neg_integer
+  def get_follower_count(%User{} = user), do: Follows.get_follower_count(user: user)
 
   @doc """
   Gets the publication count of the user.
@@ -466,12 +472,8 @@ defmodule Margaret.Accounts do
 
   """
   @spec get_publication_count(User.t()) :: non_neg_integer
-  def get_publication_count(%User{id: user_id}) do
-    query =
-      from(
-        pm in PublicationMembership,
-        where: pm.member_id == ^user_id
-      )
+  def get_publication_count(%User{} = user) do
+    query = PublicationMembership.by_member(user)
 
     Repo.aggregate(query, :count, :id)
   end

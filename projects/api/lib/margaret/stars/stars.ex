@@ -6,20 +6,62 @@ defmodule Margaret.Stars do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stars, Workers}
+  alias Margaret.{Repo, Accounts, Stories, Comments, Stars, Workers}
   alias Accounts.User
+  alias Stories.Story
+  alias Comments.Comment
   alias Stars.Star
 
   @doc """
   Gets a star.
+
+  ## Examples
+
+      iex> get_star(user_id: 123, story_id: 123)
+      %Star{}
+
+      iex> get_star(user_id: 123, story_id: 456)
+      nil
+
   """
   @spec get_star(Keyword.t()) :: Star.t() | nil
   def get_star(clauses) when length(clauses) == 2, do: Repo.get_by(Star, clauses)
 
   @doc """
+  Returns `true` if the user has starred the starrable.
+  `false` otherwise.
+
+  ## Examples
+
+      iex> has_starred?(user: %User{}, story: %Story{})
+      true
+
+      iex> has_starred?(user: %User{}, story: %Story{})
+      false
+
   """
   @spec has_starred?(Keyword.t()) :: boolean
-  def has_starred?(clauses), do: !!get_star(clauses)
+  def has_starred?(clauses) do
+    user_id =
+      clauses
+      |> Keyword.get(:user)
+
+    starrable =
+      cond do
+        Keyword.has_key?(clauses, :story) -> Keyword.get(clauses, :story)
+        Keyword.has_key?(clauses, :comment) -> Keyword.get(clauses, :comment)
+      end
+
+    clauses =
+      starrable
+      |> case do
+        %Story{id: story_id} -> [story_id: story_id]
+        %Comment{id: comment_id} -> [comment_id: comment_id]
+      end
+      |> Keyword.put(:user_id, user_id)
+
+    !!get_star(clauses)
+  end
 
   @doc """
   Inserts a star.
@@ -72,10 +114,11 @@ defmodule Margaret.Stars do
           |> Keyword.get(:comment)
           |> Star.by_comment()
       end
-      |> join(:inner, [star], u in assoc(star, :user))
-      |> User.active()
 
-    Repo.aggregate(query, :count, :id)
+    query
+    |> join(:inner, [star], u in assoc(star, :user))
+    |> User.active()
+    |> Repo.aggregate(query, :count, :id)
   end
 
   @doc """

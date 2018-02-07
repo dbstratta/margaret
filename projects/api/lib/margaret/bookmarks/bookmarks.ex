@@ -3,8 +3,6 @@ defmodule Margaret.Bookmarks do
   The Bookmarks context.
   """
 
-  import Ecto.Query
-
   alias Margaret.{
     Repo,
     Accounts.User,
@@ -42,6 +40,8 @@ defmodule Margaret.Bookmarks do
   end
 
   @doc """
+  Returns `true` if the user has bookmarked the bookmarkable.
+  `false` otherwise.
 
   ## Examples
 
@@ -64,17 +64,22 @@ defmodule Margaret.Bookmarks do
   @doc """
   Deletes a bookmark.
   """
-  def delete_bookmark(%Bookmark{} = bookmark) do
-    Repo.delete(bookmark)
-  end
+  @spec delete_bookmark(Bookmark.t()) :: Bookmark.t()
+  def delete_bookmark(%Bookmark{} = bookmark), do: Repo.delete(bookmark)
 
   @doc """
   Gets the bookmarked count of a user.
+
+  ## Examples
+
+      iex> get_bookmarked_count(%User{})
+      42
+
   """
   @spec get_bookmarked_count(User.t()) :: non_neg_integer
-  def get_bookmarked_count(%User{id: user_id}) do
-    query = from(b in Bookmark, where: b.user_id == ^user_id, select: count(b.id))
+  def get_bookmarked_count(%User{} = user) do
+    query = Bookmark.by_user(user)
 
-    Repo.all(query)
+    Repo.aggregate(query, :count, :id)
   end
 end

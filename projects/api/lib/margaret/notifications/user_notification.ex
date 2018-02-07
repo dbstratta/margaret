@@ -4,7 +4,7 @@ defmodule Margaret.Notifications.UserNotification do
   """
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
   alias __MODULE__
 
@@ -58,6 +58,13 @@ defmodule Margaret.Notifications.UserNotification do
     user_notification
     |> cast(attrs, permitted_attrs)
   end
+
+  @doc """
+  Filters the user notifications by user.
+  """
+  @spec by_user(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  def by_user(query \\ UserNotification, %User{id: user_id}),
+    do: where(query, [..., un], un.user_id == ^user_id)
 
   @doc """
   Preloads the user of a user notification.

@@ -77,6 +77,13 @@ defmodule Margaret.Publications.PublicationMembership do
     do: where(query, [..., pm], pm.publication_id == ^publication_id)
 
   @doc """
+  Filters the publication memberships by member.
+  """
+  @spec by_member(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  def by_member(query \\ PublicationMembership, %User{id: member_id}),
+    do: where(query, [..., pm], pm.member_id == ^member_id)
+
+  @doc """
   Filters the publication memberships by owner.
   """
   @spec owner(Ecto.Query.t()) :: Ecto.Query.t()

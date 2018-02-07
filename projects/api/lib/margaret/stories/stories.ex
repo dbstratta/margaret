@@ -5,7 +5,7 @@ defmodule Margaret.Stories do
 
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stories, Stars, Publications, Tags}
+  alias Margaret.{Repo, Accounts, Stories, Comments, Stars, Publications, Tags}
   alias Accounts.User
   alias Stories.{Story, StoryView}
 
@@ -217,9 +217,14 @@ defmodule Margaret.Stories do
       815
 
   """
-  @spec get_story_count :: non_neg_integer
-  def get_story_count do
-    query = Story
+  @spec get_story_count(Keyword.t()) :: non_neg_integer
+  def get_story_count(opts \\ []) do
+    query =
+      if Keyword.get(opts, :published_only, false) do
+        Story.published()
+      else
+        Story
+      end
 
     Repo.aggregate(query, :count, :id)
   end
@@ -229,6 +234,12 @@ defmodule Margaret.Stories do
   """
   @spec get_star_count(Story.t()) :: non_neg_integer
   def get_star_count(%Story{} = story), do: Stars.get_star_count(story: story)
+
+  @doc """
+  Gets the comment count of a story.
+  """
+  @spec get_comment_count(Story.t()) :: non_neg_integer
+  def get_comment_count(%Story{} = story), do: Comments.get_comment_count(story: story)
 
   @doc """
   Gets the view count of a story.

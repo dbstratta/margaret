@@ -44,10 +44,10 @@ defmodule Margaret.Follows do
     42
 
   """
-  def get_followee_count(%User{id: user_id}) do
-    query = from(f in Follow, where: f.follower_id == ^user_id, select: count(f.id))
+  def get_followee_count(%User{} = user) do
+    query = Follow.by_follower(user)
 
-    Repo.one!(query)
+    Repo.aggregate(query, :count, :id)
   end
 
   @doc """
@@ -55,19 +55,32 @@ defmodule Margaret.Follows do
 
   ## Examples
 
-    iex> get_follower_count(%{user_id: 123})
+    iex> get_follower_count([user: %User{}])
     42
 
-    iex> get_follower_count(%{publication_id: 234})
+    iex> get_follower_count([publication: %Publication{}])
     815
 
   """
-  def get_follower_count(%{user_id: user_id}) do
-    Repo.one!(from(f in Follow, where: f.user_id == ^user_id, select: count(f.id)))
-  end
+  @spec get_follower_count(Keyword.t()) :: non_neg_integer
+  def get_follower_count(clauses) do
+    query =
+      cond do
+        Keyword.has_key?(clauses, :user) ->
+          clauses
+          |> Keyword.get(:user)
+          |> Follow.by_user()
 
-  def get_follower_count(%{publication_id: publication_id}) do
-    Repo.one!(from(f in Follow, where: f.publication_id == ^publication_id, select: count(f.id)))
+        Keyword.has_key?(clauses, :publication) ->
+          clauses
+          |> Keyword.get(:publication)
+          |> Follow.by_publication()
+      end
+
+    query
+    |> join(:inner, [c], u in assoc(c, :author))
+    |> User.active()
+    |> Repo.aggregate(:count, :id)
   end
 
   @doc """
@@ -105,14 +118,8 @@ defmodule Margaret.Follows do
 
   ## Examples
 
-    iex> delete_follow(123)
+    iex> delete_follow(%Follow{})
     {:ok, %Follow{}}
-
-    iex> delete_follow(%{follower_id: 123, publication_id: 234})
-    {:ok, %Follow{}}
-
-    iex> delete_follow(%{follower_id: 123, user_id: 234})
-    {:error, %Ecto.Changeset{}}
 
   """
   def delete_follow(%Follow{} = follow), do: Repo.delete(follow)

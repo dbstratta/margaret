@@ -4,7 +4,7 @@ defmodule Margaret.Bookmarks.Bookmark do
   """
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
   alias __MODULE__
 
@@ -52,6 +52,13 @@ defmodule Margaret.Bookmarks.Bookmark do
     |> unique_constraint(:user, name: :bookmarks_user_id_comment_id_index)
     |> check_constraint(:user, name: :only_one_not_null_bookmarkable)
   end
+
+  @doc """
+  Filters the bookmarks by user.
+  """
+  @spec by_user(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  def by_user(query \\ Bookmark, %User{id: user_id}),
+    do: where(query, [..., b], b.user_id == ^user_id)
 
   @doc """
   Preloads the user of a bookmark.
