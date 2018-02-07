@@ -1,4 +1,4 @@
-FROM elixir:1.6.0
+FROM elixir:1.6.1
 
 LABEL name="margaret_api_dev"
 LABEL version="1.0.0"

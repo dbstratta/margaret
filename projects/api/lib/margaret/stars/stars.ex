@@ -12,6 +12,8 @@ defmodule Margaret.Stars do
   alias Comments.Comment
   alias Stars.Star
 
+  @type starrable :: Story.t() | Comment.t()
+
   @doc """
   Gets a star.
 
@@ -42,19 +44,11 @@ defmodule Margaret.Stars do
   """
   @spec has_starred?(Keyword.t()) :: boolean
   def has_starred?(clauses) do
-    user_id =
-      clauses
-      |> Keyword.get(:user)
-      |> Map.get(:id)
-
-    starrable =
-      cond do
-        Keyword.has_key?(clauses, :story) -> Keyword.get(clauses, :story)
-        Keyword.has_key?(clauses, :comment) -> Keyword.get(clauses, :comment)
-      end
+    %User{id: user_id} = Keyword.get(clauses, :user)
 
     clauses =
-      starrable
+      clauses
+      |> get_starrable_from_clauses()
       |> case do
         %Story{id: story_id} -> [story_id: story_id]
         %Comment{id: comment_id} -> [comment_id: comment_id]
@@ -104,22 +98,25 @@ defmodule Margaret.Stars do
   """
   def get_star_count(clauses) do
     query =
-      cond do
-        Keyword.has_key?(clauses, :story) ->
-          clauses
-          |> Keyword.get(:story)
-          |> Star.by_story()
-
-        Keyword.has_key?(clauses, :comment) ->
-          clauses
-          |> Keyword.get(:comment)
-          |> Star.by_comment()
+      clauses
+      |> get_starrable_from_clauses()
+      |> case do
+        %Story{} = story -> Star.by_story(story)
+        %Comment{} = comment -> Star.by_comment(comment)
       end
 
     query
     |> join(:inner, [star], u in assoc(star, :user))
     |> User.active()
     |> Repo.aggregate(query, :count, :id)
+  end
+
+  @spec get_starrable_from_clauses(Keyword.t()) :: starrable
+  defp get_starrable_from_clauses(clauses) do
+    cond do
+      Keyword.has_key?(clauses, :story) -> Keyword.get(clauses, :story)
+      Keyword.has_key?(clauses, :comment) -> Keyword.get(clauses, :comment)
+    end
   end
 
   @doc """

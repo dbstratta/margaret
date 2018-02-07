@@ -1,4 +1,4 @@
-defmodule MargaretWeb.Mailer do
+defmodule Margaret.Mailer do
   @moduledoc """
   Swoosh implementation module.
   """

@@ -7,7 +7,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   alias Absinthe.Relay
 
   alias MargaretWeb.Helpers
-  alias Margaret.{Repo, Accounts, Stories, Stars, Bookmarks, Comments}
+  alias Margaret.{Repo, Accounts, Stars, Bookmarks, Comments}
   alias Accounts.User
   alias Comments.Comment
   alias Stars.Star

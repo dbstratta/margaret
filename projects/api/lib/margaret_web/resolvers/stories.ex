@@ -102,16 +102,13 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves the stargazers of the story.
   """
-  def resolve_stargazers(%Story{id: story_id} = story, args, _) do
+  def resolve_stargazers(story, args, _) do
     query =
-      from(
-        u in User,
-        join: s in Star,
-        on: s.user_id == u.id,
-        where: is_nil(u.deactivated_at),
-        where: s.story_id == ^story_id,
-        select: {u, %{starred_at: s.inserted_at}}
-      )
+      User
+      |> User.active()
+      |> join(:inner, [u], s in assoc(u, :stars))
+      |> Star.by_story(story)
+      |> select([u, s], {u, %{starred_at: s.inserted_at}})
 
     total_count = Stories.get_star_count(story)
 
@@ -120,16 +117,14 @@ defmodule MargaretWeb.Resolvers.Stories do
     |> Helpers.transform_connection(total_count: total_count)
   end
 
-  def resolve_comments(%Story{id: story_id}, args, _) do
+  def resolve_comments(story, args, _) do
     query =
-      from(
-        c in Comment,
-        join: u in User,
-        where: c.story_id == ^story_id,
-        where: is_nil(u.deactivated_at)
-      )
+      Comment
+      |> Comment.by_story(story)
+      |> join(:inner, [c], u in assoc(c, :author))
+      |> User.active()
 
-    total_count = Comments.get_story_comment_count(story_id)
+    total_count = Stories.get_comment_count(story)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)

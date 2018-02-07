@@ -11,6 +11,8 @@ defmodule Margaret.Follows do
   alias Follows.Follow
   alias Publications.Publication
 
+  @type followable :: User.t() | Publication.t()
+
   @doc """
   Gets a follow.
 
@@ -22,10 +24,10 @@ defmodule Margaret.Follows do
       iex> get_follow(456)
       nil
 
-      iex> get_follow(123, publication_id: 123)
+      iex> get_follow(follower_id: 123, publication_id: 123)
       %Follow{}
 
-      iex> get_follow(456, user_id: 345)
+      iex> get_follow(follower_id: 456, user_id: 345)
       nil
 
   """
@@ -65,20 +67,15 @@ defmodule Margaret.Follows do
   @spec get_follower_count(Keyword.t()) :: non_neg_integer
   def get_follower_count(clauses) do
     query =
-      cond do
-        Keyword.has_key?(clauses, :user) ->
-          clauses
-          |> Keyword.get(:user)
-          |> Follow.by_user()
-
-        Keyword.has_key?(clauses, :publication) ->
-          clauses
-          |> Keyword.get(:publication)
-          |> Follow.by_publication()
+      clauses
+      |> get_followable_from_clauses()
+      |> case do
+        %User{} = user -> Follow.by_user(user)
+        %Publication{} = publication -> Follow.by_publication(publication)
       end
 
     query
-    |> join(:inner, [c], u in assoc(c, :author))
+    |> join(:inner, [c], u in assoc(c, :follower))
     |> User.active()
     |> Repo.aggregate(:count, :id)
   end
@@ -98,19 +95,11 @@ defmodule Margaret.Follows do
   """
   @spec has_followed?(Keyword.t()) :: boolean
   def has_followed?(clauses) do
-    follower_id =
-      clauses
-      |> Keyword.get(:follower)
-      |> Map.get(:id)
-
-    followable =
-      cond do
-        Keyword.has_key?(clauses, :user) -> Keyword.get(clauses, :user)
-        Keyword.has_key?(clauses, :publication) -> Keyword.get(clauses, :publication)
-      end
+    %User{id: follower_id} = Keyword.get(clauses, :follower)
 
     clauses =
-      followable
+      clauses
+      |> get_followable_from_clauses()
       |> case do
         %User{id: user_id} -> [user_id: user_id]
         %Publication{id: publication_id} -> [publication_id: publication_id]
@@ -121,16 +110,31 @@ defmodule Margaret.Follows do
   end
 
   @doc """
+  Returns `true` if the follower can follow the followable.
+  `false` otherwise.
+  """
+  @spec can_follow?(Keyword.t()) :: boolean
+  def can_follow?(clauses) do
+    %User{id: follower_id} = Keyword.get(clauses, :follower)
+
+    clauses
+    |> get_followable_from_clauses()
+    |> case do
+      %User{id: user_id} when user_id == follower_id -> false
+      _ -> true
+    end
+  end
+
+  @spec get_followable_from_clauses(Keyword.t()) :: followable
+  defp get_followable_from_clauses(clauses) do
+    cond do
+      Keyword.has_key?(clauses, :user) -> Keyword.get(clauses, :user)
+      Keyword.has_key?(clauses, :publication) -> Keyword.get(clauses, :publication)
+    end
+  end
+
+  @doc """
   Inserts a follow.
-
-  ## Examples
-
-    iex> insert_follow(attrs)
-    {:ok, %Follow{}}
-
-    iex> insert_follow(attrs)
-    {:error, %Ecto.Changeset{}}
-
   """
   def insert_follow(%{follower_id: follower_id} = attrs) do
     follow_changeset = Follow.changeset(attrs)

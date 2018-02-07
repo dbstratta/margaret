@@ -14,7 +14,6 @@ defmodule MargaretWeb.Resolvers.Accounts do
     Accounts,
     Follows,
     Stories,
-    Comments,
     Publications,
     Stars,
     Bookmarks,
@@ -24,7 +23,6 @@ defmodule MargaretWeb.Resolvers.Accounts do
   alias Accounts.User
   alias Follows.Follow
   alias Stories.Story
-  alias Comments.Comment
   alias Publications.{Publication, PublicationMembership}
   alias Stars.Star
   alias Bookmarks.Bookmark
@@ -98,18 +96,14 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves the connection of followees of a user.
   """
-  def resolve_followees(%User{id: user_id} = user, args, _) do
+  def resolve_followees(user, args, _) do
     query =
-      from(
-        f in Follow,
-        left_join: u in User,
-        on: u.id == f.user_id,
-        left_join: p in Publication,
-        on: p.id == f.publication_id,
-        where: f.follower_id == ^user_id,
-        where: is_nil(u.deactivated_at),
-        select: {[u, p], %{followed_at: f.inserted_at}}
-      )
+      Follow
+      |> Follow.by_follower(user)
+      |> join(:left, [f], u in assoc(f, :user))
+      |> User.active()
+      |> join(:left, [f], p in assoc(f, :publication))
+      |> select([f, u, p], {[u, p], %{followed_at: f.inserted_at}})
 
     total_count = Follows.get_followee_count(user)
 
@@ -121,17 +115,13 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves the connection of starrables the user starred.
   """
-  def resolve_starred(%User{id: user_id} = user, args, _) do
+  def resolve_starred(user, args, _) do
     query =
-      from(
-        star in Star,
-        left_join: story in Story,
-        on: story.id == star.story_id,
-        left_join: comment in Comment,
-        on: comment.id == star.comment_id,
-        where: star.user_id == ^user_id,
-        select: {[story, comment], %{starred_at: star.inserted_at}}
-      )
+      Star
+      |> Star.by_user(user)
+      |> join(:left, [star], story in assoc(star, :story))
+      |> join(:left, [star], comment in assoc(star, :comment))
+      |> select([star, story, comment], {[story, comment], %{starred_at: star.inserted_at}})
 
     total_count = Stars.get_starred_count(user)
 
@@ -147,15 +137,11 @@ defmodule MargaretWeb.Resolvers.Accounts do
   """
   def resolve_bookmarked(%User{id: user_id} = user, args, %{context: %{viewer: %{id: user_id}}}) do
     query =
-      from(
-        b in Bookmark,
-        left_join: s in Story,
-        on: s.id == b.story_id,
-        left_join: c in Comment,
-        on: c.id == b.comment_id,
-        where: b.user_id == ^user_id,
-        select: {[s, c], %{bookmarked_at: b.inserted_at}}
-      )
+      Bookmark
+      |> Bookmark.by_user(user)
+      |> join(:left, [b], s in assoc(b, :story))
+      |> join(:left, [b], c in assoc(b, :comment))
+      |> select([b, s, c], {[s, c], %{bookmarked_at: b.inserted_at}})
 
     total_count = Bookmarks.get_bookmarked_count(user)
 
@@ -186,15 +172,12 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves the publications of the user.
   """
-  def resolve_publications(%User{id: user_id} = user, args, _) do
+  def resolve_publications(user, args, _) do
     query =
-      from(
-        p in Publication,
-        join: pm in PublicationMembership,
-        on: pm.publication_id == p.id,
-        where: pm.member_id == ^user_id,
-        select: {p, %{role: pm.role, member_since: pm.inserted_at}}
-      )
+      Publication
+      |> join(:inner, [p], pm in assoc(p, :publication_memberships))
+      |> PublicationMembership.by_member(user)
+      |> select([p, pm], {p, %{role: pm.role, member_since: pm.inserted_at}})
 
     total_count = Accounts.get_publication_count(user)
 
@@ -208,12 +191,9 @@ defmodule MargaretWeb.Resolvers.Accounts do
   """
   def resolve_notifications(%User{id: user_id} = user, args, %{context: %{viewer: %{id: user_id}}}) do
     query =
-      from(
-        n in Notification,
-        join: un in UserNotification,
-        on: un.notification_id == n.id,
-        where: un.user_id == ^user_id
-      )
+      Notification
+      |> join(:inner, [n], un in assoc(n, :user_notifications))
+      |> UserNotification.by_user(user)
 
     total_count = Notifications.get_notification_count(user)
 
@@ -265,6 +245,9 @@ defmodule MargaretWeb.Resolvers.Accounts do
     end
   end
 
+  @doc """
+  Resolves the mark of the viewer for deletion.
+  """
   def resolve_mark_viewer_for_deletion(_, %{context: %{viewer: viewer}}) do
     case Accounts.mark_user_for_deletion(viewer) do
       {:ok, _} -> {:ok, %{viewer: viewer}}
@@ -284,11 +267,11 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves if the viewer can follow the user.
   """
-  def resolve_viewer_can_follow(%User{id: user_id}, _, %{context: %{viewer: %{id: user_id}}}) do
-    {:ok, false}
-  end
+  def resolve_viewer_can_follow(user, _, %{context: %{viewer: viewer}}) do
+    can_follow = Follows.can_follow?(follower: viewer, user: user)
 
-  def resolve_viewer_can_follow(_, _, _), do: {:ok, true}
+    {:ok, can_follow}
+  end
 
   @doc """
   Resolves whether the viewer has followed this user.

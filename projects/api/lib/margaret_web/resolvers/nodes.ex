@@ -3,11 +3,12 @@ defmodule MargaretWeb.Resolvers.Nodes do
   The Node GraphQL resolvers.
   """
 
-  alias Margaret.{Accounts, Stories, Publications, Comments, Tags}
+  alias Margaret.{Accounts, Stories, Publications, Comments, Notifications, Tags}
   alias Accounts.User
   alias Stories.Story
   alias Publications.{Publication, PublicationInvitation}
   alias Comments.Comment
+  alias Notifications.Notification
   alias Tags.Tag
 
   @doc """
@@ -18,13 +19,18 @@ defmodule MargaretWeb.Resolvers.Nodes do
   def resolve_type(%Publication{}, _), do: :publication
   def resolve_type(%PublicationInvitation{}, _), do: :publication_invitation
   def resolve_type(%Comment{}, _), do: :comment
+  def resolve_type(%Notification{}, _), do: :notification
   def resolve_type(%Tag{}, _), do: :tag
   def resolve_type(_, _), do: nil
 
   @doc """
   Resolves the node from its type and global ID.
   """
-  def resolve_node(%{type: :user, id: id}, _), do: {:ok, Accounts.get_user(id)}
+  def resolve_node(%{type: :user, id: user_id}, _) do
+    user = Accounts.get_user(user_id)
+
+    {:ok, user}
+  end
 
   def resolve_node(%{type: :story, id: story_id}, %{context: %{viewer: viewer}}) do
     resolve_story(story_id, viewer)
@@ -32,17 +38,27 @@ defmodule MargaretWeb.Resolvers.Nodes do
 
   def resolve_node(%{type: :story, id: story_id}, _), do: resolve_story(story_id, nil)
 
-  def resolve_node(%{type: :publication, id: id}, _), do: {:ok, Publications.get_publication(id)}
+  def resolve_node(%{type: :publication, id: publication_id}, _) do
+    publication = Publications.get_publication(publication_id)
 
-  def resolve_node(%{type: :publication_invitation, id: id}, _) do
-    {:ok, Publications.get_invitation(id)}
+    {:ok, publication}
+  end
+
+  def resolve_node(%{type: :publication_invitation, id: invitation_id}, _) do
+    publication_invitation = Publications.get_invitation(invitation_id)
+
+    {:ok, publication_invitation}
   end
 
   def resolve_node(%{type: :comment, id: comment_id}, %{context: %{viewer: viewer}}) do
     resolve_comment(comment_id, viewer)
   end
 
-  def resolve_node(%{type: :tag, id: id}, _), do: {:ok, Tags.get_tag(id)}
+  def resolve_node(%{type: :tag, id: tag_id}, _) do
+    tag = Tags.get_tag(tag_id)
+
+    {:ok, tag}
+  end
 
   defp resolve_story(story_id, viewer) do
     story_id

@@ -8,7 +8,7 @@ defmodule MargaretWeb.Schema.JSONTypes do
   """
   scalar :json, name: "JSON" do
     parse(&parse_json/1)
-    serialize(&Poison.encode!/1)
+    serialize(&serialize_json/1)
   end
 
   defp parse_json(%{value: value}) do
@@ -16,5 +16,9 @@ defmodule MargaretWeb.Schema.JSONTypes do
       {:ok, result} -> {:ok, result}
       _ -> :error
     end
+  end
+
+  defp serialize_json(value) do
+    Poison.encode!(value)
   end
 end
