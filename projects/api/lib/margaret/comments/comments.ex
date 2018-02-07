@@ -54,6 +54,26 @@ defmodule Margaret.Comments do
   end
 
   @doc """
+  Gets the author of a comment.
+  """
+  @spec get_author(Comment.t()) :: User.t()
+  def get_author(%Comment{} = comment) do
+    comment
+    |> Comment.preload_author()
+    |> Map.get(:author)
+  end
+
+  @doc """
+  Gets the parent of a comment.
+  """
+  @spec get_parent(Comment.t()) :: User.t()
+  def get_parent(%Comment{} = comment) do
+    comment
+    |> Comment.preload_parent()
+    |> Map.get(:parent)
+  end
+
+  @doc """
   Gets the comment count of a commentable.
 
   ## Examples

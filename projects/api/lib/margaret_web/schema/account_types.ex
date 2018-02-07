@@ -1,6 +1,6 @@
 defmodule MargaretWeb.Schema.AccountTypes do
   @moduledoc """
-  The Account GraphQL types.
+  The Account GraphQL type definitions.
   """
 
   use Absinthe.Schema.Notation
@@ -146,11 +146,17 @@ defmodule MargaretWeb.Schema.AccountTypes do
       resolve(&Resolvers.Accounts.resolve_is_viewer/3)
     end
 
+    @desc """
+    Whether or not the viewer can follow this user.
+    """
     field :viewer_can_follow, non_null(:boolean) do
       middleware(Middleware.RequireAuthenticated, resolve: false)
       resolve(&Resolvers.Accounts.resolve_viewer_can_follow/3)
     end
 
+    @desc """
+    Whether or not the viewer has followed this user.
+    """
     field :viewer_has_followed, non_null(:boolean) do
       middleware(Middleware.RequireAuthenticated, resolve: false)
       resolve(&Resolvers.Accounts.resolve_viewer_has_followed/3)

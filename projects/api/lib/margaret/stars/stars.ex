@@ -45,6 +45,7 @@ defmodule Margaret.Stars do
     user_id =
       clauses
       |> Keyword.get(:user)
+      |> Map.get(:id)
 
     starrable =
       cond do

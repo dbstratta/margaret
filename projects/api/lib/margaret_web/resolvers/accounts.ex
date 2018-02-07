@@ -1,6 +1,7 @@
 defmodule MargaretWeb.Resolvers.Accounts do
   @moduledoc """
   The Account GraphQL resolvers.
+  TODO: Try to clean up queries using defined API instead.
   """
 
   import Ecto.Query
@@ -51,7 +52,6 @@ defmodule MargaretWeb.Resolvers.Accounts do
   """
   def resolve_stories(%User{id: author_id} = user, args, %{context: %{viewer: %{id: author_id}}}) do
     query = Story.by_author(user)
-
     total_count = Accounts.get_story_count(user)
 
     query
@@ -77,7 +77,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
 
   Also resolves the `followed_at` attribute.
   """
-  def resolve_followers(%User{id: user_id}, args, _) do
+  def resolve_followers(%User{id: user_id} = user, args, _) do
     query =
       from(
         u in User,
@@ -88,7 +88,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
         select: {u, %{followed_at: f.inserted_at}}
       )
 
-    total_count = Follows.get_follower_count(%{user_id: user_id})
+    total_count = Accounts.get_follower_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -98,7 +98,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves the connection of followees of a user.
   """
-  def resolve_followees(%User{id: user_id}, args, _) do
+  def resolve_followees(%User{id: user_id} = user, args, _) do
     query =
       from(
         f in Follow,
@@ -111,7 +111,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
         select: {[u, p], %{followed_at: f.inserted_at}}
       )
 
-    total_count = Follows.get_followee_count(user_id)
+    total_count = Follows.get_followee_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -121,7 +121,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves the connection of starrables the user starred.
   """
-  def resolve_starred(%User{id: user_id}, args, _) do
+  def resolve_starred(%User{id: user_id} = user, args, _) do
     query =
       from(
         star in Star,
@@ -133,7 +133,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
         select: {[story, comment], %{starred_at: star.inserted_at}}
       )
 
-    total_count = Stars.get_starred_count(user_id)
+    total_count = Stars.get_starred_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -145,7 +145,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
 
   Bookmarks are only visible to the user who bookmarked.
   """
-  def resolve_bookmarked(%User{id: user_id}, args, %{context: %{viewer: %{id: user_id}}}) do
+  def resolve_bookmarked(%User{id: user_id} = user, args, %{context: %{viewer: %{id: user_id}}}) do
     query =
       from(
         b in Bookmark,
@@ -157,7 +157,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
         select: {[s, c], %{bookmarked_at: b.inserted_at}}
       )
 
-    total_count = Bookmarks.get_bookmarked_count(user_id)
+    total_count = Bookmarks.get_bookmarked_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -166,6 +166,9 @@ defmodule MargaretWeb.Resolvers.Accounts do
 
   def resolve_bookmarked(_, _, _), do: {:ok, nil}
 
+  @doc """
+  Resolves a publication of the user.
+  """
   def resolve_publication(%User{id: user_id}, %{name: publication_name}, _) do
     query =
       from(
@@ -175,10 +178,15 @@ defmodule MargaretWeb.Resolvers.Accounts do
         where: pm.member_id == ^user_id and p.name == ^publication_name
       )
 
-    {:ok, Repo.one(query)}
+    publication = Repo.one(query)
+
+    {:ok, publication}
   end
 
-  def resolve_publications(%User{id: user_id}, args, _) do
+  @doc """
+  Resolves the publications of the user.
+  """
+  def resolve_publications(%User{id: user_id} = user, args, _) do
     query =
       from(
         p in Publication,
@@ -188,14 +196,17 @@ defmodule MargaretWeb.Resolvers.Accounts do
         select: {p, %{role: pm.role, member_since: pm.inserted_at}}
       )
 
-    total_count = Accounts.get_publication_count(user_id)
+    total_count = Accounts.get_publication_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
     |> Helpers.transform_connection(total_count: total_count)
   end
 
-  def resolve_notifications(%User{id: user_id}, args, %{context: %{viewer: %{id: user_id}}}) do
+  @doc """
+  Resolves the notifications of the user.
+  """
+  def resolve_notifications(%User{id: user_id} = user, args, %{context: %{viewer: %{id: user_id}}}) do
     query =
       from(
         n in Notification,
@@ -204,7 +215,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
         where: un.user_id == ^user_id
       )
 
-    total_count = Notifications.get_notification_count(user_id)
+    total_count = Notifications.get_notification_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -217,8 +228,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   Resolves a connection of users.
   """
   def resolve_users(args, _) do
-    query = from(u in User, where: is_nil(u.deactivated_at))
-
+    query = User.active()
     total_count = Accounts.get_user_count()
 
     query
@@ -239,8 +249,13 @@ defmodule MargaretWeb.Resolvers.Accounts do
     do_resolve_update_user(viewer, attrs)
   end
 
+  @doc """
+  Resolves teh deactivation of the user.
+  """
   def resolve_deactivate_viewer(_, %{context: %{viewer: viewer}}) do
-    do_resolve_update_user(viewer, %{deactivated_at: NaiveDateTime.utc_now()})
+    now = NaiveDateTime.utc_now()
+
+    do_resolve_update_user(viewer, %{deactivated_at: now})
   end
 
   defp do_resolve_update_user(user, attrs) do
@@ -253,7 +268,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   def resolve_mark_viewer_for_deletion(_, %{context: %{viewer: viewer}}) do
     case Accounts.mark_user_for_deletion(viewer) do
       {:ok, _} -> {:ok, %{viewer: viewer}}
-      {:error, _, _, _} -> Helpers.GraphQLErrors.something_went_wrong()
+      {:error, _, changeset, _} -> {:error, changeset}
     end
   end
 
@@ -278,10 +293,9 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves whether the viewer has followed this user.
   """
-  def resolve_viewer_has_followed(%User{id: user_id}, _, %{context: %{viewer: %{id: viewer_id}}}) do
-    case Follows.get_follow(%{follower_id: viewer_id, user_id: user_id}) do
-      %Follow{} -> {:ok, true}
-      _ -> {:ok, false}
-    end
+  def resolve_viewer_has_followed(user, _, %{context: %{viewer: viewer}}) do
+    has_followed = Follows.has_followed?(follower: viewer, user: user)
+
+    {:ok, has_followed}
   end
 end

@@ -16,13 +16,19 @@ defmodule MargaretWeb.Resolvers.Publications do
   @doc """
   Resolves a publication.
   """
-  def resolve_publication(%{name: name}, _), do: {:ok, Publications.get_publication_by_name(name)}
+  def resolve_publication(%{name: name}, _) do
+    publication = Publications.get_publication_by_name(name)
+
+    {:ok, publication}
+  end
 
   @doc """
   Resolves the owner of the publication.
   """
-  def resolve_owner(%Publication{} = publication, _, _) do
-    {:ok, Publications.get_owner(publication)}
+  def resolve_owner(publication, _, _) do
+    owner = Publications.get_owner(publication)
+
+    {:ok, owner}
   end
 
   @doc """
@@ -135,10 +141,10 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves whether the user has followd the publication.
   TODO: Refactor this.
   """
-  def resolve_viewer_has_followed(%Publication{id: publication_id}, _, %{
-        context: %{viewer: %{id: viewer_id}}
-      }) do
-    {:ok, Follows.get_follow(%{follower_id: viewer_id, publication_id: publication_id})}
+  def resolve_viewer_has_followed(publication, _, %{context: %{viewer: viewer}}) do
+    has_followed = Follows.has_followed?(follower: viewer, publication: publication)
+
+    {:ok, has_followed}
   end
 
   @doc """

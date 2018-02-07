@@ -84,6 +84,43 @@ defmodule Margaret.Follows do
   end
 
   @doc """
+  Returns `true` if the user has followed the followable.
+  `false` otherwise.
+
+  ## Examples
+
+      iex> has_followed?(follower: %User{}, user: %User{})
+      true
+
+      iex> has_followed?(follower: %User{}, publication: %Publication{})
+      false
+
+  """
+  @spec has_followed?(Keyword.t()) :: boolean
+  def has_followed?(clauses) do
+    follower_id =
+      clauses
+      |> Keyword.get(:follower)
+      |> Map.get(:id)
+
+    followable =
+      cond do
+        Keyword.has_key?(clauses, :user) -> Keyword.get(clauses, :user)
+        Keyword.has_key?(clauses, :publication) -> Keyword.get(clauses, :publication)
+      end
+
+    clauses =
+      followable
+      |> case do
+        %User{id: user_id} -> [user_id: user_id]
+        %Publication{id: publication_id} -> [publication_id: publication_id]
+      end
+      |> Keyword.put(:follower_id, follower_id)
+
+    !!get_follow(clauses)
+  end
+
+  @doc """
   Inserts a follow.
 
   ## Examples

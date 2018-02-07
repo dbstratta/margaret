@@ -15,8 +15,11 @@ defmodule MargaretWeb.Resolvers.Comments do
   @doc """
   Resolves the author of the comment.
   """
-  def resolve_author(%Comment{author_id: author_id}, _, _),
-    do: {:ok, Accounts.get_user(author_id)}
+  def resolve_author(comment, _, _) do
+    author = Comments.get_author(comment)
+
+    {:ok, author}
+  end
 
   @doc """
   Resolves the stargazers of the comment.
@@ -52,15 +55,19 @@ defmodule MargaretWeb.Resolvers.Comments do
   @doc """
   Resolves the story of the comment.
   """
-  def resolve_story(%Comment{story_id: story_id}, _, _), do: {:ok, Stories.get_story(story_id)}
+  def resolve_story(comment, _, _) do
+    story = Comments.get_story(comment)
+
+    {:ok, story}
+  end
 
   @doc """
   Resolves the parent comment of the comment.
   """
-  def resolve_parent(%Comment{parent_id: nil}, _, _), do: {:ok, nil}
+  def resolve_parent(comment, _, _) do
+    parent = Comments.get_parent(comment)
 
-  def resolve_parent(%Comment{parent_id: parent_id}, _, _) do
-    {:ok, Comments.get_comment(parent_id)}
+    {:ok, parent}
   end
 
   @doc """
@@ -80,35 +87,35 @@ defmodule MargaretWeb.Resolvers.Comments do
   @doc """
   Resolves whether the viewer can star the comment.
   """
-  def resolve_viewer_can_star(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+  def resolve_viewer_can_star(_, _, _), do: {:ok, true}
 
   @doc """
   Resolves whether the viewer has starred this comment.
   """
-  def resolve_viewer_has_starred(%Comment{id: comment_id}, _, %{
-        context: %{viewer: %{id: viewer_id}}
-      }) do
-    {:ok, Stars.has_starred?(%{user_id: viewer_id, comment_id: comment_id})}
+  def resolve_viewer_has_starred(comment, _, %{context: %{viewer: viewer}}) do
+    has_starred = Stars.has_starred?(user: viewer, comment: comment)
+
+    {:ok, has_starred}
   end
 
   @doc """
   Resolves whether the viewer can bookmark the comment.
   """
-  def resolve_viewer_can_bookmark(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+  def resolve_viewer_can_bookmark(_, _, _), do: {:ok, true}
 
   @doc """
   Resolves whether the viewer has bookmarked this comment.
   """
-  def resolve_viewer_has_bookmarked(%Comment{id: comment_id}, _, %{
-        context: %{viewer: %{id: viewer_id}}
-      }) do
-    {:ok, Bookmarks.has_bookmarked?(%{user_id: viewer_id, comment_id: comment_id})}
+  def resolve_viewer_has_bookmarked(comment, _, %{context: %{viewer: viewer}}) do
+    has_bookmarked = Bookmarks.has_bookmarked?(user: viewer, comment: comment)
+
+    {:ok, has_bookmarked}
   end
 
   @doc """
   Resolves whether the viewer can comment the comment.
   """
-  def resolve_viewer_can_comment(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+  def resolve_viewer_can_comment(_, _, _), do: {:ok, true}
 
   def resolve_viewer_can_update(%Comment{author_id: author_id}, _, %{
         context: %{viewer: %{id: author_id}}

@@ -139,13 +139,13 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves whether the viewer can star the story.
   """
-  def resolve_viewer_can_star(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+  def resolve_viewer_can_star(_, _, _), do: {:ok, true}
 
   @doc """
   Resolves whether the viewer has starred this story.
   """
-  def resolve_viewer_has_starred(%Story{id: story_id}, _, %{context: %{viewer: %{id: viewer_id}}}) do
-    has_starred = Stars.has_starred?(%{user_id: viewer_id, story_id: story_id})
+  def resolve_viewer_has_starred(story, _, %{context: %{viewer: viewer}}) do
+    has_starred = Stars.has_starred?(user: viewer, story: story)
 
     {:ok, has_starred}
   end
@@ -153,24 +153,26 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves whether the viewer can bookmark the story.
   """
-  def resolve_viewer_can_bookmark(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+  def resolve_viewer_can_bookmark(_, _, _), do: {:ok, true}
 
-  def resolve_viewer_has_bookmarked(%Story{id: story_id}, _, %{
-        context: %{viewer: %{id: viewer_id}}
-      }) do
-    {:ok, Bookmarks.has_bookmarked(%{user_id: viewer_id, story_id: story_id})}
+  def resolve_viewer_has_bookmarked(story, _, %{context: %{viewer: viewer}}) do
+    has_bookmarked = Bookmarks.has_bookmarked?(user: viewer, story: story)
+
+    {:ok, has_bookmarked}
   end
 
   @doc """
   Resolves whether the viewer can comment the story.
   """
-  def resolve_viewer_can_comment(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+  def resolve_viewer_can_comment(_, _, _), do: {:ok, true}
 
   @doc """
   Resolves whether the viewer can update the story.
   """
-  def resolve_viewer_can_update(%Story{} = story, _, %{context: %{viewer: %User{} = viewer}}) do
-    {:ok, Stories.can_update_story?(story, viewer)}
+  def resolve_viewer_can_update(story, _, %{context: %{viewer: viewer}}) do
+    can_update_story = Stories.can_update_story?(story, viewer)
+
+    {:ok, can_update_story}
   end
 
   @doc """

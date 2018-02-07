@@ -1,6 +1,7 @@
 defmodule MargaretWeb.Resolvers.Bookmarkable do
   @moduledoc """
   The Bookmarkable GraphQL resolvers.
+  TODO: See if I can refactor this into something prettier.
   """
 
   alias Margaret.{Stories, Comments, Bookmarks}
