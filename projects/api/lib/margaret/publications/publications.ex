@@ -358,6 +358,18 @@ defmodule Margaret.Publications do
   end
 
   @doc """
+  """
+  @spec can_kick?(Publication.t(), User.t(), User.t()) :: boolean
+  def can_kick?(publication, kicker, user) do
+    case get_member_role(publication, user) do
+      nil -> false
+      :owner -> false
+      :admin -> check_role(publication, kicker, ~w(owner)a)
+      _role -> check_role(publication, kicker, ~w(owner admin)a)
+    end
+  end
+
+  @doc """
   Returns `true` if the user can accept the invitation.
   `false` otherwise.
   """

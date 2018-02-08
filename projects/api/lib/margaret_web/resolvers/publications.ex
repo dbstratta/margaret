@@ -203,32 +203,43 @@ defmodule MargaretWeb.Resolvers.Publications do
   end
 
   def resolve_kick_member(%{member_id: member_id}, %{context: %{viewer: %{id: member_id}}}) do
-    {:error, "You can't kick yourself."}
+    {:error, "You can't kick yourself"}
   end
 
-  def resolve_kick_member(%{member_id: member_id, publication_id: publication_id}, %{
-        context: %{viewer: %{id: viewer_id}}
-      }) do
+  def resolve_kick_member(args, %{context: %{viewer: viewer}}) do
+    %{member_id: member_id, publication_id: publication_id} = args
+
     publication_id
-    |> Publications.admin?(viewer_id)
-    |> do_resolve_kick_member(publication_id, member_id)
+    |> Publications.get_publication()
+    |> do_resolve_kick_member(member_id, viewer)
   end
 
-  defp do_resolve_kick_member(true, publication_id, member_id) do
-    case Publications.kick_member(publication_id, member_id) do
-      {:ok, _} -> {:ok, %{publication: Publications.get_publication(publication_id)}}
-      {:error, reason} -> {:error, reason}
+  defp do_resolve_kick_member(%Publication{} = publication, member_id, kicker) do
+    with %User{} = user <- Accounts.get_user(member_id),
+         true <- Publications.can_kick?(publication, kicker, user),
+         {:ok, _} <- Publications.kick_member(publication, user) do
+      {:ok, %{publication: publication}}
+    else
+      nil -> Helpers.GraphQLErrors.user_doesnt_exist()
+      false -> Helpers.GraphQLErrors.unauthorized()
+      {:error, _reason} = error -> error
     end
   end
 
-  defp do_resolve_kick_member(_, _, _), do: Helpers.GraphQLErrors.unauthorized()
+  defp do_resolve_kick_member(nil = _publication, _member_id, _kicker),
+    do: Helpers.GraphQLErrors.publication_doesnt_exist()
 
+  @doc """
+  Resolves the deletion of a publication.
+  TODO: Implement this.
+  """
   def resolve_delete_publication(_, _) do
     Helpers.GraphQLErrors.not_implemented()
   end
 
   @doc """
   Resolves the leave of the viewer from the publication.
+  TODO: Refactor this.
   """
   def resolve_leave_publication(%{publication_id: publication_id}, %{
         context: %{viewer: %{id: viewer_id}}
