@@ -29,7 +29,7 @@ defmodule Margaret.Repo.Migrations.AddStoriesTable do
     create(
       index(
         :stories,
-        [:author_id],
+        [:publication_id],
         where: "publication_id is not null",
         name: :publication_stories
       )

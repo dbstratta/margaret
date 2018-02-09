@@ -5,9 +5,10 @@ defmodule Margaret.Stories do
 
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stories, Comments, Stars, Publications, Tags}
+  alias Margaret.{Repo, Accounts, Stories, Comments, Stars, Publications, Collections, Tags}
   alias Accounts.User
   alias Stories.{Story, StoryView}
+  alias Collections.Collection
 
   @doc """
   Gets a single story by its id.
@@ -167,6 +168,25 @@ defmodule Margaret.Stories do
     story
     |> Story.preload_publication()
     |> Map.get(:publication)
+  end
+
+  @doc """
+  Gets the collection of a story.
+
+  ## Examples
+
+      iex> get_collection(%Story{})
+      %Collection{}
+
+      iex> get_collection(%Story{})
+      nil
+
+  """
+  @spec get_collection(Story.t()) :: Collection.t() | nil
+  def get_collection(%Story{} = story) do
+    story
+    |> Story.preload_collection()
+    |> Map.get(:collection)
   end
 
   @doc """

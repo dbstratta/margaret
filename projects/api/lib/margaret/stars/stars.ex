@@ -108,7 +108,7 @@ defmodule Margaret.Stars do
     query
     |> join(:inner, [star], u in assoc(star, :user))
     |> User.active()
-    |> Repo.aggregate(query, :count, :id)
+    |> Repo.aggregate(:count, :id)
   end
 
   @spec get_starrable_from_clauses(Keyword.t()) :: starrable

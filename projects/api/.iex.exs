@@ -8,6 +8,7 @@ alias Margaret.{
   Stories,
   Comments,
   Publications,
+  Collections,
   Follows,
   Stars,
   Bookmarks,
@@ -20,6 +21,7 @@ alias Accounts.{User, SocialLogin}
 alias Stories.{Story, StoryView}
 alias Comments.Comment
 alias Publications.{Publication, PublicationInvitation, PublicationMembership}
+alias Collections.{Collection, CollectionStory}
 alias Follows.Follow
 alias Stars.Star
 alias Bookmarks.Bookmark

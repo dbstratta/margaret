@@ -44,6 +44,7 @@ defmodule Margaret.Collections.CollectionStory do
     %CollectionStory{}
     |> cast(attrs, permitted_attrs)
     |> validate_required(required_attrs)
+    |> validate_number(:part, greater_than_or_equal_to: 1)
     |> assoc_constraint(:story)
     |> assoc_constraint(:collection)
   end
@@ -58,6 +59,7 @@ defmodule Margaret.Collections.CollectionStory do
 
     collection_story
     |> cast(attrs, permitted_attrs)
+    |> validate_number(:part, greater_than_or_equal_to: 1)
   end
 
   @doc """

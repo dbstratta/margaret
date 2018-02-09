@@ -19,6 +19,7 @@ defmodule Margaret.Stories.Story do
     Stars.Star,
     Comments.Comment,
     Publications.Publication,
+    Collections.CollectionStory,
     Tags.Tag,
     Helpers
   }
@@ -48,6 +49,9 @@ defmodule Margaret.Stories.Story do
 
     # Stories can be published under a publication.
     belongs_to(:publication, Publication)
+
+    has_one(:collection_story, CollectionStory)
+    has_one(:collection, through: [:collection_story, :collection])
 
     many_to_many(:tags, Tag, join_through: "story_tags", on_replace: :delete)
 
@@ -168,6 +172,12 @@ defmodule Margaret.Stories.Story do
   """
   @spec preload_publication(t) :: t
   def preload_publication(%Story{} = story), do: Repo.preload(story, :publication)
+
+  @doc """
+  Preloads the collection of a story.
+  """
+  @spec preload_collection(t) :: t
+  def preload_collection(%Story{} = story), do: Repo.preload(story, :collection)
 
   @doc """
   Preloads the tags of a story.
