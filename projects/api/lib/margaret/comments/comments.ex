@@ -6,7 +6,12 @@ defmodule Margaret.Comments do
   import Ecto.Query
   alias Margaret.Repo
 
-  alias Margaret.{Accounts, Stories, Comments}
+  alias Margaret.{
+    Accounts,
+    Stories,
+    Comments
+  }
+
   alias Accounts.User
   alias Stories.Story
   alias Comments.Comment

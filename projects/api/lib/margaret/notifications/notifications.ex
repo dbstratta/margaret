@@ -6,7 +6,13 @@ defmodule Margaret.Notifications do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Notifications, Accounts, Stories}
+  alias Margaret.{
+    Repo,
+    Notifications,
+    Accounts,
+    Stories
+  }
+
   alias Notifications.{Notification, UserNotification}
   alias Accounts.User
   alias Stories.Story

@@ -5,7 +5,17 @@ defmodule Margaret.Stories do
 
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stories, Comments, Stars, Publications, Collections, Tags}
+  alias Margaret.{
+    Repo,
+    Accounts,
+    Stories,
+    Comments,
+    Stars,
+    Publications,
+    Collections,
+    Tags
+  }
+
   alias Accounts.User
   alias Stories.{Story, StoryView}
   alias Collections.Collection

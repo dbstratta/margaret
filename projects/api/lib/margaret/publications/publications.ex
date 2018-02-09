@@ -6,7 +6,15 @@ defmodule Margaret.Publications do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Stories, Publications, Follows, Tags}
+  alias Margaret.{
+    Repo,
+    Accounts,
+    Stories,
+    Publications,
+    Follows,
+    Tags
+  }
+
   alias Stories.Story
   alias Publications.{Publication, PublicationMembership, PublicationInvitation}
   alias Accounts.User

@@ -12,6 +12,7 @@ defmodule Margaret.Accounts.User do
     Repo,
     Accounts,
     Publications,
+    Collections.Collection,
     Stories.Story,
     Comments.Comment,
     Stars.Star,
@@ -50,6 +51,8 @@ defmodule Margaret.Accounts.User do
 
     has_many(:publication_memberships, PublicationMembership, foreign_key: :member_id)
     many_to_many(:publications, Publication, join_through: PublicationMembership)
+
+    has_many(:collections, Collection, foreign_key: :author_id)
 
     many_to_many(
       :followers,

@@ -5,9 +5,20 @@ defmodule Margaret.Bookmarks do
 
   alias Margaret.{
     Repo,
-    Accounts.User,
-    Bookmarks.Bookmark
+    Accounts,
+    Stories,
+    Comments,
+    Collections,
+    Bookmarks
   }
+
+  alias Accounts.User
+  alias Stories.Story
+  alias Comments.Comment
+  alias Collections.Collection
+  alias Bookmarks.Bookmark
+
+  @type bookmarkable :: Collection.t() | Story.t() | Comment.t()
 
   @doc """
   Gets a bookmark.
@@ -21,6 +32,7 @@ defmodule Margaret.Bookmarks do
       nil
 
   """
+  @spec get_bookmark(Keyword.t()) :: Bookmark.t() | nil
   def get_bookmark(clauses) when length(clauses) == 2, do: Repo.get_by(Bookmark, clauses)
 
   @doc """
@@ -45,12 +57,38 @@ defmodule Margaret.Bookmarks do
 
   ## Examples
 
-      iex> has_bookmarked?(user_id: 123, comment_id: 123)
+      iex> has_bookmarked?(user: %User{}, comment: %Comment{})
       true
+
+      iex> has_bookmarked?(user: %User{}, collection: %Collection{})
+      false
 
   """
   @spec has_bookmarked?(Keyword.t()) :: boolean
-  def has_bookmarked?(clauses), do: !!get_bookmark(clauses)
+  def has_bookmarked?(clauses) do
+    %User{id: user_id} = Keyword.get(clauses, :user)
+
+    clauses =
+      clauses
+      |> get_bookmarkable_from_clauses()
+      |> case do
+        %Collection{id: collection_id} -> [collection_id: collection_id]
+        %Story{id: story_id} -> [story_id: story_id]
+        %Comment{id: comment_id} -> [comment_id: comment_id]
+      end
+      |> Keyword.put(:user_id, user_id)
+
+    !!get_bookmark(clauses)
+  end
+
+  @spec get_bookmarkable_from_clauses(Keyword.t()) :: bookmarkable
+  defp get_bookmarkable_from_clauses(clauses) do
+    cond do
+      Keyword.has_key?(clauses, :collection) -> Keyword.get(clauses, :collection)
+      Keyword.has_key?(clauses, :story) -> Keyword.get(clauses, :story)
+      Keyword.has_key?(clauses, :comment) -> Keyword.get(clauses, :comment)
+    end
+  end
 
   @doc """
   Inserts a bookmark.

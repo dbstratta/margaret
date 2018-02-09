@@ -6,7 +6,14 @@ defmodule Margaret.Follows do
   import Ecto.Query
   alias Ecto.Multi
 
-  alias Margaret.{Repo, Accounts, Follows, Publications, Workers}
+  alias Margaret.{
+    Repo,
+    Accounts,
+    Follows,
+    Publications,
+    Workers
+  }
+
   alias Accounts.User
   alias Follows.Follow
   alias Publications.Publication
@@ -46,6 +53,7 @@ defmodule Margaret.Follows do
     42
 
   """
+  @spec get_followee_count(User.t()) :: non_neg_integer
   def get_followee_count(%User{} = user) do
     query = Follow.by_follower(user)
 
