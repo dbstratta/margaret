@@ -115,7 +115,41 @@ defmodule Margaret.Collections do
 
   """
   @spec in_collection?(Collection.t(), Story.t()) :: boolean
-  def in_collection?(%Collection{} = _collection, %Story{} = _story) do
-    false
+  def in_collection?(%Collection{id: collection_id}, %Story{} = story) do
+    case Stories.get_collection(story) do
+      %Collection{id: story_collection_id} -> story_collection_id === collection_id
+      nil -> false
+    end
+  end
+
+  @doc """
+  Inserts a collection.
+  """
+  def insert_collection(attrs) do
+    attrs
+    |> Collection.changeset()
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a collection.
+  """
+  def update_collection(%Collection{} = collection, attrs) do
+    collection
+    |> Collection.update_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a collection and all the stories in it.
+  TODO: Finish this.
+  """
+  def delete_collection(%Collection{} = collection) do
+    stories_query = nil
+
+    Multi.new()
+    |> Multi.delete(:collection, collection)
+    |> Multi.delete_all(:stories, stories_query)
+    |> Repo.transaction()
   end
 end

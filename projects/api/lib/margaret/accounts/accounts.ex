@@ -249,6 +249,8 @@ defmodule Margaret.Accounts do
   When inserting the user, we try to set its username
   to the part before the `@` in the email.
   If it's already taken we take a UUID.
+
+  TODO: Accept more attrs when inserting.
   """
   @spec get_or_insert_user(String.t()) :: User.t()
   def get_or_insert_user(email) do
@@ -276,7 +278,7 @@ defmodule Margaret.Accounts do
 
       {:error, reason} ->
         raise """
-        cannot get or update user.
+        cannot get or insert user.
         Reason: #{inspect(reason)}
         """
     end

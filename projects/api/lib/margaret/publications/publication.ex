@@ -23,6 +23,7 @@ defmodule Margaret.Publications.Publication do
     field(:name, :string)
     field(:display_name, :string)
 
+    field(:logo, :string)
     field(:description, :string)
     field(:website, :string)
 

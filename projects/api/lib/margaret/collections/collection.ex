@@ -22,6 +22,8 @@ defmodule Margaret.Collections.Collection do
 
   schema "collections" do
     field(:title, :string)
+
+    field(:image, :string)
     field(:subtitle, :string)
     field(:description, :string)
 
