@@ -282,6 +282,19 @@ defmodule Margaret.Stories do
   end
 
   @doc """
+  Returns `true` if the story is under a publication.
+  """
+  @spec under_publication?(Story.t()) :: boolean
+  def under_publication?(%Story{publication_id: nil}), do: false
+  def under_publication?(%Story{}), do: true
+
+  @doc """
+  Returns `true` if the story is in a collection.
+  """
+  @spec in_collection?(Story.t()) :: boolean
+  def in_collection?(%Story{} = story), do: !!get_collection(story)
+
+  @doc """
   Returns `true` if the story has been published.
   `false` otherwise.
 
@@ -292,6 +305,8 @@ defmodule Margaret.Stories do
 
   """
   @spec has_been_published?(Story.t()) :: boolean
+  def has_been_published?(%Story{published_at: nil}), do: false
+
   def has_been_published?(%Story{published_at: published_at}),
     do: published_at <= NaiveDateTime.utc_now()
 
@@ -353,12 +368,17 @@ defmodule Margaret.Stories do
 
   def can_update_story?(_, _), do: false
 
+  @doc """
+  Returns `true` if the user can delete the story,
+  `false` otherwise.
+  """
   @spec can_delete_story?(Story.t(), User.t()) :: boolean
   def can_delete_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
   def can_delete_story?(_, _), do: false
 
   @doc """
   Inserts a story.
+  TODO: Check if `collection_id` is in attrs and add it to the collection.
   """
   @spec insert_story(any) :: {:ok, any} | {:error, any, any, any}
   def insert_story(attrs) do

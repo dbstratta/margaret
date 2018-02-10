@@ -3,6 +3,7 @@ defmodule Margaret.Collections do
   The Collections context.
   """
 
+  import Ecto.Query
   alias Ecto.Multi
 
   alias Margaret.{
@@ -117,8 +118,8 @@ defmodule Margaret.Collections do
   @spec in_collection?(Collection.t(), Story.t()) :: boolean
   def in_collection?(%Collection{id: collection_id}, %Story{} = story) do
     case Stories.get_collection(story) do
-      %Collection{id: story_collection_id} -> story_collection_id === collection_id
-      nil -> false
+      %Collection{id: story_collection_id} when story_collection_id === collection_id -> true
+      _ -> false
     end
   end
 
@@ -142,10 +143,12 @@ defmodule Margaret.Collections do
 
   @doc """
   Deletes a collection and all the stories in it.
-  TODO: Finish this.
   """
   def delete_collection(%Collection{} = collection) do
-    stories_query = nil
+    stories_query =
+      Story
+      |> join(:inner, [..., s], cs in assoc(s, :collection_story))
+      |> CollectionStory.by_collection(collection)
 
     Multi.new()
     |> Multi.delete(:collection, collection)

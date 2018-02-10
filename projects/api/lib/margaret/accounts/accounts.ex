@@ -202,6 +202,7 @@ defmodule Margaret.Accounts do
 
   @doc """
   Inserts a user.
+  TODO: Refactor to use Ecto.Multi and send email when creating user.
 
   ## Examples
 

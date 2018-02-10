@@ -3,8 +3,6 @@ defmodule Margaret.Tags do
   The Tags context.
   """
 
-  import Ecto.Query
-
   alias Margaret.Repo
   alias Margaret.Tags.Tag
 
@@ -73,27 +71,28 @@ defmodule Margaret.Tags do
       iex> insert_and_get_all_tags(["programming", "elixir"])
       [%Tag{title: "programming"}, %Tag{title: "elixir"}]
 
-      iex> get_tag([])
+      iex> insert_and_get_all_tags([])
       []
 
   """
   @spec insert_and_get_all_tags([String.t()]) :: [%Tag{}]
-  def insert_and_get_all_tags([]), do: []
-
-  def insert_and_get_all_tags(tags) when is_list(tags) do
+  def insert_and_get_all_tags(tag_titles) when is_list(tag_titles) do
     now = NaiveDateTime.utc_now()
 
+    # Convert the tag title list into Tag structs to bulk insert.
     structs =
-      tags
+      tag_titles
       |> Stream.map(&String.trim/1)
       |> Stream.map(&%{title: &1})
       |> Stream.map(&Map.put(&1, :inserted_at, now))
       |> Enum.map(&Map.put(&1, :updated_at, now))
 
+    # Insert the structs.
     Repo.insert_all(Tag, structs, on_conflict: :nothing)
 
-    query = from(t in Tag, where: t.title in ^tags)
-
-    Repo.all(query)
+    # Retrieve the structs.
+    tag_titles
+    |> Tag.by_titles()
+    |> Repo.all()
   end
 end
