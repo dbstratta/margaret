@@ -15,6 +15,7 @@ defmodule Margaret.Repo.Migrations.AddCollectionStoriesTable do
     end
 
     create(unique_index(:collection_stories, [:story_id]))
+    create(unique_index(:collection_stories, [:collection_id, :part]))
     create(index(:collection_stories, [:collection_id]))
   end
 end
