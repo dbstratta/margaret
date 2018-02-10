@@ -159,15 +159,10 @@ defmodule Margaret.Accounts do
   """
   @spec get_user_by_social_login!({atom, String.t()}) :: User.t() | no_return
   def get_user_by_social_login!({provider, uid}, opts \\ []) do
-    query =
-      from(
-        u in User,
-        join: s in assoc(u, :social_logins),
-        where: s.provider == ^provider and s.uid == ^uid
-      )
-
-    query
+    User
     |> maybe_include_deactivated(opts)
+    |> join(:inner, [u], sl in assoc(u, :social_logins))
+    |> where([..., sl], sl.provider == ^provider and sl.uid == ^uid)
     |> Repo.one!()
   end
 
@@ -182,11 +177,9 @@ defmodule Margaret.Accounts do
   """
   @spec get_user_count :: non_neg_integer
   def get_user_count(opts \\ []) do
-    query = from(u in User, select: count(u.id))
-
-    query
+    User
     |> maybe_include_deactivated(opts)
-    |> Repo.one!()
+    |> Repo.aggregate(:count, :id)
   end
 
   defp maybe_include_deactivated(query, opts) do

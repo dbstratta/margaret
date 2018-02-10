@@ -3,7 +3,7 @@ defmodule Margaret.UsersTest do
 
   @valid_attrs %{
     username: "user#{System.unique_integer()}",
-    email: "user#{System.unique_integer()}@example.com"
+    email: "user#{System.unique_integer([:positive])}@example.com"
   }
 
   @invalid_attrs %{
@@ -13,53 +13,53 @@ defmodule Margaret.UsersTest do
 
   describe "changeset/1" do
     test "with valid attributes" do
-      %Changeset{valid?: changeset_valid?} = User.changeset(@valid_attrs)
+      %Changeset{valid?: valid_changeset?} = User.changeset(@valid_attrs)
 
-      assert changeset_valid?
+      assert valid_changeset?
     end
 
     test "with invalid username" do
       attrs = %{@valid_attrs | username: "bad_#@%!_*username&&+"}
 
-      %Changeset{valid?: changeset_valid?} = User.changeset(attrs)
+      %Changeset{valid?: valid_changeset?} = User.changeset(attrs)
 
-      refute changeset_valid?
+      refute valid_changeset?
     end
 
     test "with invalid email" do
       attrs = %{@valid_attrs | email: "bad_email"}
 
-      %Changeset{valid?: changeset_valid?} = User.changeset(attrs)
+      %Changeset{valid?: valid_changeset?} = User.changeset(attrs)
 
-      refute changeset_valid?
+      refute valid_changeset?
     end
   end
 
   describe "update_changeset/2" do
     test "with valid attributes" do
-      user = Factory.build_user()
+      user = Factory.insert(:user)
 
-      %Changeset{valid?: changeset_valid?} = User.update_changeset(user, @valid_attrs)
+      %Changeset{valid?: valid_changeset?} = User.update_changeset(user, @valid_attrs)
 
-      assert changeset_valid?
+      assert valid_changeset?
     end
 
     test "with invalid username" do
-      user = Factory.build_user()
+      user = Factory.insert(:user)
       invalid_attrs = %{@valid_attrs | username: "bad_#@%!_*username&&+"}
 
-      %Changeset{valid?: changeset_valid?} = User.update_changeset(user, invalid_attrs)
+      %Changeset{valid?: valid_changeset?} = User.update_changeset(user, invalid_attrs)
 
-      refute changeset_valid?
+      refute valid_changeset?
     end
 
     test "with invalid email" do
-      user = Factory.build_user()
+      user = Factory.insert(:user)
       attrs = %{@valid_attrs | email: "bad_email"}
 
-      %Changeset{valid?: changeset_valid?} = User.update_changeset(user, attrs)
+      %Changeset{valid?: valid_changeset?} = User.update_changeset(user, attrs)
 
-      refute changeset_valid?
+      refute valid_changeset?
     end
   end
 
@@ -79,7 +79,7 @@ defmodule Margaret.UsersTest do
     test "with duplicated username doesn't create a user" do
       username = "pepe"
 
-      Factory.insert_user!(username: username)
+      Factory.insert(:user, username: username)
 
       invalid_attrs = %{@valid_attrs | username: username}
       assert {:error, _} = Accounts.insert_user(invalid_attrs)
@@ -88,7 +88,7 @@ defmodule Margaret.UsersTest do
     test "with duplicated email doesn't create a user" do
       email = "user@example.com"
 
-      Factory.insert_user!(email: email)
+      Factory.insert(:user, email: email)
 
       invalid_attrs = %{@valid_attrs | email: email}
       assert {:error, _} = Accounts.insert_user(invalid_attrs)
@@ -97,13 +97,9 @@ defmodule Margaret.UsersTest do
 
   describe "update_user/2" do
     test "with valid data updates the user" do
-      user =
-        Factory.insert_user!(
-          username: "user#{System.unique_integer()}",
-          email: "user#{System.unique_integer()}@example.com"
-        )
+      user = Factory.insert(:user)
 
-      new_email = "user#{System.unique_integer()}@example.com"
+      new_email = Faker.Internet.email()
       new_username = "user#{System.unique_integer()}"
 
       assert user.email != new_email
@@ -118,7 +114,7 @@ defmodule Margaret.UsersTest do
     end
 
     test "with invalid data doesn't update the user" do
-      user = Factory.insert_user!()
+      user = Factory.insert(:user)
 
       attrs = %{@valid_attrs | email: @invalid_attrs.email, username: @invalid_attrs.username}
 
@@ -128,7 +124,7 @@ defmodule Margaret.UsersTest do
 
   describe "get_user/2" do
     test "with valid id returns the user" do
-      %User{id: user_id} = Factory.insert_user!()
+      %User{id: user_id} = Factory.insert(:user)
 
       assert %User{id: ^user_id} = Accounts.get_user(user_id)
     end
@@ -140,7 +136,7 @@ defmodule Margaret.UsersTest do
     end
 
     test "including deactivated users" do
-      %User{id: user_id} = Factory.insert_user!(deactivated_at: NaiveDateTime.utc_now())
+      %User{id: user_id} = Factory.insert(:user, deactivated_at: NaiveDateTime.utc_now())
 
       assert is_nil(Accounts.get_user(user_id))
       assert %User{id: ^user_id} = Accounts.get_user(user_id, include_deactivated: true)
@@ -149,7 +145,7 @@ defmodule Margaret.UsersTest do
 
   describe "get_user!/2" do
     test "with valid id returns the user" do
-      %User{id: user_id} = Factory.insert_user!()
+      %User{id: user_id} = Factory.insert(:user)
 
       assert %User{id: ^user_id} = Accounts.get_user!(user_id)
     end
@@ -163,7 +159,7 @@ defmodule Margaret.UsersTest do
     end
 
     test "including deactivated users" do
-      %User{id: user_id} = Factory.insert_user!(deactivated_at: NaiveDateTime.utc_now())
+      %User{id: user_id} = Factory.insert(:user, deactivated_at: NaiveDateTime.utc_now())
 
       assert_raise Ecto.NoResultsError, fn ->
         Accounts.get_user!(user_id)
@@ -175,7 +171,7 @@ defmodule Margaret.UsersTest do
 
   describe "get_user_by_username/2" do
     test "with valid username returns the user" do
-      %User{username: username} = Factory.insert_user!()
+      %User{username: username} = Factory.insert(:user)
 
       assert %User{username: ^username} = Accounts.get_user_by_username(username)
     end
@@ -187,7 +183,7 @@ defmodule Margaret.UsersTest do
     end
 
     test "including deactivated users" do
-      %User{username: username} = Factory.insert_user!(deactivated_at: NaiveDateTime.utc_now())
+      %User{username: username} = Factory.insert(:user, deactivated_at: NaiveDateTime.utc_now())
 
       assert is_nil(Accounts.get_user_by_username(username))
 
@@ -198,7 +194,7 @@ defmodule Margaret.UsersTest do
 
   describe "get_user_by_username!/2" do
     test "with valid username returns the user" do
-      %User{username: username} = Factory.insert_user!()
+      %User{username: username} = Factory.insert(:user)
 
       assert %User{username: ^username} = Accounts.get_user_by_username!(username)
     end
@@ -212,7 +208,7 @@ defmodule Margaret.UsersTest do
     end
 
     test "including deactivated users" do
-      %User{username: username} = Factory.insert_user!(deactivated_at: NaiveDateTime.utc_now())
+      %User{username: username} = Factory.insert(:user, deactivated_at: NaiveDateTime.utc_now())
 
       assert_raise Ecto.NoResultsError, fn ->
         Accounts.get_user_by_username!(username)
@@ -225,19 +221,19 @@ defmodule Margaret.UsersTest do
 
   describe "get_user_by_email/2" do
     test "with valid email returns the user" do
-      %User{email: email} = Factory.insert_user!()
+      %User{email: email} = Factory.insert(:user)
 
       assert %User{email: ^email} = Accounts.get_user_by_email(email)
     end
 
     test "with invalid email returns nil" do
-      email = "user#{System.unique_integer()}@example.com"
+      email = Faker.Internet.email()
 
       assert is_nil(Accounts.get_user_by_email(email))
     end
 
     test "including deactivated users" do
-      %User{email: email} = Factory.insert_user!(deactivated_at: NaiveDateTime.utc_now())
+      %User{email: email} = Factory.insert(:user, deactivated_at: NaiveDateTime.utc_now())
 
       assert is_nil(Accounts.get_user_by_email(email))
 
@@ -247,7 +243,7 @@ defmodule Margaret.UsersTest do
 
   describe "get_user_by_email!/2" do
     test "with valid email returns the user" do
-      %User{email: email} = Factory.insert_user!()
+      %User{email: email} = Factory.insert(:user)
 
       assert %User{email: ^email} = Accounts.get_user_by_email!(email)
     end
@@ -261,7 +257,7 @@ defmodule Margaret.UsersTest do
     end
 
     test "including deactivated users" do
-      %User{email: email} = Factory.insert_user!(deactivated_at: NaiveDateTime.utc_now())
+      %User{email: email} = Factory.insert(:user, deactivated_at: NaiveDateTime.utc_now())
 
       assert_raise Ecto.NoResultsError, fn ->
         Accounts.get_user_by_email!(email)
@@ -273,8 +269,8 @@ defmodule Margaret.UsersTest do
 
   describe "get_user_by_social_login!/2" do
     test "with valid data returns the user" do
-      %User{id: user_id} = Factory.insert_user!()
-      %SocialLogin{provider: provider, uid: uid} = Factory.insert_social_login!(user_id: user_id)
+      %User{id: user_id} = user = Factory.insert(:user)
+      %SocialLogin{provider: provider, uid: uid} = Factory.insert(:social_login, user: user)
 
       assert %User{id: ^user_id} = Accounts.get_user_by_social_login!({provider, uid})
     end
@@ -289,8 +285,8 @@ defmodule Margaret.UsersTest do
     end
 
     test "including deactivated users" do
-      %User{id: user_id} = Factory.insert_user!(deactivated_at: NaiveDateTime.utc_now())
-      %SocialLogin{provider: provider, uid: uid} = Factory.insert_social_login!(user_id: user_id)
+      %User{id: user_id} = user = Factory.insert(:user, deactivated_at: NaiveDateTime.utc_now())
+      %SocialLogin{provider: provider, uid: uid} = Factory.insert(:social_login, user: user)
 
       assert_raise Ecto.NoResultsError, fn ->
         Accounts.get_user_by_social_login!({provider, uid})
@@ -308,11 +304,11 @@ defmodule Margaret.UsersTest do
       total_user_count = active_user_count + deactivated_user_count
 
       Enum.each(1..active_user_count, fn _ ->
-        Factory.insert_user!()
+        Factory.insert(:user)
       end)
 
       Enum.each(1..deactivated_user_count, fn _ ->
-        Factory.insert_user!(deactivated_at: NaiveDateTime.utc_now())
+        Factory.insert(:user, deactivated_at: NaiveDateTime.utc_now())
       end)
 
       assert Accounts.get_user_count() === active_user_count
@@ -322,7 +318,7 @@ defmodule Margaret.UsersTest do
 
   describe "delete_user/1" do
     test "when user exists deletes the user" do
-      %User{id: user_id} = user = Factory.insert_user!()
+      %User{id: user_id} = user = Factory.insert(:user)
 
       assert {:ok, %User{}} = Accounts.delete_user(user)
       assert is_nil(Accounts.get_user(user_id))
@@ -331,7 +327,7 @@ defmodule Margaret.UsersTest do
 
   describe "delete_user!/1" do
     test "when user exists deletes the user" do
-      %User{id: user_id} = user = Factory.insert_user!()
+      %User{id: user_id} = user = Factory.insert(:user)
 
       assert %User{} = Accounts.delete_user!(user)
       assert is_nil(Accounts.get_user(user_id))

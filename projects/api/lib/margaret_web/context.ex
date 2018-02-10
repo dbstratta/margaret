@@ -5,8 +5,6 @@ defmodule MargaretWeb.Context do
 
   @behaviour Plug
 
-  import Plug.Conn
-
   alias Margaret.Accounts.User
 
   @impl true
@@ -20,10 +18,10 @@ defmodule MargaretWeb.Context do
   end
 
   defp build_context(%User{} = viewer, conn) do
-    put_private(conn, :absinthe, %{context: %{viewer: viewer}})
+    Absinthe.Plug.put_options(conn, context: %{viewer: viewer})
   end
 
   defp build_context(nil, conn) do
-    put_private(conn, :absinthe, %{context: %{}})
+    Absinthe.Plug.put_options(conn, context: %{})
   end
 end

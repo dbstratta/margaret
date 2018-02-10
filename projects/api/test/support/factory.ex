@@ -27,18 +27,20 @@ defmodule Margaret.Factory do
   alias Follows.Follow
   alias Tags.Tag
 
+  @doc """
+  User factory.
+  """
+  @spec user_factory :: User.t()
   def user_factory do
     %User{
-      username: sequence(:username, &"user-#{&1}"),
-      email: sequence(:email, &"user-#{&1}@margaret.test"),
-      bio: "Test user.",
-      website: "https://margaret.test"
+      username: sequence(:username, &"user#{&1}"),
+      email: sequence(:email, &"user#{&1}@margaret.test")
     }
   end
 
   def social_login_factory do
     %SocialLogin{
-      uid: sequence(:uid, &"uid-#{&1}"),
+      uid: sequence(:uid, &"uid#{&1}"),
       provider: "github",
       user: build(:user)
     }
@@ -50,11 +52,7 @@ defmodule Margaret.Factory do
       author: build(:user),
       unique_hash: sequence(:unique_hash, &"unique_hash-#{&1}"),
       audience: :all,
-      license: :all_rights_reserved,
-      comments: build_list(3, :comment),
-      stars: build_list(1, :star),
-      views: build_list(3, :story_view),
-      tags: build_pair(:tag)
+      license: :all_rights_reserved
     }
   end
 
@@ -69,7 +67,6 @@ defmodule Margaret.Factory do
     %Comment{
       content: %{"blocks" => [%{"text" => "test"}]},
       author: build(:user),
-      stars: build_list(1, :star),
       story: build(:story)
     }
   end
@@ -79,10 +76,7 @@ defmodule Margaret.Factory do
       name: sequence(:name, &"publication-#{&1}"),
       display_name: sequence(:display_name, &"Publication #{&1}"),
       description: "Test publication.",
-      website: "https://margaret.test",
-      publication_memberships: [build(:publication_membership, %{role: :owner})],
-      followers: build_list(3, :user),
-      tags: build_list(1, :tag)
+      website: "https://margaret.test"
     }
   end
 
@@ -107,8 +101,7 @@ defmodule Margaret.Factory do
   def notification_factory do
     %Notification{
       actor: build(:user),
-      action: :followed,
-      user: build(:user)
+      action: :followed
     }
   end
 
@@ -121,22 +114,19 @@ defmodule Margaret.Factory do
 
   def star_factory do
     %Star{
-      user: build(:user),
-      story: build(:story)
+      user: build(:user)
     }
   end
 
   def bookmark_factory do
     %Bookmark{
-      user: build(:user),
-      story: build(:story)
+      user: build(:user)
     }
   end
 
   def follow_factory do
     %Follow{
-      follower: build(:user),
-      user: build(:user)
+      follower: build(:user)
     }
   end
 

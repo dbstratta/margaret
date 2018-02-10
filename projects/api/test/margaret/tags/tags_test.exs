@@ -7,25 +7,25 @@ defmodule Margaret.TagsTest do
 
   describe "changeset/1" do
     test "with valid attributes" do
-      %Changeset{valid?: changeset_valid?} = Tag.changeset(@valid_attrs)
+      %Changeset{valid?: valid_changeset?} = Tag.changeset(@valid_attrs)
 
-      assert changeset_valid?
+      assert valid_changeset?
     end
 
     test "with invalid username" do
       attrs = %{@valid_attrs | title: 2}
 
-      %Changeset{valid?: changeset_valid?} = Tag.changeset(attrs)
+      %Changeset{valid?: valid_changeset?} = Tag.changeset(attrs)
 
-      refute changeset_valid?
+      refute valid_changeset?
     end
 
     test "with missing attributes" do
       attrs = %{}
 
-      %Changeset{valid?: changeset_valid?} = Tag.changeset(attrs)
+      %Changeset{valid?: valid_changeset?} = Tag.changeset(attrs)
 
-      refute changeset_valid?
+      refute valid_changeset?
     end
   end
 
@@ -49,7 +49,7 @@ defmodule Margaret.TagsTest do
 
   describe "get_tag/1" do
     test "with valid id returns the tag" do
-      %Tag{id: tag_id} = Factory.insert_tag!()
+      %Tag{id: tag_id} = Factory.insert(:tag)
 
       assert %Tag{id: ^tag_id} = Tags.get_tag(tag_id)
     end
@@ -63,7 +63,7 @@ defmodule Margaret.TagsTest do
 
   describe "get_tag!/1" do
     test "with valid id returns the tag" do
-      %Tag{id: tag_id} = Factory.insert_tag!()
+      %Tag{id: tag_id} = Factory.insert(:tag)
 
       assert %Tag{id: ^tag_id} = Tags.get_tag!(tag_id)
     end
@@ -79,7 +79,7 @@ defmodule Margaret.TagsTest do
 
   describe "get_tag_by_title/1" do
     test "with valid title returns the tag" do
-      %Tag{title: title} = Factory.insert_tag!()
+      %Tag{title: title} = Factory.insert(:tag)
 
       assert %Tag{title: ^title} = Tags.get_tag_by_title(title)
     end
