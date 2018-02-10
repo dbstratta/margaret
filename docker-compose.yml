@@ -31,18 +31,18 @@ services:
 
       # These env variables will be read from the host machine.
       - NODE_ENV
-  
+
   ml:
     build: ./projects/ml
 
 
   postgres:
-    image: postgres:10.1
+    image: postgres:10.2
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
   redis:
-    image: redis:4.0.6
+    image: redis:4.0.8
     volumes:
       - redis_data:/data
 

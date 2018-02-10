@@ -86,7 +86,8 @@ defmodule Margaret.Publications.Publication do
   end
 
   # TODO: Refactor this function using `get_field/3`.
-  defp maybe_put_name(%Ecto.Changeset{changes: %{name: name}} = changeset) when not is_nil(name) do
+  defp maybe_put_name(%Ecto.Changeset{changes: %{name: name}} = changeset)
+       when not is_nil(name) do
     put_change(changeset, :name, name)
   end
 
