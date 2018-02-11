@@ -60,7 +60,14 @@ defmodule Margaret.Stories.Story do
 
   @doc """
   Builds a changeset for inserting a story.
+
+  ## Examples
+
+      iex> changeset(attrs)
+      %Ecto.Changeset{}
+
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       content
@@ -89,7 +96,14 @@ defmodule Margaret.Stories.Story do
 
   @doc """
   Builds a changeset for updating a story.
+
+  ## Examples
+
+      iex> update_changeset(%Story{}, attrs)
+      %Ecto.Changeset{}
+
   """
+  @spec update_changeset(t(), map()) :: Ecto.Changeset.t()
   def update_changeset(%Story{} = story, attrs) do
     permitted_attrs = ~w(
       content
@@ -106,6 +120,7 @@ defmodule Margaret.Stories.Story do
   end
 
   # Only put `unique_hash` in the changeset if the story is being created.
+  @spec maybe_put_unique_hash(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   defp maybe_put_unique_hash(%Ecto.Changeset{data: %{unique_hash: nil}} = changeset) do
     put_change(changeset, :unique_hash, generate_hash())
   end
@@ -113,6 +128,7 @@ defmodule Margaret.Stories.Story do
   defp maybe_put_unique_hash(changeset), do: changeset
 
   # Generates a unique hash for a story.
+  @spec generate_hash :: String.t()
   defp generate_hash do
     unique_hash_length = 16
 
@@ -139,6 +155,7 @@ defmodule Margaret.Stories.Story do
     do: where(query, [..., s], s.published_at > ^NaiveDateTime.utc_now())
 
   @doc """
+  Filters the stories in the query by being public.
   """
   @spec public(Ecto.Query.t()) :: Ecto.Query.t()
   def public(query \\ Story) do
@@ -164,24 +181,24 @@ defmodule Margaret.Stories.Story do
   @doc """
   Preloads the author of a story.
   """
-  @spec preload_author(t) :: t
+  @spec preload_author(t()) :: t()
   def preload_author(%Story{} = story), do: Repo.preload(story, :author)
 
   @doc """
   Preloads the publication of a story.
   """
-  @spec preload_publication(t) :: t
+  @spec preload_publication(t()) :: t()
   def preload_publication(%Story{} = story), do: Repo.preload(story, :publication)
 
   @doc """
   Preloads the collection of a story.
   """
-  @spec preload_collection(t) :: t
+  @spec preload_collection(t()) :: t()
   def preload_collection(%Story{} = story), do: Repo.preload(story, :collection)
 
   @doc """
   Preloads the tags of a story.
   """
-  @spec preload_tags(t) :: t
+  @spec preload_tags(t()) :: t()
   def preload_tags(%Story{} = story), do: Repo.preload(story, :tags)
 end

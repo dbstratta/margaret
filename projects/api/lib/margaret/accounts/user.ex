@@ -76,6 +76,7 @@ defmodule Margaret.Accounts.User do
   @doc """
   Builds a changeset for inserting a user.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       username
@@ -105,6 +106,7 @@ defmodule Margaret.Accounts.User do
   @doc """
   Builds a changeset for updating a user.
   """
+  @spec update_changeset(t(), map()) :: Ecto.Changeset.t()
   def update_changeset(%User{} = user, attrs) do
     permitted_attrs = ~w(
       username
@@ -128,7 +130,7 @@ defmodule Margaret.Accounts.User do
   @doc """
   Returns `true` if the string is a valid username.
   """
-  @spec valid_username?(String.t()) :: boolean
+  @spec valid_username?(String.t()) :: boolean()
   def valid_username?(username), do: String.match?(username, @username_regex)
 
   @doc """
@@ -136,7 +138,10 @@ defmodule Margaret.Accounts.User do
 
   ## Examples
 
-      iex> from(u in User, where: u.is_admin) |> active()
+      iex> active()
+      #Ecto.Query<...>
+
+      iex> active(query)
       #Ecto.Query<...>
 
   """
@@ -148,10 +153,14 @@ defmodule Margaret.Accounts.User do
 
   ## Examples
 
-      iex> User |> admin()
+      iex> admin()
+      #Ecto.Query<...>
+
+      iex> admin(query)
       #Ecto.Query<...>
 
   """
+  @spec admin(Ecto.Query.t()) :: Ecto.Query.t()
   def admin(query \\ User), do: where(query, [..., u], u.is_admin)
 
   @doc """
@@ -159,16 +168,20 @@ defmodule Margaret.Accounts.User do
 
   ## Examples
 
-      iex> User |> employee()
+      iex> employee()
+      #Ecto.Query<...>
+
+      iex> employee(query)
       #Ecto.Query<...>
 
   """
+  @spec employee(Ecto.Query.t()) :: Ecto.Query.t()
   def employee(query \\ User), do: where(query, [..., u], u.is_employee)
 
   @doc """
   Preloads the social logins of a user.
   """
-  @spec preload_social_logins(t) :: t
+  @spec preload_social_logins(t()) :: t()
   def preload_social_logins(%User{} = user), do: Repo.preload(user, :social_logins)
 
   @spec preload_social_logins(Ecto.Query.t()) :: Ecto.Query.t()
