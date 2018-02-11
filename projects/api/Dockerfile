@@ -25,8 +25,14 @@ COPY . .
 
 RUN mix do deps.compile \
     , compile \
-    , release --env=prod --verbose \
-    && mv /usr/src/app/_build/prod/rel/${APP_NAME} /opt/release \
+    , release --env=prod --verbose
+
+# FIXME: Remove this.
+RUN ls _build
+RUN ls _build/prod
+RUN ls _build/prod/rel
+
+RUN mv _build/prod/rel/${APP_NAME} /opt/release \
     && mv /opt/release/bin/${APP_NAME} /opt/release/bin/start_server
 
 # Final stage
