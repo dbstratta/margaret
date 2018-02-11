@@ -23,7 +23,9 @@ diego =
   Repo.insert!(%User{
     username: "diego",
     email: "strattadb@gmail.com",
-    location: "Montevideo, Uruguay"
+    location: "Montevideo, Uruguay",
+    is_admin: true,
+    is_employee: true
   })
 
 margaret_tag =
