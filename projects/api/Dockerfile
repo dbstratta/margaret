@@ -6,7 +6,7 @@ LABEL version="1.0.0"
 LABEL maintainer="strattadb@gmail.com"
 
 ARG APP_NAME=margaret
-ENV MIX_ENV=${MIX_ENV:-prod} REPLACE_OS_VARS=true
+ENV MIX_ENV=prod REPLACE_OS_VARS=true
 
 # Install the Hex package manager.
 RUN mix local.hex --force && \
@@ -18,19 +18,21 @@ WORKDIR /usr/src/app
 
 # Install dependencies.
 COPY mix.exs mix.lock ./
-RUN mix do deps.get --only prod, deps.compile
+RUN mix deps.get --only prod
 
 # Bundle app source.
 COPY . .
 
-RUN mix do compile, release --env=prod --verbose \
-    && mv _build/prod/rel/${APP_NAME} /opt/release \
+RUN mix do deps.compile \
+    , compile \
+    , release --env=prod --verbose \
+    && mv /usr/src/app/_build/prod/rel/${APP_NAME} /opt/release \
     && mv /opt/release/bin/${APP_NAME} /opt/release/bin/start_server
 
 # Final stage
 FROM alpine:3.7@sha256:7df6db5aa61ae9480f52f0b3a06a140ab98d427f86d8d5de0bedab9b8df6b1c0
 
-ENV MIX_ENV=${MIX_ENV:-prod} REPLACE_OS_VARS=true
+ENV MIX_ENV=prod REPLACE_OS_VARS=true
 
 WORKDIR /opt/app
 
