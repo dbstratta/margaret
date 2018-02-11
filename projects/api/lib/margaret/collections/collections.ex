@@ -33,7 +33,7 @@ defmodule Margaret.Collections do
       nil
 
   """
-  @spec get_collection(String.t() | non_neg_integer) :: Collection.t() | nil
+  @spec get_collection(String.t() | non_neg_integer()) :: Collection.t() | nil
   def get_collection(id), do: Repo.get(Collection, id)
 
   @doc """
@@ -115,7 +115,7 @@ defmodule Margaret.Collections do
       true
 
   """
-  @spec in_collection?(Collection.t(), Story.t()) :: boolean
+  @spec in_collection?(Collection.t(), Story.t()) :: boolean()
   def in_collection?(%Collection{id: collection_id}, %Story{} = story) do
     case Stories.get_collection(story) do
       %Collection{id: story_collection_id} when story_collection_id === collection_id -> true
@@ -126,6 +126,7 @@ defmodule Margaret.Collections do
   @doc """
   Inserts a collection.
   """
+  @spec insert_collection(map()) :: {:ok, Collection.t()} | {:error, Ecto.Changeset.t()}
   def insert_collection(attrs) do
     attrs
     |> Collection.changeset()
@@ -135,6 +136,8 @@ defmodule Margaret.Collections do
   @doc """
   Updates a collection.
   """
+  @spec update_collection(Collection.t(), map()) ::
+          {:ok, Collection.t()} | {:error, Ecto.Changeset.t()}
   def update_collection(%Collection{} = collection, attrs) do
     collection
     |> Collection.update_changeset(attrs)
@@ -144,6 +147,7 @@ defmodule Margaret.Collections do
   @doc """
   Deletes a collection and all the stories in it.
   """
+  @spec delete_collection(Collection.t()) :: {:ok, Collection.t()} | {:error, Ecto.Changeset.t()}
   def delete_collection(%Collection{} = collection) do
     stories_query =
       Story
@@ -154,5 +158,27 @@ defmodule Margaret.Collections do
     |> Multi.delete(:collection, collection)
     |> Multi.delete_all(:stories, stories_query)
     |> Repo.transaction()
+  end
+
+  @doc """
+  Inserts a collection story.
+  """
+  @spec insert_collection_story(map()) ::
+          {:ok, CollectionStory.t()} | {:error, Ecto.Changeset.t()}
+  def insert_collection_story(attrs) do
+    attrs
+    |> CollectionStory.changeset()
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a collection story.
+  """
+  @spec update_collection_story(CollectionStory.t(), map()) ::
+          {:ok, CollectionStory.t()} | {:error, Ecto.Changeset.t()}
+  def update_collection_story(%CollectionStory{} = collection_story, attrs) do
+    collection_story
+    |> CollectionStory.update_changeset(attrs)
+    |> Repo.update()
   end
 end

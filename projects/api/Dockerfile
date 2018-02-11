@@ -26,7 +26,7 @@ COPY . .
 
 RUN mix do compile \
     , release --env=prod --verbose \
-    # Alpine Linux doesn't have /opt folder.
+    # Alpine Linux doesn't come with the /opt folder.
     && mkdir -p /opt \
     && mv _build/prod/rel/${APP_NAME} /opt/release \
     && mv /opt/release/bin/${APP_NAME} /opt/release/bin/start_server

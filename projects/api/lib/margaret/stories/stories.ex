@@ -32,7 +32,7 @@ defmodule Margaret.Stories do
       nil
 
   """
-  @spec get_story(String.t() | non_neg_integer) :: Story.t() | nil
+  @spec get_story(String.t() | non_neg_integer()) :: Story.t() | nil
   def get_story(id), do: Repo.get(Story, id)
 
   @doc """
@@ -49,7 +49,7 @@ defmodule Margaret.Stories do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_story!(String.t() | non_neg_integer) :: Story.t() | no_return
+  @spec get_story!(String.t() | non_neg_integer()) :: Story.t() | no_return()
   def get_story!(id), do: Repo.get!(Story, id)
 
   @doc """
@@ -208,7 +208,7 @@ defmodule Margaret.Stories do
       42
 
   """
-  @spec get_word_count(Story.t()) :: non_neg_integer
+  @spec get_word_count(Story.t()) :: non_neg_integer()
   def get_word_count(%Story{content: %{"blocks" => blocks}}) do
     blocks
     |> Enum.map_join(" ", &Map.get(&1, "text"))
@@ -225,7 +225,7 @@ defmodule Margaret.Stories do
       12
 
   """
-  @spec get_read_time(Story.t()) :: non_neg_integer
+  @spec get_read_time(Story.t()) :: non_neg_integer()
   def get_read_time(%Story{} = story) do
     avg_wpm = 275
 
@@ -247,7 +247,7 @@ defmodule Margaret.Stories do
       815
 
   """
-  @spec get_story_count(Keyword.t()) :: non_neg_integer
+  @spec get_story_count(Keyword.t()) :: non_neg_integer()
   def get_story_count(opts \\ []) do
     query =
       if Keyword.get(opts, :published_only, false) do
@@ -262,19 +262,19 @@ defmodule Margaret.Stories do
   @doc """
   Gets the star count of a story.
   """
-  @spec get_star_count(Story.t()) :: non_neg_integer
+  @spec get_star_count(Story.t()) :: non_neg_integer()
   def get_star_count(%Story{} = story), do: Stars.get_star_count(story: story)
 
   @doc """
   Gets the comment count of a story.
   """
-  @spec get_comment_count(Story.t()) :: non_neg_integer
+  @spec get_comment_count(Story.t()) :: non_neg_integer()
   def get_comment_count(%Story{} = story), do: Comments.get_comment_count(story: story)
 
   @doc """
   Gets the view count of a story.
   """
-  @spec get_view_count(Story.t()) :: non_neg_integer
+  @spec get_view_count(Story.t()) :: non_neg_integer()
   def get_view_count(%Story{} = story) do
     query = StoryView.by_story(story)
 
@@ -284,14 +284,14 @@ defmodule Margaret.Stories do
   @doc """
   Returns `true` if the story is under a publication.
   """
-  @spec under_publication?(Story.t()) :: boolean
+  @spec under_publication?(Story.t()) :: boolean()
   def under_publication?(%Story{publication_id: nil}), do: false
   def under_publication?(%Story{}), do: true
 
   @doc """
   Returns `true` if the story is in a collection.
   """
-  @spec in_collection?(Story.t()) :: boolean
+  @spec in_collection?(Story.t()) :: boolean()
   def in_collection?(%Story{} = story), do: !!get_collection(story)
 
   @doc """
@@ -304,7 +304,7 @@ defmodule Margaret.Stories do
       false
 
   """
-  @spec has_been_published?(Story.t()) :: boolean
+  @spec has_been_published?(Story.t()) :: boolean()
   def has_been_published?(%Story{published_at: nil}), do: false
 
   def has_been_published?(%Story{published_at: published_at}),
@@ -323,7 +323,7 @@ defmodule Margaret.Stories do
       false
 
   """
-  @spec public?(Story.t()) :: boolean
+  @spec public?(Story.t()) :: boolean()
   def public?(%Story{audience: :all} = story), do: has_been_published?(story)
   def public?(_), do: false
 
@@ -337,7 +337,7 @@ defmodule Margaret.Stories do
       true
 
   """
-  @spec can_see_story?(Story.t(), User.t()) :: boolean
+  @spec can_see_story?(Story.t(), User.t()) :: boolean()
   def can_see_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
 
   def can_see_story?(%Story{publication_id: publication_id}, %User{id: user_id})
@@ -358,7 +358,7 @@ defmodule Margaret.Stories do
   Returns `true` if the user can update the story,
   `false` otherwise.
   """
-  @spec can_update_story?(Story.t(), User.t()) :: boolean
+  @spec can_update_story?(Story.t(), User.t()) :: boolean()
   def can_update_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
 
   def can_update_story?(%Story{publication_id: publication_id}, %User{id: user_id})
@@ -372,7 +372,7 @@ defmodule Margaret.Stories do
   Returns `true` if the user can delete the story,
   `false` otherwise.
   """
-  @spec can_delete_story?(Story.t(), User.t()) :: boolean
+  @spec can_delete_story?(Story.t(), User.t()) :: boolean()
   def can_delete_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
   def can_delete_story?(_, _), do: false
 
@@ -380,14 +380,16 @@ defmodule Margaret.Stories do
   Inserts a story.
   TODO: Check if `collection_id` is in attrs and add it to the collection.
   """
-  @spec insert_story(any) :: {:ok, any} | {:error, any, any, any}
+  @spec insert_story(map()) :: {:ok, map()} | {:error, atom(), any(), map()}
   def insert_story(attrs) do
     Multi.new()
     |> maybe_insert_tags(attrs)
     |> insert_story(attrs)
+    |> maybe_insert_in_collection(attrs)
     |> Repo.transaction()
   end
 
+  @spec insert_story(Multi.t(), map()) :: Multi.t()
   defp insert_story(multi, attrs) do
     insert_story_fn = fn changes ->
       maybe_put_tags = fn attrs ->
@@ -409,7 +411,7 @@ defmodule Margaret.Stories do
   @doc """
   Updates a story.
   """
-  @spec update_story(Story.t(), any) :: {:ok, any} | {:error, any, any, any}
+  @spec update_story(Story.t(), map()) :: {:ok, map()} | {:error, atom(), any(), map()}
   def update_story(%Story{} = story, attrs) do
     Multi.new()
     |> maybe_insert_tags(attrs)
@@ -417,6 +419,7 @@ defmodule Margaret.Stories do
     |> Repo.transaction()
   end
 
+  @spec update_story(Multi.t(), Story.t(), map()) :: Multi.t()
   defp update_story(multi, %Story{} = story, attrs) do
     update_story_fn = fn changes ->
       maybe_put_tags = fn {story, attrs} ->
@@ -436,18 +439,30 @@ defmodule Margaret.Stories do
     Multi.run(multi, :story, update_story_fn)
   end
 
+  @spec maybe_insert_tags(Multi.t(), map()) :: Multi.t()
   defp maybe_insert_tags(multi, %{tags: tags}) do
-    insert_tags_fn = fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end
+    insert_tags_fn = fn _ ->
+      tags = Tags.insert_and_get_all_tags(tags)
+
+      {:ok, tags}
+    end
 
     Multi.run(multi, :tags, insert_tags_fn)
   end
 
   defp maybe_insert_tags(multi, _attrs), do: multi
 
+  @spec maybe_insert_in_collection(Multi.t(), map()) :: Multi.t()
+  defp maybe_insert_in_collection(multi, %{collection_id: collection_id}) do
+    multi
+  end
+
+  defp maybe_insert_in_collection(multi, _attrs), do: multi
+
   @doc """
   Removes a story from its publication.
   """
-  @spec remove_from_publication(Story.t()) :: {:ok, Story.t()} | any
+  @spec remove_from_publication(Story.t()) :: {:ok, map()} | {:error, atom(), any(), map()}
   def remove_from_publication(%Story{} = story) do
     attrs = %{publication_id: nil}
 

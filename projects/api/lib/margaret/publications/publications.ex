@@ -22,7 +22,7 @@ defmodule Margaret.Publications do
   @typedoc """
   The role of a member in a publication.
   """
-  @type role :: atom
+  @type role :: atom()
 
   @doc """
   Gets a publication by its id.
@@ -36,7 +36,7 @@ defmodule Margaret.Publications do
       nil
 
   """
-  @spec get_publication(String.t() | non_neg_integer) :: Publication.t() | nil
+  @spec get_publication(String.t() | non_neg_integer()) :: Publication.t() | nil
   def get_publication(id), do: Repo.get(Publication, id)
 
   @doc """
@@ -82,7 +82,7 @@ defmodule Margaret.Publications do
       nil
 
   """
-  @spec get_member_role(Publication.t(), User.t()) :: role | nil
+  @spec get_member_role(Publication.t(), User.t()) :: role() | nil
   def get_member_role(%Publication{id: publication_id}, %User{id: user_id}) do
     case get_membership(publication_id: publication_id, member_id: user_id) do
       %PublicationMembership{role: role} -> role
@@ -99,7 +99,7 @@ defmodule Margaret.Publications do
     3
 
   """
-  @spec get_member_count(Publication.t()) :: non_neg_integer
+  @spec get_member_count(Publication.t()) :: non_neg_integer()
   def get_member_count(%Publication{} = publication) do
     query = PublicationMembership.by_publication(publication)
 
@@ -109,7 +109,7 @@ defmodule Margaret.Publications do
   @doc """
   Returns the story count of the publication.
   """
-  @spec get_story_count(Publication.t(), Keyword.t()) :: non_neg_integer
+  @spec get_story_count(Publication.t(), Keyword.t()) :: non_neg_integer()
   def get_story_count(%Publication{} = publication, opts \\ []) do
     query = Story.under_publication(publication)
 
@@ -126,7 +126,7 @@ defmodule Margaret.Publications do
   @doc """
   Gets the follower count of a publication.
   """
-  @spec get_follower_count(Publication.t()) :: non_neg_integer
+  @spec get_follower_count(Publication.t()) :: non_neg_integer()
   def get_follower_count(%Publication{} = publication),
     do: Follows.get_follower_count(publication: publication)
 
@@ -143,7 +143,7 @@ defmodule Margaret.Publications do
     false
 
   """
-  @spec check_role(Publication.t(), User.t(), [role, ...] | role) :: boolean
+  @spec check_role(Publication.t(), User.t(), [role(), ...] | role()) :: boolean()
   def check_role(publication, user, permitted_roles) when is_list(permitted_roles) do
     get_member_role(publication, user) in permitted_roles
   end
@@ -163,7 +163,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec member?(Publication.t(), User.t()) :: boolean
+  @spec member?(Publication.t(), User.t()) :: boolean()
   def member?(publication, user), do: !!get_member_role(publication, user)
 
   @doc """
@@ -179,7 +179,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec editor?(Publication.t(), User.t()) :: boolean
+  @spec editor?(Publication.t(), User.t()) :: boolean()
   def editor?(publication, user), do: check_role(publication, user, :editor)
 
   @doc """
@@ -195,7 +195,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec writer?(Publication.t(), User.t()) :: boolean
+  @spec writer?(Publication.t(), User.t()) :: boolean()
   def writer?(publication, user), do: check_role(publication, user, :writer)
 
   @doc """
@@ -211,7 +211,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec admin?(Publication.t(), User.t()) :: boolean
+  @spec admin?(Publication.t(), User.t()) :: boolean()
   def admin?(publication, user), do: check_role(publication, user, :admin)
 
   @doc """
@@ -227,7 +227,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec owner?(Publication.t(), User.t()) :: boolean
+  @spec owner?(Publication.t(), User.t()) :: boolean()
   def owner?(publication, user), do: check_role(publication, user, :owner)
 
   @doc """
@@ -243,7 +243,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec can_write_stories?(Publication.t(), User.t()) :: boolean
+  @spec can_write_stories?(Publication.t(), User.t()) :: boolean()
   def can_write_stories?(publication, user) do
     roles = ~w(owner admin editor writer)a
 
@@ -263,7 +263,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec can_publish_stories?(Publication.t(), User.t()) :: boolean
+  @spec can_publish_stories?(Publication.t(), User.t()) :: boolean()
   def can_publish_stories?(publication, user) do
     roles = ~w(owner admin editor)a
 
@@ -283,7 +283,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec can_edit_stories?(Publication.t(), User.t()) :: boolean
+  @spec can_edit_stories?(Publication.t(), User.t()) :: boolean()
   def can_edit_stories?(publication, user) do
     roles = ~w(owner admin editor)a
 
@@ -303,7 +303,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec can_see_invitations?(Publication.t(), User.t()) :: boolean
+  @spec can_see_invitations?(Publication.t(), User.t()) :: boolean()
   def can_see_invitations?(publication, user) do
     roles = ~w(owner admin)a
 
@@ -324,7 +324,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec can_invite?(Publication.t(), User.t(), User.t(), role) :: boolean
+  @spec can_invite?(Publication.t(), User.t(), User.t(), role()) :: boolean()
   def can_invite?(publication, inviter, invitee, role) when role in [:writer, :editor] do
     roles = ~w(owner admin)a
 
@@ -341,6 +341,7 @@ defmodule Margaret.Publications do
 
   def can_invite?(_publication, _inviter, _invitee, _role), do: false
 
+  @spec do_can_invite?(boolean(), Publication.t(), User.t()) :: boolean()
   defp do_can_invite?(true, publication, invitee), do: not member?(publication, invitee)
 
   defp do_can_invite?(false, _publication, _invitee), do: false
@@ -358,7 +359,7 @@ defmodule Margaret.Publications do
       false
 
   """
-  @spec can_update_publication?(Publication.t(), User.t()) :: boolean
+  @spec can_update_publication?(Publication.t(), User.t()) :: boolean()
   def can_update_publication?(publication, user) do
     roles = ~w(owner admin)a
 
@@ -367,7 +368,7 @@ defmodule Margaret.Publications do
 
   @doc """
   """
-  @spec can_kick?(Publication.t(), User.t(), User.t()) :: boolean
+  @spec can_kick?(Publication.t(), User.t(), User.t()) :: boolean()
   def can_kick?(publication, kicker, user) do
     case get_member_role(publication, user) do
       nil -> false
@@ -381,7 +382,7 @@ defmodule Margaret.Publications do
   Returns `true` if the user can accept the invitation.
   `false` otherwise.
   """
-  @spec can_accept_invitation?(PublicationInvitation.t(), User.t()) :: boolean
+  @spec can_accept_invitation?(PublicationInvitation.t(), User.t()) :: boolean()
   def can_accept_invitation?(%PublicationInvitation{invitee_id: invitee_id}, %User{id: invitee_id}),
       do: true
 
@@ -391,7 +392,7 @@ defmodule Margaret.Publications do
   Returns `true` if the user can reject the invitation.
   `false` otherwise.
   """
-  @spec can_reject_invitation?(PublicationInvitation.t(), User.t()) :: boolean
+  @spec can_reject_invitation?(PublicationInvitation.t(), User.t()) :: boolean()
   def can_reject_invitation?(%PublicationInvitation{invitee_id: invitee_id}, %User{id: invitee_id}),
       do: true
 
@@ -400,6 +401,7 @@ defmodule Margaret.Publications do
   @doc """
   Inserts a publication.
   """
+  @spec insert_publication(map()) :: {:ok, map()} | {:error, atom(), any(), map()}
   def insert_publication(attrs) do
     Multi.new()
     |> maybe_insert_tags(attrs)
@@ -408,6 +410,7 @@ defmodule Margaret.Publications do
     |> Repo.transaction()
   end
 
+  @spec insert_publication(Multi.t(), map()) :: Multi.t()
   defp insert_publication(multi, attrs) do
     insert_publication_fn = fn changes ->
       maybe_put_tags = fn attrs ->
@@ -429,6 +432,8 @@ defmodule Margaret.Publications do
   @doc """
   Updates a publication.
   """
+  @spec update_publication(Publication.t(), map()) ::
+          {:ok, map()} | {:error, atom(), any(), map()}
   def update_publication(%Publication{} = publication, attrs) do
     Multi.new()
     |> maybe_insert_tags(attrs)
@@ -436,6 +441,7 @@ defmodule Margaret.Publications do
     |> Repo.transaction()
   end
 
+  @spec update_publication(Multi.t(), Publication.t(), map()) :: Multi.t()
   defp update_publication(multi, %Publication{} = publication, attrs) do
     update_publication_fn = fn changes ->
       maybe_put_tags = fn {publication, attrs} ->
@@ -455,6 +461,7 @@ defmodule Margaret.Publications do
     Multi.run(multi, :publication, update_publication_fn)
   end
 
+  @spec maybe_insert_tags(Multi.t(), map()) :: Multi.t()
   defp maybe_insert_tags(multi, %{tags: tags}) do
     insert_tags_fn = fn _ -> {:ok, Tags.insert_and_get_all_tags(tags)} end
 
@@ -463,6 +470,7 @@ defmodule Margaret.Publications do
 
   defp maybe_insert_tags(multi, _attrs), do: multi
 
+  @spec insert_owner(Multi.t(), map()) :: Multi.t()
   defp insert_owner(multi, %{owner_id: owner_id}) do
     insert_owner_fn = fn %{publication: %{id: publication_id}} ->
       insert_membership(%{
@@ -478,7 +486,7 @@ defmodule Margaret.Publications do
   @doc """
   Inserts a publication.
   """
-  @spec insert_publication!(any) :: Publication.t() | no_return
+  @spec insert_publication!(map()) :: Publication.t() | no_return()
   def insert_publication!(attrs) do
     case insert_publication(attrs) do
       {:ok, %{publication: publication}} ->
@@ -495,6 +503,8 @@ defmodule Margaret.Publications do
   @doc """
   Inserts a publication membership.
   """
+  @spec insert_membership(map()) ::
+          {:ok, PublicationMembership.t()} | {:error, Ecto.Changeset.t()}
   def insert_membership(attrs) do
     attrs
     |> PublicationMembership.changeset()
@@ -504,8 +514,10 @@ defmodule Margaret.Publications do
   @doc """
   Gets a publication membership.
   """
+  @spec get_membership(String.t() | non_neg_integer()) :: PublicationMembership.t() | nil
   def get_membership(id) when not is_list(id), do: Repo.get(PublicationMembership, id)
 
+  @spec get_membership(Keyword.t()) :: PublicationMembership.t() | nil
   def get_membership(clauses) when length(clauses) == 2,
     do: Repo.get_by(PublicationMembership, clauses)
 
@@ -526,6 +538,8 @@ defmodule Margaret.Publications do
   @doc """
   Deletes a publication membership.
   """
+  @spec delete_membership(PublicationMembership.t()) ::
+          {:ok, PublicationMembership.t()} | {:error, Ecto.Changeset.t()}
   def delete_membership(%PublicationMembership{} = publication_membership),
     do: Repo.delete(publication_membership)
 
@@ -537,6 +551,8 @@ defmodule Margaret.Publications do
   @doc """
   Inserts a publication invitation.
   """
+  @spec insert_invitation(map()) ::
+          {:ok, PublicationInvitation.t()} | {:error, Ecto.Changeset.t()}
   def insert_invitation(attrs) do
     attrs
     |> PublicationInvitation.changeset()
@@ -546,7 +562,7 @@ defmodule Margaret.Publications do
   @doc """
   Updates a publication invitation.
   """
-  @spec update_invitation(PublicationInvitation.t(), any) ::
+  @spec update_invitation(PublicationInvitation.t(), map()) ::
           {:ok, PublicationInvitation.t()} | {:error, Ecto.Changeset.t()}
   def update_invitation(%PublicationInvitation{} = invitation, attrs) do
     invitation
@@ -557,8 +573,8 @@ defmodule Margaret.Publications do
   @doc """
   Updates a publication invitation.
   """
-  @spec update_invitation!(PublicationInvitation.t(), any) ::
-          PublicationInvitation.t() | no_return
+  @spec update_invitation!(PublicationInvitation.t(), map()) ::
+          PublicationInvitation.t() | no_return()
   def update_invitation!(%PublicationInvitation{} = invitation, attrs) do
     case update_invitation(invitation, attrs) do
       {:ok, invitation} ->
@@ -576,6 +592,8 @@ defmodule Margaret.Publications do
   Accepts a publication invitation.
   Rejects all other invitations to the invitee.
   """
+  @spec accept_invitation(PublicationInvitation.t()) ::
+          {:ok, map()} | {:error, atom(), any(), map()}
   def accept_invitation(%PublicationInvitation{} = invitation) do
     invitation_changeset =
       PublicationInvitation.update_changeset(invitation, %{status: :accepted})
@@ -606,12 +624,14 @@ defmodule Margaret.Publications do
   @doc """
   Rejects a publcation invitation.
   """
+  @spec reject_invitation(PublicationInvitation.t()) ::
+          {:ok, PublicationInvitation.t()} | {:error, Ecto.Changeset.t()}
   def reject_invitation(invitation), do: update_invitation(invitation, %{status: :rejected})
 
   @doc """
   Rejects a publcation invitation.
   """
-  @spec reject_invitation(PublicationInvitation.t()) :: PublicationInvitation.t() | no_return
+  @spec reject_invitation!(PublicationInvitation.t()) :: PublicationInvitation.t() | no_return()
   def reject_invitation!(invitation) do
     case reject_invitation(invitation) do
       {:ok, invitation} ->
@@ -628,7 +648,8 @@ defmodule Margaret.Publications do
   @doc """
   Invites a user to a publication.
   """
-  @spec invite_user(Publication.t(), User.t(), User.t(), role) :: {atom, any}
+  @spec invite_user(Publication.t(), User.t(), User.t(), role()) ::
+          {:ok, PublicationInvitation.t()} | {:error, Ecto.Changeset.t()}
   def invite_user(publication, inviter, invitee, role) do
     attrs = %{
       publication_id: publication.id,

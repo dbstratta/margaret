@@ -35,7 +35,7 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user(String.t() | non_neg_integer, Keyword.t()) :: User.t() | nil
+  @spec get_user(String.t() | non_neg_integer(), Keyword.t()) :: User.t() | nil
   def get_user(id, opts \\ []) do
     User
     |> maybe_include_deactivated(opts)
@@ -56,7 +56,7 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user!(String.t() | non_neg_integer, Keyword.t()) :: User.t() | no_return
+  @spec get_user!(String.t() | non_neg_integer, Keyword.t()) :: User.t() | no_return()
   def get_user!(id, opts \\ []) do
     User
     |> maybe_include_deactivated(opts)
@@ -92,7 +92,7 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_username!(String.t(), Keyword.t()) :: User.t() | no_return
+  @spec get_user_by_username!(String.t(), Keyword.t()) :: User.t() | no_return()
   def get_user_by_username!(username, opts \\ []), do: get_user_by!([username: username], opts)
 
   @doc """
@@ -124,7 +124,7 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_email!(String.t(), Keyword.t()) :: User.t() | no_return
+  @spec get_user_by_email!(String.t(), Keyword.t()) :: User.t() | no_return()
   def get_user_by_email!(email, opts \\ []), do: get_user_by!([email: email], opts)
 
   @doc """
@@ -137,6 +137,7 @@ defmodule Margaret.Accounts do
     |> Repo.get_by(clauses)
   end
 
+  @spec get_user_by(Keyword.t(), Keyword.t()) :: User.t() | no_return()
   def get_user_by!(clauses, opts \\ []) do
     User
     |> maybe_include_deactivated(opts)
@@ -157,7 +158,7 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_social_login!({atom, String.t()}) :: User.t() | no_return
+  @spec get_user_by_social_login!(social_credentials(), Keyword.t()) :: User.t() | no_return()
   def get_user_by_social_login!({provider, uid}, opts \\ []) do
     User
     |> maybe_include_deactivated(opts)
@@ -175,19 +176,21 @@ defmodule Margaret.Accounts do
       42
 
   """
-  @spec get_user_count :: non_neg_integer
+  @spec get_user_count :: non_neg_integer()
   def get_user_count(opts \\ []) do
     User
     |> maybe_include_deactivated(opts)
     |> Repo.aggregate(:count, :id)
   end
 
+  @spec maybe_include_deactivated(Ecto.Query.t(), Keyword.t()) :: Ecto.Query.t()
   defp maybe_include_deactivated(query, opts) do
     opts
     |> Keyword.get(:include_deactivated, false)
     |> do_maybe_include_deactivated(query)
   end
 
+  @spec do_maybe_include_deactivated(boolean(), Ecto.Query.t()) :: Ecto.Query.t()
   defp do_maybe_include_deactivated(false, query), do: User.active(query)
   defp do_maybe_include_deactivated(true, query), do: query
 
@@ -206,7 +209,7 @@ defmodule Margaret.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  @spec insert_user(%{optional(any) => any}) :: {:error, Ecto.Changeset.t()} | {:ok, User.t()}
+  @spec insert_user(map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def insert_user(attrs) do
     attrs
     |> User.changeset()
@@ -227,7 +230,7 @@ defmodule Margaret.Accounts do
       ** (Ecto.InvalidChangesetError)
 
   """
-  @spec insert_user!(%{optional(any) => any}) :: User.t() | no_return
+  @spec insert_user!(map()) :: User.t() | no_return()
   def insert_user!(attrs) do
     attrs
     |> User.changeset()
@@ -282,7 +285,7 @@ defmodule Margaret.Accounts do
   Returns `true` if the username is available to use.
   `false` otherwise.
   """
-  @spec available_username?(String.t()) :: boolean
+  @spec available_username?(String.t()) :: boolean()
   def available_username?(username),
     do: !get_user_by_username(username, include_deactivated: true)
 
@@ -292,7 +295,7 @@ defmodule Margaret.Accounts do
 
   For a username to be eligible it has to be available and have a valid format.
   """
-  @spec eligible_username?(String.t()) :: boolean
+  @spec eligible_username?(String.t()) :: boolean()
   def eligible_username?(username),
     do: available_username?(username) and User.valid_username?(username)
 
@@ -300,13 +303,13 @@ defmodule Margaret.Accounts do
   Returns `true` if the email is available to use.
   `false` otherwise.
   """
-  @spec available_email?(String.t()) :: boolean
+  @spec available_email?(String.t()) :: boolean()
   def available_email?(email), do: !get_user_by_email(email, include_deactivated: true)
 
   @doc """
   Updates a user.
   """
-  @spec update_user(User.t(), any) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
+  @spec update_user(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def update_user(%User{} = user, attrs) do
     user
     |> User.update_changeset(attrs)
@@ -344,6 +347,7 @@ defmodule Margaret.Accounts do
   @doc """
   Deletes a user.
   """
+  @spec delete_user(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def delete_user(%User{} = user), do: Repo.delete(user)
 
   @doc """
@@ -391,8 +395,7 @@ defmodule Margaret.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  @spec insert_social_login(%{optional(any) => any}) ::
-          {:error, Ecto.Changeset.t()} | {:ok, SocialLogin.t()}
+  @spec insert_social_login(map()) :: {:error, Ecto.Changeset.t()} | {:ok, SocialLogin.t()}
   def insert_social_login(attrs) do
     attrs
     |> SocialLogin.changeset()
@@ -413,6 +416,7 @@ defmodule Margaret.Accounts do
       ** (Ecto.InvalidChangesetError)
 
   """
+  @spec insert_social_login!(map()) :: SocialLogin.t()
   def insert_social_login!(attrs) do
     attrs
     |> SocialLogin.changeset()
@@ -422,12 +426,15 @@ defmodule Margaret.Accounts do
   @doc """
   Links a user to a social account.
   """
+  @spec link_user_to_social_login(User.t(), social_credentials()) ::
+          {:ok, SocialLogin.t()} :: {:error, Ecto.Changeset.t()}
   def link_user_to_social_login(%User{id: user_id}, {provider, uid}) do
     attrs = %{user_id: user_id, provider: provider, uid: uid}
 
     insert_social_login(attrs)
   end
 
+  @spec link_user_to_social_login!(User.t(), social_credentials()) :: SocialLogin.t()
   def link_user_to_social_login!(%User{} = user, social_info) do
     case link_user_to_social_login(user, social_info) do
       {:ok, social_login} ->
@@ -443,7 +450,19 @@ defmodule Margaret.Accounts do
 
   @doc """
   Gets the story count of a user.
+  Accepts the option `published_only: true`
+  which only counts pubilshed stories.
+
+  ## Examples
+
+      iex> get_story_count(%User{})
+      42
+
+      iex> get_story_count(%User{}, published_only: true)
+      0
+
   """
+  @spec get_story_count(User.t(), Keyword.t()) :: non_neg_integer()
   def get_story_count(%User{} = author, opts \\ []) do
     query =
       if Keyword.get(opts, :published_only, false) do
@@ -458,8 +477,17 @@ defmodule Margaret.Accounts do
 
   @doc """
   Gets the follower count of a user.
+
+  ## Examples
+
+      iex> get_follower_count(%User{})
+      42
+
+      iex> get_follower_count(%User{})
+      0
+
   """
-  @spec get_follower_count(User.t()) :: non_neg_integer
+  @spec get_follower_count(User.t()) :: non_neg_integer()
   def get_follower_count(%User{} = user), do: Follows.get_follower_count(user: user)
 
   @doc """
@@ -474,7 +502,7 @@ defmodule Margaret.Accounts do
       0
 
   """
-  @spec get_publication_count(User.t()) :: non_neg_integer
+  @spec get_publication_count(User.t()) :: non_neg_integer()
   def get_publication_count(%User{} = user) do
     query = PublicationMembership.by_member(user)
 
