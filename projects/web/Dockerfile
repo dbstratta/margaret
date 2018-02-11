@@ -7,7 +7,10 @@ WORKDIR /usr/src/app
 
 # Install dependencies.
 COPY package.json yarn.lock ./
-RUN yarn install
+# We need `react-app-rewired` to build the app
+# and it's listed in `devDependencies`. That's why
+# we pass `--production=false`.
+RUN yarn install --production=false
 
 # Bundle app source.
 COPY . .
