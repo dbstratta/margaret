@@ -45,6 +45,7 @@ defmodule Margaret.Publications.Publication do
   @doc """
   Builds a changeset for inserting a publication.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       name
@@ -69,6 +70,7 @@ defmodule Margaret.Publications.Publication do
   @doc """
   Builds a changeset for updating a publication.
   """
+  @spec update_changeset(t(), map()) :: Ecto.Changeset.t()
   def update_changeset(%Publication{} = publication, attrs) do
     update_permitted_attrs = ~w(
       name

@@ -40,6 +40,7 @@ defmodule Margaret.Publications.PublicationInvitation do
   @doc """
   Builds a changeset for inserting a publication invitation.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       invitee_id
@@ -67,6 +68,7 @@ defmodule Margaret.Publications.PublicationInvitation do
   @doc """
   Builds a changeset for updating a publication invitation.
   """
+  @spec update_changeset(t(), map()) :: Ecto.Changeset.t()
   def update_changeset(%PublicationInvitation{} = publication_invitation, attrs) do
     permitted_attrs = ~w(
       status

@@ -99,8 +99,10 @@ defmodule MargaretWeb.Schema.StoryTypes do
     @desc "Identifies the date and time when the story was published."
     field(:published_at, :naive_datetime)
 
+    @desc "The audience of the story."
     field(:audience, non_null(:story_audience))
 
+    @desc "The license of the story."
     field(:license, non_null(:story_license))
 
     field :viewer_can_star, non_null(:boolean) do
@@ -197,6 +199,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
       end
 
       middleware(Absinthe.Relay.Node.ParseIDs, story_id: :story)
+      middleware(Absinthe.Relay.Node.ParseIDs, publication_id: :publication)
       resolve(&Resolvers.Stories.resolve_update_story/2)
     end
 

@@ -36,6 +36,7 @@ defmodule Margaret.Publications.PublicationMembership do
   @doc """
   Builds a changeset for inserting a publication membership.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       role
@@ -60,6 +61,7 @@ defmodule Margaret.Publications.PublicationMembership do
   @doc """
   Builds a changeset for updating a publication membership.
   """
+  @spec update_changeset(t(), map()) :: Ecto.Changeset.t()
   def update_changeset(%PublicationMembership{} = publication_membership, attrs) do
     permitted_attrs = ~w(
       role

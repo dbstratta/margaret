@@ -31,6 +31,7 @@ defmodule Margaret.Bookmarks.Bookmark do
   @doc """
   Builds a changeset for inserting a bookmark.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       user_id

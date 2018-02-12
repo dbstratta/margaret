@@ -30,6 +30,7 @@ defmodule Margaret.Stories.StoryView do
   @doc """
   Builds a changeset for inserting a story view.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       story_id

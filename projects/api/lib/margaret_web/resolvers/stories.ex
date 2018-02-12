@@ -16,6 +16,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves a story by its unique hash.
   """
+  @spec resolve_story(map(), Absinthe.Resolution.t()) :: {:ok, Story.t() | nil}
   def resolve_story(%{unique_hash: unique_hash}, _) do
     story = Stories.get_story_by_unique_hash(unique_hash)
 
@@ -25,6 +26,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves the title of the story.
   """
+  @spec resolve_title(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, String.t()}
   def resolve_title(story, _, _) do
     title = Stories.get_title(story)
 
@@ -34,6 +36,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves the authro of the story.
   """
+  @spec resolve_author(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, User.t()}
   def resolve_author(story, _, _) do
     author = Stories.get_author(story)
 
@@ -43,6 +46,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves the slug of the story.
   """
+  @spec resolve_slug(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, String.t()}
   def resolve_slug(story, _, _) do
     slug = Stories.get_slug(story)
 
@@ -52,13 +56,16 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves the publication of the story.
   """
-  def resolve_publication(story, _, _) do
+  @spec resolve_publication(Story.t(), map(), Absinthe.Resolution.t()) ::
+          {:ok, Publication.t() | nil}
+  def resolve_publication(story, _args, _resolution) do
     publication = Stories.get_publication(story)
 
     {:ok, publication}
   end
 
-  def resolve_tags(story, _, _) do
+  @spec resolve_tags(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, [Tag.t()]}
+  def resolve_tags(story, _args, _resolution) do
     tags = Stories.get_tags(story)
 
     {:ok, tags}
@@ -67,7 +74,8 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves the read time of the story.
   """
-  def resolve_read_time(story, _, _) do
+  @spec resolve_read_time(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, pos_integer()}
+  def resolve_read_time(story, _args, _resolution) do
     read_time = Stories.get_read_time(story)
 
     {:ok, read_time}
@@ -79,7 +87,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   TODO: Create a macro `get_popularity` that calculates
   freshness, stars and views.
   """
-  def resolve_feed(args, _) do
+  def resolve_feed(args, _resolution) do
     query =
       from(
         story in Story,
@@ -102,7 +110,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves the stargazers of the story.
   """
-  def resolve_stargazers(story, args, _) do
+  def resolve_stargazers(story, args, _resolution) do
     query =
       User
       |> User.active()
@@ -117,7 +125,7 @@ defmodule MargaretWeb.Resolvers.Stories do
     |> Helpers.transform_connection(total_count: total_count)
   end
 
-  def resolve_comments(story, args, _) do
+  def resolve_comments(story, args, _resolution) do
     query =
       Comment
       |> Comment.by_story(story)
@@ -134,12 +142,12 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves whether the viewer can star the story.
   """
-  def resolve_viewer_can_star(_, _, _), do: {:ok, true}
+  def resolve_viewer_can_star(_story, _args, _resolution), do: {:ok, true}
 
   @doc """
   Resolves whether the viewer has starred this story.
   """
-  def resolve_viewer_has_starred(story, _, %{context: %{viewer: viewer}}) do
+  def resolve_viewer_has_starred(story, _args, %{context: %{viewer: viewer}}) do
     has_starred = Stars.has_starred?(user: viewer, story: story)
 
     {:ok, has_starred}
@@ -148,9 +156,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves whether the viewer can bookmark the story.
   """
-  def resolve_viewer_can_bookmark(_, _, _), do: {:ok, true}
+  def resolve_viewer_can_bookmark(_story, _args, _resolution), do: {:ok, true}
 
-  def resolve_viewer_has_bookmarked(story, _, %{context: %{viewer: viewer}}) do
+  def resolve_viewer_has_bookmarked(story, _args, %{context: %{viewer: viewer}}) do
     has_bookmarked = Bookmarks.has_bookmarked?(user: viewer, story: story)
 
     {:ok, has_bookmarked}
@@ -159,7 +167,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves whether the viewer can comment the story.
   """
-  def resolve_viewer_can_comment(_, _, _), do: {:ok, true}
+  def resolve_viewer_can_comment(_story, _args, _resolution), do: {:ok, true}
 
   @doc """
   Resolves whether the viewer can update the story.
@@ -221,7 +229,7 @@ defmodule MargaretWeb.Resolvers.Stories do
         |> do_resolve_update_story(story, attrs)
 
       _ ->
-        {:error, "Story doesn't exist."}
+        Helpers.GraphQLErrors.story_doesnt_exist()
     end
   end
 
@@ -240,7 +248,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_delete_story(%{story_id: story_id}, %{context: %{viewer: viewer}}) do
     case Stories.get_story(story_id) do
       %Story{} = story -> do_resolve_delete_story(story, viewer)
-      _ -> {:error, "Story doesn't exist."}
+      _ -> Helpers.GraphQLErrors.story_doesnt_exist()
     end
   end
 

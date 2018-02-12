@@ -124,6 +124,26 @@ defmodule Margaret.Collections do
   end
 
   @doc """
+  Returns `true` if the user can add stories to the collection.
+  `false` otherwise.
+
+  ## Examples
+
+      iex> can_add_stories_to_collection?(%Collection{}, %User{})
+      true
+
+      iex> can_add_stories_to_collection?(%Collection{}, %User{})
+      false
+
+  """
+
+  @spec can_add_stories_to_collection?(Collection.t(), User.t()) :: boolean()
+  def can_add_stories_to_collection?(%Collection{author_id: user_id}, %User{id: user_id}),
+    do: true
+
+  def can_add_stories_to_collection?(_user, _collection), do: false
+
+  @doc """
   Inserts a collection.
   """
   @spec insert_collection(map()) :: {:ok, Collection.t()} | {:error, Ecto.Changeset.t()}
@@ -145,23 +165,22 @@ defmodule Margaret.Collections do
   end
 
   @doc """
-  Returns `true` if the user can add stories to the collection.
-  `false` otherwise.
-
-  ## Examples
-
-      iex> can_add_stories_to_collection?(%Collection{}, %User{})
-      true
-
-      iex> can_add_stories_to_collection?(%Collection{}, %User{})
-      false
-
+  TODO: Implement changing the position of stories within a collection.
   """
-  @spec can_add_stories_to_collection?(Collection.t(), User.t()) :: boolean()
-  def can_add_stories_to_collection?(%Collection{author_id: user_id}, %User{id: user_id}),
-    do: true
+  @spec move_story(Story.t(), pos_integer()) :: {:ok, Story.t()} | {:error, any()}
+  def move_story(%Story{} = story, part) do
+    story
+    |> Stories.get_collection()
+    |> do_move_story(story, part)
+  end
 
-  def can_add_stories_to_collection?(_user, _collection), do: false
+  @spec do_move_story(Collection.t() | nil, Story.t(), pos_integer()) ::
+          {:ok, Story.t()} | {:error, any()}
+  defp do_move_story(nil, _story, _part), do: {:error, "Story isn't in a collection"}
+
+  # defp do_move_story(%Collection{} = collection, %Story{id: story_id}, part) do
+  #   update_query = CollectionStory.by_collection(collection)
+  # end
 
   @doc """
   Deletes a collection and all the stories in it.

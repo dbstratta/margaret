@@ -31,6 +31,7 @@ defmodule Margaret.Stars.Star do
   @doc """
   Builds a changeset for inserting a star.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       user_id

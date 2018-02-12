@@ -25,6 +25,7 @@ defmodule Margaret.Accounts.SocialLogin do
   @doc """
   Builds a changeset for inserting a social login.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       uid

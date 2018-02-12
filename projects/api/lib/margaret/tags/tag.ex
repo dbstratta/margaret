@@ -29,6 +29,7 @@ defmodule Margaret.Tags.Tag do
   @doc """
   Builds a changeset for inserting a tag.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       title

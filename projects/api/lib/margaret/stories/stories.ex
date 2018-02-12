@@ -371,6 +371,12 @@ defmodule Margaret.Stories do
   @doc """
   Returns `true` if the user can delete the story,
   `false` otherwise.
+
+  ## Examples
+
+      iex> can_delete_story?(%Story{}, %User{})
+      true
+
   """
   @spec can_delete_story?(Story.t(), User.t()) :: boolean()
   def can_delete_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
@@ -378,6 +384,15 @@ defmodule Margaret.Stories do
 
   @doc """
   Inserts a story.
+
+  ## Examples
+
+      iex> insert_story(attrs)
+      {:ok, changes}
+
+      iex> insert_story(attrs)
+      {:error, :story, %Ecto.Changeset{}, changes}
+
   """
   @spec insert_story(map()) :: {:ok, map()} | {:error, atom(), any(), map()}
   def insert_story(attrs) do
@@ -407,6 +422,8 @@ defmodule Margaret.Stories do
     Multi.run(multi, :story, insert_story_fn)
   end
 
+  # If there's a `collection_id` in the attrs map
+  # we try to insert the story in the collection.
   @spec maybe_insert_in_collection(Multi.t(), map()) :: Multi.t()
   defp maybe_insert_in_collection(multi, %{collection_id: collection_id}) do
     insert_in_collectin_fn = fn %{story: %Story{id: story_id} = story} ->
@@ -419,7 +436,7 @@ defmodule Margaret.Stories do
         Collections.insert_collection_story(attrs)
       else
         nil -> {:error, "Collection doesn't exist"}
-        false -> {:error, "Unauthorized"}
+        false -> {:error, "User cannot add stories to the collection"}
       end
     end
 
