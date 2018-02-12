@@ -164,6 +164,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
       input do
         field(:content, non_null(:json))
         field(:publication_id, :id)
+        field(:collection_id, :id)
         field(:audience, non_null(:story_audience))
         field(:tags, list_of(:string))
         field(:license, non_null(:story_license))
@@ -175,6 +176,7 @@ defmodule MargaretWeb.Schema.StoryTypes do
       end
 
       middleware(Absinthe.Relay.Node.ParseIDs, publication_id: :publication)
+      middleware(Absinthe.Relay.Node.ParseIDs, collection_id: :collection)
       resolve(&Resolvers.Stories.resolve_create_story/2)
     end
 

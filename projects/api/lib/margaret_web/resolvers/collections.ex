@@ -51,9 +51,29 @@ defmodule MargaretWeb.Resolvers.Collections do
     {:ok, tags}
   end
 
+  @doc """
+  Resolves whether the viewer can bookmark the collection or not.
+  """
+  def resolve_viewer_can_bookmark(_collection, _args, _resolution), do: {:ok, true}
+
+  @doc """
+  Resolves whether the viewer has bookmarked the collection or not.
+  """
+  def resolve_viewer_has_bookmarked(collection, _, %{context: %{viewer: viewer}}) do
+    has_bookmarked = Bookmarks.has_bookmarked?(user: viewer, collection: collection)
+
+    {:ok, has_bookmarked}
+  end
+
   def resolve_collection(%{slug: slug}, _) do
     collection = Collections.get_collection_by_slug(slug)
 
     {:ok, collection}
+  end
+
+  def resolve_create_collection(_args, %{context: %{viewer: _viewer}}) do
+  end
+
+  def resolve_update_collection(_args, %{context: %{viewer: _viewer}}) do
   end
 end

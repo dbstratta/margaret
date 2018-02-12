@@ -47,7 +47,7 @@ defmodule Margaret.Comments do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_comment!(String.t() | non_neg_integer) :: Comment.t() | no_return
+  @spec get_comment!(String.t() | non_neg_integer()) :: Comment.t() | no_return()
   def get_comment!(id), do: Repo.get!(Comment, id)
 
   @doc """

@@ -145,6 +145,25 @@ defmodule Margaret.Collections do
   end
 
   @doc """
+  Returns `true` if the user can add stories to the collection.
+  `false` otherwise.
+
+  ## Examples
+
+      iex> can_add_stories_to_collection?(%Collection{}, %User{})
+      true
+
+      iex> can_add_stories_to_collection?(%Collection{}, %User{})
+      false
+
+  """
+  @spec can_add_stories_to_collection?(Collection.t(), User.t()) :: boolean()
+  def can_add_stories_to_collection?(%Collection{author_id: user_id}, %User{id: user_id}),
+    do: true
+
+  def can_add_stories_to_collection?(_user, _collection), do: false
+
+  @doc """
   Deletes a collection and all the stories in it.
   """
   @spec delete_collection(Collection.t()) :: {:ok, Collection.t()} | {:error, Ecto.Changeset.t()}
@@ -159,6 +178,34 @@ defmodule Margaret.Collections do
     |> Multi.delete_all(:stories, stories_query)
     |> Repo.transaction()
   end
+
+  @doc """
+  Gets the story count of a collection.
+
+  ## Examples
+
+      iex> get_story_count(%Collection{})
+      2
+
+  """
+  @spec get_story_count(Collection.t()) :: non_neg_integer()
+  def get_story_count(%Collection{} = collection) do
+    collection
+    |> CollectionStory.by_collection(collection)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  @doc """
+  Gets the part number of the next story of the collection.
+
+  ## Examples
+
+      iex> get_next_part_number(%Collection{})
+      3
+
+  """
+  @spec get_next_part_number(Collection.t()) :: pos_integer()
+  def get_next_part_number(%Collection{} = collection), do: get_story_count(collection) + 1
 
   @doc """
   Inserts a collection story.

@@ -6,7 +6,7 @@ defmodule MargaretWeb.Schema.CollectionTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias MargaretWeb.Resolvers
+  alias MargaretWeb.{Resolvers, Middleware}
 
   @desc """
   The connection type for Collection.
@@ -56,6 +56,16 @@ defmodule MargaretWeb.Schema.CollectionTypes do
       resolve(&Resolvers.Collections.resolve_tags/3)
     end
 
+    field :viewer_can_bookmark, non_null(:boolean) do
+      middleware(Middleware.RequireAuthenticated, resolve: false)
+      resolve(&Resolvers.Collections.resolve_viewer_can_bookmark/3)
+    end
+
+    field :viewer_has_bookmarked, non_null(:boolean) do
+      middleware(Middleware.RequireAuthenticated, resolve: false)
+      resolve(&Resolvers.Collections.resolve_viewer_has_bookmarked/3)
+    end
+
     @desc "Identifies the date and time when the collection was created."
     field(:inserted_at, non_null(:naive_datetime))
 
@@ -74,6 +84,45 @@ defmodule MargaretWeb.Schema.CollectionTypes do
     end
   end
 
-  object :story_mutations do
+  object :collection_mutations do
+    @desc "Creates a collection."
+    payload field(:create_collection) do
+      input do
+        field(:title, non_null(:string))
+        field(:subtitle, non_null(:string))
+        field(:description, :string)
+        field(:slug, :string)
+
+        field(:publication_id, :id)
+        field(:tags, list_of(:string))
+      end
+
+      output do
+        field(:collection, non_null(:collection))
+      end
+
+      middleware(Absinthe.Relay.Node.ParseIDs, publication_id: :publication)
+      resolve(&Resolvers.Collections.resolve_create_collection/2)
+    end
+
+    @desc "Updates a collection."
+    payload field(:update_collection) do
+      input do
+        field(:collection_id, non_null(:id))
+        field(:subtitle, :string)
+        field(:description, :string)
+        field(:slug, :string)
+
+        field(:publication_id, :id)
+        field(:tags, list_of(:string))
+      end
+
+      output do
+        field(:collection, non_null(:collection))
+      end
+
+      middleware(Absinthe.Relay.Node.ParseIDs, collection_id: :collection)
+      resolve(&Resolvers.Collections.resolve_update_collection/2)
+    end
   end
 end

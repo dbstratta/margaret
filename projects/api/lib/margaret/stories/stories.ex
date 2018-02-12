@@ -378,7 +378,6 @@ defmodule Margaret.Stories do
 
   @doc """
   Inserts a story.
-  TODO: Check if `collection_id` is in attrs and add it to the collection.
   """
   @spec insert_story(map()) :: {:ok, map()} | {:error, atom(), any(), map()}
   def insert_story(attrs) do
@@ -407,6 +406,27 @@ defmodule Margaret.Stories do
 
     Multi.run(multi, :story, insert_story_fn)
   end
+
+  @spec maybe_insert_in_collection(Multi.t(), map()) :: Multi.t()
+  defp maybe_insert_in_collection(multi, %{collection_id: collection_id}) do
+    insert_in_collectin_fn = fn %{story: %Story{id: story_id} = story} ->
+      with %Collection{id: collection_id} = collection <-
+             Collections.get_collection(collection_id),
+           author = get_author(story),
+           true <- Collections.can_add_stories_to_collection?(collection, author),
+           part = Collections.get_next_part_number(collection),
+           attrs = %{collection_id: collection_id, story_id: story_id, part: part} do
+        Collections.insert_collection_story(attrs)
+      else
+        nil -> {:error, "Collection doesn't exist"}
+        false -> {:error, "Unauthorized"}
+      end
+    end
+
+    Multi.run(multi, :collection, insert_in_collectin_fn)
+  end
+
+  defp maybe_insert_in_collection(multi, _attrs), do: multi
 
   @doc """
   Updates a story.
@@ -451,13 +471,6 @@ defmodule Margaret.Stories do
   end
 
   defp maybe_insert_tags(multi, _attrs), do: multi
-
-  @spec maybe_insert_in_collection(Multi.t(), map()) :: Multi.t()
-  defp maybe_insert_in_collection(multi, %{collection_id: _collection_id}) do
-    multi
-  end
-
-  defp maybe_insert_in_collection(multi, _attrs), do: multi
 
   @doc """
   Removes a story from its publication.

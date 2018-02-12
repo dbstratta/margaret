@@ -64,7 +64,7 @@ defmodule Margaret.Bookmarks do
       false
 
   """
-  @spec has_bookmarked?(Keyword.t()) :: boolean
+  @spec has_bookmarked?(Keyword.t()) :: boolean()
   def has_bookmarked?(clauses) do
     %User{id: user_id} = Keyword.get(clauses, :user)
 
@@ -81,7 +81,7 @@ defmodule Margaret.Bookmarks do
     !!get_bookmark(clauses)
   end
 
-  @spec get_bookmarkable_from_clauses(Keyword.t()) :: bookmarkable
+  @spec get_bookmarkable_from_clauses(Keyword.t()) :: bookmarkable()
   defp get_bookmarkable_from_clauses(clauses) do
     cond do
       Keyword.has_key?(clauses, :collection) -> Keyword.get(clauses, :collection)

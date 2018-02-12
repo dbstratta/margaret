@@ -15,6 +15,7 @@ defmodule MargaretWeb.Schema do
     StoryTypes,
     PublicationTypes,
     PublicationInvitationTypes,
+    CollectionTypes,
     NotificationTypes,
     StarrableTypes,
     BookmarkableTypes,
@@ -36,6 +37,7 @@ defmodule MargaretWeb.Schema do
   import_types(StoryTypes)
   import_types(PublicationTypes)
   import_types(PublicationInvitationTypes)
+  import_types(CollectionTypes)
   import_types(NotificationTypes)
   import_types(StarrableTypes)
   import_types(BookmarkableTypes)
@@ -52,6 +54,7 @@ defmodule MargaretWeb.Schema do
     import_fields(:account_queries)
     import_fields(:story_queries)
     import_fields(:publication_queries)
+    import_fields(:collection_queries)
   end
 
   @desc "The root mutation type."
@@ -63,6 +66,7 @@ defmodule MargaretWeb.Schema do
     import_fields(:followable_mutations)
     import_fields(:publication_mutations)
     import_fields(:publication_invitation_mutations)
+    import_fields(:collection_mutations)
     import_fields(:comment_mutations)
     import_fields(:commentable_mutations)
   end
