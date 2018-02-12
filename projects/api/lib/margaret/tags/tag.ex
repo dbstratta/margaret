@@ -47,6 +47,6 @@ defmodule Margaret.Tags.Tag do
   @doc """
   Filters the tags in the query by a title list.
   """
-  @spec by_titles(Ecto.Query.t(), [String.t()]) :: Ecto.Query.t()
+  @spec by_titles(Ecto.Queryable.t(), [String.t()]) :: Ecto.Query.t()
   def by_titles(query \\ Tag, titles), do: where(query, [..., t], t.title in ^titles)
 end

@@ -453,7 +453,7 @@ defmodule Margaret.Stories do
   defp maybe_insert_tags(multi, _attrs), do: multi
 
   @spec maybe_insert_in_collection(Multi.t(), map()) :: Multi.t()
-  defp maybe_insert_in_collection(multi, %{collection_id: collection_id}) do
+  defp maybe_insert_in_collection(multi, %{collection_id: _collection_id}) do
     multi
   end
 

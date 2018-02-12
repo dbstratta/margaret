@@ -48,6 +48,7 @@ defmodule Margaret.Notifications.Notification do
   @doc """
   Builds a changeset for inserting a notification.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       actor_id
@@ -76,6 +77,7 @@ defmodule Margaret.Notifications.Notification do
   end
 
   # TODO: validate that the action and object combination makes sense.
+  @spec validate_action(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   defp validate_action(changeset) do
     changeset
   end
@@ -89,7 +91,7 @@ defmodule Margaret.Notifications.Notification do
   @doc """
   Filters the notifications by actor.
   """
-  @spec by_actor(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  @spec by_actor(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
   def by_actor(query \\ Notification, %User{id: actor_id}),
     do: where(query, [..., n], n.actor_id == ^actor_id)
 

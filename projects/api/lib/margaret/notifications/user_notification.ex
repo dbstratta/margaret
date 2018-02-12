@@ -28,6 +28,7 @@ defmodule Margaret.Notifications.UserNotification do
   @doc """
   Builds a changeset for inserting a user notification.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       user_id
@@ -50,6 +51,7 @@ defmodule Margaret.Notifications.UserNotification do
   @doc """
   Builds a changeset for updating a user notification.
   """
+  @spec update_changeset(UserNotification.t(), map()) :: Ecto.Changeset.t()
   def update_changeset(%UserNotification{} = user_notification, attrs) do
     permitted_attrs = ~w(
       read_at
@@ -62,21 +64,21 @@ defmodule Margaret.Notifications.UserNotification do
   @doc """
   Filters the user notifications by user.
   """
-  @spec by_user(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  @spec by_user(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
   def by_user(query \\ UserNotification, %User{id: user_id}),
     do: where(query, [..., un], un.user_id == ^user_id)
 
   @doc """
   Preloads the user of a user notification.
   """
-  @spec preload_user(t) :: t
+  @spec preload_user(t()) :: t()
   def preload_user(%UserNotification{} = user_notification),
     do: Repo.preload(user_notification, :user)
 
   @doc """
   Preloads the notification of a user notification.
   """
-  @spec preload_notification(t) :: t
+  @spec preload_notification(t()) :: t()
   def preload_notification(%UserNotification{} = user_notification),
     do: Repo.preload(user_notification, :notification)
 end

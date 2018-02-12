@@ -56,21 +56,21 @@ defmodule Margaret.Stars.Star do
   @doc """
   Filters the stars by story.
   """
-  @spec by_story(Ecto.Query.t(), Story.t()) :: Ecto.Query.t()
+  @spec by_story(Ecto.Queryable.t(), Story.t()) :: Ecto.Query.t()
   def by_story(query \\ Star, %Story{id: story_id}),
     do: where(query, [..., s], s.story_id == ^story_id)
 
   @doc """
   Filters the stars by comment.
   """
-  @spec by_comment(Ecto.Query.t(), Comment.t()) :: Ecto.Query.t()
+  @spec by_comment(Ecto.Queryable.t(), Comment.t()) :: Ecto.Query.t()
   def by_comment(query \\ Star, %Comment{id: comment_id}),
     do: where(query, [..., s], s.comment_id == ^comment_id)
 
   @doc """
   Filters the stars by user.
   """
-  @spec by_user(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  @spec by_user(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
   def by_user(query \\ Star, %User{id: user_id}),
     do: where(query, [..., s], s.user_id == ^user_id)
 

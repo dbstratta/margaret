@@ -50,14 +50,14 @@ defmodule Margaret.Stories.StoryView do
   @doc """
   Filters the views by story.
   """
-  @spec by_story(Ecto.Query.t(), Story.t()) :: Ecto.Query.t()
+  @spec by_story(Ecto.Queryable.t(), Story.t()) :: Ecto.Query.t()
   def by_story(query \\ StoryView, %Story{id: story_id}),
     do: where(query, [..., sv], sv.story_id == ^story_id)
 
   @doc """
   Filters the views by viewer.
   """
-  @spec by_viewer(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  @spec by_viewer(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
   def by_viewer(query \\ StoryView, %User{id: viewer_id}),
     do: where(query, [..., sv], sv.viewer_id == ^viewer_id)
 end

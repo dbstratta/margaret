@@ -145,7 +145,7 @@ defmodule Margaret.Accounts.User do
       #Ecto.Query<...>
 
   """
-  @spec active(Ecto.Query.t()) :: Ecto.Query.t()
+  @spec active(Ecto.Queryable.t()) :: Ecto.Query.t()
   def active(query \\ User), do: where(query, [..., u], is_nil(u.deactivated_at))
 
   @doc """
@@ -160,7 +160,7 @@ defmodule Margaret.Accounts.User do
       #Ecto.Query<...>
 
   """
-  @spec admin(Ecto.Query.t()) :: Ecto.Query.t()
+  @spec admin(Ecto.Queryable.t()) :: Ecto.Query.t()
   def admin(query \\ User), do: where(query, [..., u], u.is_admin)
 
   @doc """
@@ -175,15 +175,13 @@ defmodule Margaret.Accounts.User do
       #Ecto.Query<...>
 
   """
-  @spec employee(Ecto.Query.t()) :: Ecto.Query.t()
+  @spec employee(Ecto.Queryable.t()) :: Ecto.Query.t()
   def employee(query \\ User), do: where(query, [..., u], u.is_employee)
 
   @doc """
   Preloads the social logins of a user.
   """
-  @spec preload_social_logins(t()) :: t()
+  @spec preload_social_logins(Ecto.Queryable.t() | t()) :: Ecto.Query.t() | t()
   def preload_social_logins(%User{} = user), do: Repo.preload(user, :social_logins)
-
-  @spec preload_social_logins(Ecto.Query.t()) :: Ecto.Query.t()
   def preload_social_logins(%Ecto.Query{} = query), do: preload(query, [..., u], :social_logins)
 end

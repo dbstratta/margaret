@@ -102,6 +102,6 @@ defmodule Margaret.Publications.Publication do
   @doc """
   Preloads the tags of a publication.
   """
-  @spec preload_tags(t) :: t
+  @spec preload_tags(t()) :: t()
   def preload_tags(%Publication{} = publication), do: Repo.preload(publication, :tags)
 end

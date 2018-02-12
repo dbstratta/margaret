@@ -28,6 +28,7 @@ defmodule Margaret.Collections.CollectionStory do
   @doc """
   Builds a changeset for inserting a collection story.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       story_id
@@ -52,6 +53,7 @@ defmodule Margaret.Collections.CollectionStory do
   @doc """
   Builds a changeset for updating a collection story.
   """
+  @spec update_changeset(CollectionStory.t(), map()) :: Ecto.Changeset.t()
   def update_changeset(%CollectionStory{} = collection_story, attrs) do
     permitted_attrs = ~w(
       part
@@ -65,7 +67,7 @@ defmodule Margaret.Collections.CollectionStory do
   @doc """
   Filters the collection stories by collection.
   """
-  @spec by_collection(Ecto.Query.t(), Collection.t()) :: Ecto.Query.t()
+  @spec by_collection(Ecto.Queryable.t(), Collection.t()) :: Ecto.Query.t()
   def by_collection(query \\ Story, %Collection{id: collection_id}),
     do: where(query, [..., cs], cs.collection_id == ^collection_id)
 end

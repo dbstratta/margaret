@@ -137,7 +137,7 @@ defmodule Margaret.Accounts do
     |> Repo.get_by(clauses)
   end
 
-  @spec get_user_by(Keyword.t(), Keyword.t()) :: User.t() | no_return()
+  @spec get_user_by!(Keyword.t(), Keyword.t()) :: User.t() | no_return()
   def get_user_by!(clauses, opts \\ []) do
     User
     |> maybe_include_deactivated(opts)
@@ -176,21 +176,21 @@ defmodule Margaret.Accounts do
       42
 
   """
-  @spec get_user_count :: non_neg_integer()
+  @spec get_user_count(Keyword.t()) :: non_neg_integer()
   def get_user_count(opts \\ []) do
     User
     |> maybe_include_deactivated(opts)
     |> Repo.aggregate(:count, :id)
   end
 
-  @spec maybe_include_deactivated(Ecto.Query.t(), Keyword.t()) :: Ecto.Query.t()
+  @spec maybe_include_deactivated(Ecto.Queryable.t(), Keyword.t()) :: Ecto.Queryable.t()
   defp maybe_include_deactivated(query, opts) do
     opts
     |> Keyword.get(:include_deactivated, false)
     |> do_maybe_include_deactivated(query)
   end
 
-  @spec do_maybe_include_deactivated(boolean(), Ecto.Query.t()) :: Ecto.Query.t()
+  @spec do_maybe_include_deactivated(boolean(), Ecto.Queryable.t()) :: Ecto.Queryable.t()
   defp do_maybe_include_deactivated(false, query), do: User.active(query)
   defp do_maybe_include_deactivated(true, query), do: query
 
@@ -249,13 +249,14 @@ defmodule Margaret.Accounts do
 
   TODO: Accept more attrs when inserting.
   """
-  @spec get_or_insert_user(String.t()) :: User.t()
+  @spec get_or_insert_user(String.t()) :: {:ok, User.t()} | {:error, any()}
   def get_or_insert_user(email) do
     email
     |> get_user_by_email(include_deactivated: true)
     |> do_get_or_insert_user(email)
   end
 
+  @spec do_get_or_insert_user(User.t() | nil, String.t()) :: {:ok, User.t()} | {:error, any()}
   defp do_get_or_insert_user(%User{} = user, _email), do: {:ok, user}
 
   defp do_get_or_insert_user(nil, email) do
@@ -268,6 +269,7 @@ defmodule Margaret.Accounts do
     insert_user(attrs)
   end
 
+  @spec get_or_insert_user!(String.t()) :: User.t() | no_return()
   def get_or_insert_user!(email) do
     case get_or_insert_user(email) do
       {:ok, user} ->
@@ -331,6 +333,7 @@ defmodule Margaret.Accounts do
   @doc """
   Activates a user.
   """
+  @spec activate_user!(User.t()) :: User.t() | no_return()
   def activate_user!(%User{} = user) do
     case activate_user(user) do
       {:ok, user} ->
@@ -427,14 +430,15 @@ defmodule Margaret.Accounts do
   Links a user to a social account.
   """
   @spec link_user_to_social_login(User.t(), social_credentials()) ::
-          {:ok, SocialLogin.t()} :: {:error, Ecto.Changeset.t()}
+          {:ok, SocialLogin.t()} | {:error, Ecto.Changeset.t()}
   def link_user_to_social_login(%User{id: user_id}, {provider, uid}) do
     attrs = %{user_id: user_id, provider: provider, uid: uid}
 
     insert_social_login(attrs)
   end
 
-  @spec link_user_to_social_login!(User.t(), social_credentials()) :: SocialLogin.t()
+  @spec link_user_to_social_login!(User.t(), social_credentials()) ::
+          SocialLogin.t() | no_return()
   def link_user_to_social_login!(%User{} = user, social_info) do
     case link_user_to_social_login(user, social_info) do
       {:ok, social_login} ->

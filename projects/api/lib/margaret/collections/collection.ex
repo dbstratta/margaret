@@ -45,6 +45,7 @@ defmodule Margaret.Collections.Collection do
   @doc """
   Builds a changeset for inserting a collection.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       title
@@ -72,6 +73,7 @@ defmodule Margaret.Collections.Collection do
   @doc """
   Builds a changeset for updating a collection.
   """
+  @spec update_changeset(Collection.t(), map()) :: Ecto.Changeset.t()
   def update_changeset(%Collection{} = collection, attrs) do
     permitted_attrs = ~w(
       title
@@ -90,32 +92,32 @@ defmodule Margaret.Collections.Collection do
   @doc """
   Filters the collections by author.
   """
-  @spec by_author(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  @spec by_author(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
   def by_author(query \\ Collection, %User{id: author_id}),
     do: where(query, [..., c], c.author_id == ^author_id)
 
   @doc """
   Filters the collections in the query by being under a publication.
   """
-  @spec under_publication(Ecto.Query.t(), Publication.t()) :: Ecto.Query.t()
+  @spec under_publication(Ecto.Queryable.t(), Publication.t()) :: Ecto.Query.t()
   def under_publication(query \\ Collection, %Publication{id: publication_id}),
     do: where(query, [..., c], c.publication_id == ^publication_id)
 
   @doc """
   Preloads the author of a collection.
   """
-  @spec preload_author(t) :: t
+  @spec preload_author(t()) :: t()
   def preload_author(%Collection{} = collection), do: Repo.preload(collection, :author)
 
   @doc """
   Preloads the publication of a collection.
   """
-  @spec preload_publication(t) :: t
+  @spec preload_publication(t()) :: t()
   def preload_publication(%Collection{} = collection), do: Repo.preload(collection, :publication)
 
   @doc """
   Preloads the tags of a collection.
   """
-  @spec preload_tags(t) :: t
+  @spec preload_tags(t()) :: t()
   def preload_tags(%Collection{} = collection), do: Repo.preload(collection, :tags)
 end

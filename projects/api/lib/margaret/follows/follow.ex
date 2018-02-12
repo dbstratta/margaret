@@ -29,6 +29,7 @@ defmodule Margaret.Follows.Follow do
   @doc """
   Builds a changeset for inserting a follow.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       follower_id
@@ -55,27 +56,27 @@ defmodule Margaret.Follows.Follow do
   @doc """
   Filters the follows by follower.
   """
-  @spec by_follower(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  @spec by_follower(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
   def by_follower(query \\ Follow, %User{id: follower_id}),
     do: where(query, [..., f], f.follower_id == ^follower_id)
 
   @doc """
   Filters the follows by followed user.
   """
-  @spec by_user(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  @spec by_user(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
   def by_user(query \\ Follow, %User{id: user_id}),
     do: where(query, [..., f], f.user_id == ^user_id)
 
   @doc """
   Filters the follows by followed publication.
   """
-  @spec by_publication(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  @spec by_publication(Ecto.Queryable.t(), Publication.t()) :: Ecto.Query.t()
   def by_publication(query \\ Follow, %Publication{id: publication_id}),
     do: where(query, [..., f], f.publication_id == ^publication_id)
 
   @doc """
   Preloads the follower of a follow.
   """
-  @spec preload_follower(t) :: t
+  @spec preload_follower(t()) :: t()
   def preload_follower(%Follow{} = follow), do: Repo.preload(follow, :follower)
 end

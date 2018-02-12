@@ -51,7 +51,7 @@ defmodule MargaretWeb.AuthController do
   end
 
   @spec insert_user_and_get_token!(String.t(), Accounts.social_credentials()) ::
-          Guardian.Token.token()
+          Guardian.Token.token() | no_return()
   defp insert_user_and_get_token!(email, social_credentials) do
     user =
       email

@@ -53,7 +53,7 @@ defmodule Margaret.Follows do
     42
 
   """
-  @spec get_followee_count(User.t()) :: non_neg_integer
+  @spec get_followee_count(User.t()) :: non_neg_integer()
   def get_followee_count(%User{} = user) do
     query = Follow.by_follower(user)
 

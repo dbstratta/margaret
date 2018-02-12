@@ -119,7 +119,7 @@ defmodule Margaret.Stars do
     |> Repo.aggregate(:count, :id)
   end
 
-  @spec get_starrable_from_clauses(Keyword.t()) :: starrable
+  @spec get_starrable_from_clauses(Keyword.t()) :: starrable()
   defp get_starrable_from_clauses(clauses) do
     cond do
       Keyword.has_key?(clauses, :story) -> Keyword.get(clauses, :story)

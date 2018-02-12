@@ -35,6 +35,7 @@ defmodule Margaret.Comments.Comment do
   @doc """
   Builds a changeset for inserting a comment.
   """
+  @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
     permitted_attrs = ~w(
       author_id
@@ -60,6 +61,7 @@ defmodule Margaret.Comments.Comment do
   @doc """
   Builds a changeset for updating a comment.
   """
+  @spec update_changeset(Comment.t(), map()) :: Ecto.Changeset.t()
   def update_changeset(%Comment{} = comment, attrs) do
     permitted_attrs = ~w(
       content
@@ -71,31 +73,31 @@ defmodule Margaret.Comments.Comment do
 
   @doc """
   """
-  @spec by_story(Ecto.Query.t(), Story.t()) :: Ecto.Query.t()
+  @spec by_story(Ecto.Queryable.t(), Story.t()) :: Ecto.Query.t()
   def by_story(query \\ Comment, %Story{id: story_id}),
     do: where(query, [..., c], c.story_id == ^story_id)
 
   @doc """
   """
-  @spec by_parent(Ecto.Query.t(), t()) :: Ecto.Query.t()
+  @spec by_parent(Ecto.Queryable.t(), t()) :: Ecto.Query.t()
   def by_parent(query \\ Comment, %Comment{id: parent_id}),
     do: where(query, [..., c], c.parent_id == ^parent_id)
 
   @doc """
   Preloads the author of a comment.
   """
-  @spec preload_author(t) :: t
+  @spec preload_author(t()) :: t()
   def preload_author(%Comment{} = comment), do: Repo.preload(comment, :author)
 
   @doc """
   Preloads the story of a comment.
   """
-  @spec preload_story(t) :: t
+  @spec preload_story(t()) :: t()
   def preload_story(%Comment{} = comment), do: Repo.preload(comment, :story)
 
   @doc """
   Preloads the parent comment of a comment.
   """
-  @spec preload_parent(t) :: t
+  @spec preload_parent(t()) :: t()
   def preload_parent(%Comment{} = comment), do: Repo.preload(comment, :parent)
 end

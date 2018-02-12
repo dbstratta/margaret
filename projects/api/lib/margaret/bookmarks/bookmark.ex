@@ -56,25 +56,25 @@ defmodule Margaret.Bookmarks.Bookmark do
   @doc """
   Filters the bookmarks by user.
   """
-  @spec by_user(Ecto.Query.t(), User.t()) :: Ecto.Query.t()
+  @spec by_user(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
   def by_user(query \\ Bookmark, %User{id: user_id}),
     do: where(query, [..., b], b.user_id == ^user_id)
 
   @doc """
   Preloads the user of a bookmark.
   """
-  @spec preload_user(t) :: t
+  @spec preload_user(t()) :: t()
   def preload_user(%Bookmark{} = bookmark), do: Repo.preload(bookmark, :user)
 
   @doc """
   Preloads the story of a bookmark.
   """
-  @spec preload_story(t) :: t
+  @spec preload_story(t()) :: t()
   def preload_story(%Bookmark{} = bookmark), do: Repo.preload(bookmark, :story)
 
   @doc """
   Preloads the comment of a bookmark.
   """
-  @spec preload_comment(t) :: t
+  @spec preload_comment(t()) :: t()
   def preload_comment(%Bookmark{} = bookmark), do: Repo.preload(bookmark, :comment)
 end
