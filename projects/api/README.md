@@ -79,4 +79,6 @@ We try to comply with the
 
     * [`seeds.ex`](./priv/repo/seeds.exs): Contains the initial data to populate the database with.
 
+* [**`rel`**](./rel): Contains the release configuration.
+
 * [**`test`**](./test): Contains all the tests.
