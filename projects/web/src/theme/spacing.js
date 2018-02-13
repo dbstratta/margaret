@@ -1,96 +1,40 @@
-import { css } from 'styled-components';
-import { curry, map, __ as _ } from 'ramda';
+/**
+ * The base raw value is the value we base the rest of the values on.
+ */
+const baseRawValue = 0.2;
 
-const baseSize = 0.2;
-const sizes = {
-  xs: `${baseSize * 3}rem`,
-  sm: `${baseSize * 5}rem`,
-  md: `${baseSize * 8}rem`,
-  lg: `${baseSize * 13}rem`,
-  xl: `${baseSize * 21}rem`,
+/**
+ * Adds a unit to a raw value.
+ */
+const addUnit = unit => rawValue => `${rawValue}${unit}`;
+
+/**
+ * Adds the `rem` unit to a raw value.
+ */
+const addRemUnit = addUnit('rem');
+
+/**
+ * The raw sizes are the sizes without the unit.
+ * They're useful for adding to other values and then appending the unit.
+ */
+const rawSizes = {
+  xs: baseRawValue * 3,
+  sm: baseRawValue * 5,
+  md: baseRawValue * 8,
+  lg: baseRawValue * 13,
+  xl: baseRawValue * 21,
 };
 
-// Spacing helpers
-const spacing = curry((target, {
-  top, right, bottom, left,
-}) => css`
-    ${top && `${target}-top: ${sizes[top]}`};
-    ${right && `${target}-right: ${sizes[right]}`};
-    ${bottom && `${target}-bottom: ${sizes[bottom]}`};
-    ${left && `${target}-left: ${sizes[left]}`};
-  `);
-
-const spacingAll = target => size =>
-  spacing(target, {
-    top: size,
-    right: size,
-    bottom: size,
-    left: size,
-  });
-
-const spacingTopBottom = target => size => spacing(target, { top: size, bottom: size });
-const spacingRightLeft = target => size => spacing(target, { right: size, left: size });
-const spacingSide = side => target => size => spacing(target, { [side]: size });
-
-const sides = ['top', 'right', 'bottom', 'left'];
-const [spacingTop, spacingRight, spacingBottom, spacingLeft] = map(spacingSide, sides);
-
-const spacingHelpers = [
-  spacing,
-  spacingAll,
-  spacingTopBottom,
-  spacingRightLeft,
-  spacingTop,
-  spacingRight,
-  spacingBottom,
-  spacingLeft,
-];
-
-const [marginCreator, paddingCreator] = map(target => fn => fn(target), ['margin', 'padding']);
-
-const helperCreator = map(_, spacingHelpers);
-const [marginHelper, paddingHelper] = map(helperCreator, [marginCreator, paddingCreator]);
-
-// Margin helpers
-const [
-  margin,
-  marginAll,
-  marginTopBottom,
-  marginRightLeft,
-  marginTop,
-  marginRight,
-  marginBottom,
-  marginLeft,
-] = marginHelper;
-
-// Padding helpers
-const [
-  padding,
-  paddingAll,
-  paddingTopBottom,
-  paddingRightLeft,
-  paddingTop,
-  paddingRight,
-  paddingBottom,
-  paddingLeft,
-] = paddingHelper;
+/**
+ * The sizes are just the raw sizes with `rem` appended to them.
+ */
+const sizes = Object.entries(rawSizes).reduce(
+  (acc, [size, rawValue]) => ({ ...acc, [size]: addRemUnit(rawValue) }),
+  {},
+);
 
 export default {
   sizes,
-  margin,
-  marginAll,
-  marginTopBottom,
-  marginRightLeft,
-  marginTop,
-  marginRight,
-  marginBottom,
-  marginLeft,
-  padding,
-  paddingAll,
-  paddingTopBottom,
-  paddingRightLeft,
-  paddingTop,
-  paddingRight,
-  paddingBottom,
-  paddingLeft,
+  rawSizes,
+  addRemUnit,
 };

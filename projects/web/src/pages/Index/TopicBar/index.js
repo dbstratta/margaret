@@ -5,7 +5,6 @@ import styled from 'styled-components';
 const StyledNav = styled.nav`
   position: sticky;
   top: 0;
-  ${props => props.theme.spacing.paddingTopBottom('sm')};
 `;
 
 const StyledUl = styled.ul`

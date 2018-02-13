@@ -19,7 +19,7 @@ services:
       context: ./projects/web
       dockerfile: dev.dockerfile
     ports:
-      - "8090:8090"
+      - "3000:3000"
 
       # The storybook server.
       - "6006:6006"

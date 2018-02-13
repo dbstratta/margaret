@@ -1,6 +1,8 @@
 defmodule Margaret.Accounts.User do
   @moduledoc """
   The User schema and changesets.
+
+  TODO: Add email verification functionality.
   """
 
   use Ecto.Schema
