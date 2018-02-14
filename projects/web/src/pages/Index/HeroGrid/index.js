@@ -49,13 +49,17 @@ const HeroGrid = () => <Grid> 3 </Grid>;
 const featuredFeedQuery = gql`
   query FeaturedFeed {
     feed(first: 8) {
-      title
-      author {
-        firstName
-        lastName
-      }
-      publication {
-        displayName
+      edges {
+        node {
+          title
+          author {
+            firstName
+            lastName
+          }
+          publication {
+            displayName
+          }
+        }
       }
     }
   }

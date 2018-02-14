@@ -9,6 +9,9 @@ defmodule Margaret.Repo.Migrations.AddUsersTable do
       add(:username, :string, size: 64, null: false)
       add(:email, :string, size: 254, null: false)
 
+      add(:first_name, :string)
+      add(:last_name, :string)
+
       add(:avatar, :string)
       add(:bio, :string)
       add(:website, :string)

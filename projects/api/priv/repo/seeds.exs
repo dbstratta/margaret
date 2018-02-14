@@ -22,6 +22,8 @@ alias Publications.{Publication, PublicationMembership}
 diego =
   Repo.insert!(%User{
     username: "diego",
+    first_name: "Diego",
+    last_name: "Stratta",
     email: "strattadb@gmail.com",
     location: "Montevideo, Uruguay",
     is_admin: true,

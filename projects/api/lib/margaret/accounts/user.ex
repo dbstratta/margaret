@@ -33,6 +33,9 @@ defmodule Margaret.Accounts.User do
     field(:username, :string)
     field(:email, :string)
 
+    field(:first_name, :string)
+    field(:last_name, :string)
+
     # TODO: Use Arc and Arc Ecto to manage file uploads.
     field(:avatar, :string)
     field(:bio, :string)

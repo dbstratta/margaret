@@ -62,6 +62,16 @@ defmodule MargaretWeb.Schema.AccountTypes do
     field(:email, non_null(:string))
 
     @desc """
+    The first name of the user.
+    """
+    field(:first_name, :string)
+
+    @desc """
+    The last name of the user.
+    """
+    field(:last_name, :string)
+
+    @desc """
     The biography of the user.
     """
     field(:bio, :string)
