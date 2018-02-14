@@ -13,12 +13,25 @@ const Grid = styled.section`
 
   display: grid;
   grid-gap: var(--grid-gap);
-  grid-template-columns: [grid-left lg-start] 3fr [lg-end] repeat(3, 1fr) [grid-right];
+  grid-template-columns: [grid-left] 3fr repeat(3, 1fr) [grid-right];
   grid-template-rows: [grid-top] auto 2fr repeat(3, 1fr) auto [grid-bottom];
   grid-template-areas:
     'title  title  title  title'
     'lg     lg     lg     lg   '
-    'md     md     md     md   ';
+    'lg     lg     lg     lg   '
+    'md     md     md     md   '
+    'md     md     md     md   '
+    'more   more   more   more ';
+
+  @media (min-width: ${props => props.theme.breakpoints.md}) {
+    grid-template-areas:
+      'title  sm1   sm2  sm3'
+      'lg     sm1   sm2  sm3'
+      'lg     xs1   md   md '
+      'lg     xs2   md   md '
+      'lg     xs3   md   md '
+      'lg     more  md   md ';
+  }
 
   @media (min-width: ${props => props.theme.breakpoints.xl}) {
     grid-template-areas:

@@ -4,16 +4,29 @@
  * The breakpoint values were extracted from Bootstrap 4.
  */
 
-const xs = 0;
-const sm = 576;
-const md = 768;
-const lg = 992;
-const xl = 1200;
+import { addPxUnit } from './helpers';
+
+/**
+ * The raw breakpoints are the breakpoint values without the unit.
+ * They're useful for adding to other values and then appending the unit.
+ */
+const rawBreakpoints = {
+  xs: 0,
+  sm: 576,
+  md: 768,
+  lg: 992,
+  xl: 1200,
+};
+
+/**
+ * The breakpoints are just the raw breakpoints with `px` appended to them.
+ */
+const breakpoints = Object.entries(rawBreakpoints).reduce(
+  (acc, [breakpoint, rawValue]) => ({ ...acc, [breakpoint]: addPxUnit(rawValue) }),
+  {},
+);
 
 export default {
-  xs,
-  sm,
-  md,
-  lg,
-  xl,
+  rawBreakpoints,
+  ...breakpoints,
 };

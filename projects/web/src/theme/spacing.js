@@ -1,17 +1,13 @@
 /**
+ * Spacing variables to use in margins, paddings, etc.
+ */
+
+import { addRemUnit } from './helpers';
+
+/**
  * The base raw value is the value we base the rest of the values on.
  */
 const baseRawValue = 0.2;
-
-/**
- * Adds a unit to a raw value.
- */
-const addUnit = unit => rawValue => `${rawValue}${unit}`;
-
-/**
- * Adds the `rem` unit to a raw value.
- */
-const addRemUnit = addUnit('rem');
 
 /**
  * The raw sizes are the sizes without the unit.
@@ -36,5 +32,4 @@ const sizes = Object.entries(rawSizes).reduce(
 export default {
   sizes,
   rawSizes,
-  addRemUnit,
 };
