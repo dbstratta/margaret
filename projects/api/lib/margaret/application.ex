@@ -10,8 +10,6 @@ defmodule Margaret.Application do
     children = [
       # Start the Ecto repository.
       Margaret.Repo,
-      # Start the scheduler.
-      Margaret.Scheduler,
       # Start the endpoint when the application starts.
       MargaretWeb.Endpoint,
       %{
