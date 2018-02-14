@@ -55,7 +55,6 @@ defmodule Margaret.Mixfile do
       {:phoenix_swoosh, "~> 0.2.0"},
       {:sentry, "~> 6.1.0"},
       {:exq, "~> 0.9.1"},
-      {:quantum, "~> 2.2.2"},
       {:timex, "~> 3.1.25"},
       {:cors_plug, "~> 1.5.0"},
       {:arc, "~> 0.8.0"},
