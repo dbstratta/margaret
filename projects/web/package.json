@@ -20,7 +20,7 @@
     "date-fns": "1.29.0",
     "draft-js": "0.10.5",
     "final-form": "4.2.0",
-    "graphql": "0.13.0",
+    "graphql": "0.13.1",
     "graphql-tag": "2.7.3",
     "history": "4.7.2",
     "polished": "1.9.2",
