@@ -76,7 +76,7 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@researchgate/react-intersection-observer@^0.6.0":
+"@researchgate/react-intersection-observer@0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@researchgate/react-intersection-observer/-/react-intersection-observer-0.6.0.tgz#505f20b62c8941a035442b61ac448870afb5d8a2"
   dependencies:
