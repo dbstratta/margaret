@@ -12,7 +12,7 @@
     "build-storybook": "build-storybook -s public"
   },
   "dependencies": {
-    "apollo-cache-inmemory": "1.1.8",
+    "apollo-cache-inmemory": "1.1.9",
     "apollo-client": "2.2.4",
     "apollo-link": "1.1.0",
     "apollo-link-http": "1.3.3",
