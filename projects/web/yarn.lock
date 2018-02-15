@@ -76,6 +76,13 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
+"@researchgate/react-intersection-observer@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@researchgate/react-intersection-observer/-/react-intersection-observer-0.6.0.tgz#505f20b62c8941a035442b61ac448870afb5d8a2"
+  dependencies:
+    invariant "^2.2.2"
+    prop-types "^15.6.0"
+
 "@storybook/addon-actions@3.3.13", "@storybook/addon-actions@^3.3.13":
   version "3.3.13"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-3.3.13.tgz#6ba603e5254ab01d16f9ff97c1656f3746710059"
