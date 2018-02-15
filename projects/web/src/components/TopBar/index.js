@@ -1,60 +1,56 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Headroom from 'react-headroom';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const StyledWrapper = styled.div`
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  width: 100%;
+  --bar-height: 3.5rem;
+  --grid-template-columns: 3fr 1fr;
+
+  display: grid;
+  grid-template-columns: var(--grid-template-columns);
+  align-items: center;
+
+  width: var(--main-content-width);
+  height: var(--bar-height);
+
   margin: auto;
 
-  @media (min-width: ${props => props.theme.breakpoints.lg}px) {
-    width: 80%;
+  @media (min-width: ${props => props.theme.breakpoints.lg}) {
+    --bar-height: 4rem;
+    --grid-template-columns: 1fr 3fr 1fr;
   }
 `;
 
 const UpgradeWrapper = styled.div`
   display: none;
 
-  @media (min-width: ${props => props.theme.breakpoints.lg}px) {
+  justify-self: start;
+
+  @media (min-width: ${props => props.theme.breakpoints.lg}) {
     display: initial;
-    flex: 1 1 20%;
-    text-align: center;
   }
 `;
 
 const LogoLink = styled(Link)`
-  flex: 1 1 60%;
+  --justify-self: start;
 
-  @media (min-width: ${props => props.theme.breakpoints.lg}px) {
-    text-align: center;
+  justify-self: var(--justify-self);
+
+  @media (min-width: ${props => props.theme.breakpoints.lg}) {
+    --justify-self: center;
   }
 `;
 
 const ButtonSet = styled.div`
-  flex: 1 1 20%;
-  text-align: center;
+  justify-self: end;
 `;
 
-export const TopBar = ({ hideable }) => (
-  <Headroom disable={!hideable}>
-    <StyledWrapper>
-      <UpgradeWrapper>Upgrade</UpgradeWrapper>
-      <LogoLink to="/">Margaret</LogoLink>
-      <ButtonSet>Buttons</ButtonSet>
-    </StyledWrapper>
-  </Headroom>
+export const TopBar = () => (
+  <StyledWrapper>
+    <UpgradeWrapper>Upgrade</UpgradeWrapper>
+    <LogoLink to="/">Margaret</LogoLink>
+    <ButtonSet>Buttons</ButtonSet>
+  </StyledWrapper>
 );
-
-TopBar.propTypes = {
-  hideable: PropTypes.bool,
-};
-
-TopBar.defaultProps = {
-  hideable: false,
-};
 
 export default TopBar;

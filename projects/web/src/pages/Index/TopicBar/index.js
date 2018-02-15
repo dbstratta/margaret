@@ -4,29 +4,73 @@
  */
 
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import Observer from '@researchgate/react-intersection-observer';
 import styled from 'styled-components';
 
 const StyledNav = styled.nav`
+  --nav-height: 2.5rem;
   --bottom-shadow: 0px 2px 2px -2px rgba(0, 0, 0, 0.25);
 
   position: sticky;
   top: 0;
+  height: var(--nav-height);
+
+  background-color: var(--background-color);
 
   box-shadow: ${({ bottomShadow }) => (bottomShadow ? 'var(--bottom-shadow)' : 'none')};
+
+  @media (min-width: ${props => props.theme.breakpoints.md}) {
+    --nav-height: 3.1rem;
+  }
 `;
 
-const StyledUl = styled.ul`
-  display: grid;
+const NavWrapper = styled.div`
+  display: flex;
+  align-items: center;
 
-  list-style: none;
+  width: var(--main-content-width);
+  height: 100%;
+
+  margin: auto;
+`;
+
+const NavControl = styled.button`
+  display: none;
+
+  margin-right: ${({ left }) => (left ? 'var(--sm-space)' : 0)};
+  margin-left: ${({ right }) => (right ? 'var(--sm-space)' : 0)};
+
+  @media (min-width: ${props => props.theme.breakpoints.xl}) {
+    display: initial;
+  }
+`;
+
+const ListWrapper = styled.div`
+  height: inherit;
+
+  overflow: scroll;
+  scroll-behavior: smooth;
+`;
+
+const StyledList = styled.ul`
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: auto;
+  grid-gap: 1.5rem;
+  justify-items: center;
+  align-items: center;
+
+  height: inherit;
+
   padding: 0;
   margin: 0;
+
+  list-style: none;
 `;
 
-const StyledLi = styled.li`
-  margin: 0 ${props => props.theme.spacing.sizes.sm};
+const StyledItem = styled.li`
+  text-transform: uppercase;
 `;
 
 /**
@@ -53,15 +97,36 @@ const Sentinel = styled.div`
  */
 const topics = [
   { path: '/', topic: 'Home' },
-  { path: '/', topic: 'Technology' },
-  { path: '/', topic: 'Culture' },
+  { path: '/topic/technology', topic: 'Technology' },
+  { path: '/topic/culture', topic: 'Culture' },
+  { path: '/topic/technology', topic: 'Technology' },
+  { path: '/topic/culture', topic: 'Culture' },
+  { path: '/topic/technology', topic: 'Technology' },
+  { path: '/topic/culture', topic: 'Culture' },
+  { path: '/topic/technology', topic: 'Technology' },
+  { path: '/topic/culture', topic: 'Culture' },
+  { path: '/topic/technology', topic: 'Technology' },
+  { path: '/topic/culture', topic: 'Culture' },
+  { path: '/topic/technology', topic: 'Technology' },
+  { path: '/topic/culture', topic: 'Culture' },
 ];
+
+const activeClassName = 'nav-link-active';
+const StyledLink = styled(NavLink).attrs({ activeClassName })`
+  font-size: 0.82rem;
+
+  text-decoration: none;
+
+  &.${activeClassName} {
+    color: red;
+  }
+`;
 
 const renderTopics = topicList =>
   topicList.map(({ path, topic }) => (
-    <StyledLi>
-      <Link to={path}>{topic}</Link>
-    </StyledLi>
+    <StyledItem>
+      <StyledLink to={path}>{topic}</StyledLink>
+    </StyledItem>
   ));
 
 export default class TopicBar extends Component {
@@ -75,6 +140,22 @@ export default class TopicBar extends Component {
   handleIntersectionChange = ({ isIntersecting }) =>
     this.setState({ bottomShadow: !isIntersecting });
 
+  registerListWrapper = (listWrapperElem) => {
+    this.listWrapperElem = listWrapperElem;
+  };
+
+  registerList = (listElem) => {
+    this.listElem = listElem;
+  };
+
+  handleLeftNavControlClick = () => {
+    this.listWrapperElem.scrollLeft = 0;
+  };
+
+  handleRightNavControlClick = () => {
+    this.listWrapperElem.scrollLeft = this.listElem.scrollWidth;
+  };
+
   render() {
     return (
       <Fragment>
@@ -82,7 +163,17 @@ export default class TopicBar extends Component {
           <Sentinel />
         </Observer>
         <StyledNav bottomShadow={this.state.bottomShadow}>
-          <StyledUl>{renderTopics(topics)}</StyledUl>
+          <NavWrapper>
+            <NavControl onClick={this.handleLeftNavControlClick} left>
+              &lt;
+            </NavControl>
+            <ListWrapper innerRef={this.registerListWrapper}>
+              <StyledList innerRef={this.registerList}>{renderTopics(topics)}</StyledList>
+            </ListWrapper>
+            <NavControl onClick={this.handleRightNavControlClick} right>
+              &gt;
+            </NavControl>
+          </NavWrapper>
         </StyledNav>
       </Fragment>
     );
