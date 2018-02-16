@@ -6,7 +6,7 @@ import HeroGrid from './HeroGrid';
 
 const Index = () => (
   <Fragment>
-    <TopBar />
+    <TopBar pinnable={false} />
     <TopicBar />
     <HeroGrid />
   </Fragment>

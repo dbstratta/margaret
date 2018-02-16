@@ -1,6 +1,22 @@
-import React from 'react';
+/**
+ * The top bar of the site.
+ */
+
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import Headroom from 'react-headroom';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+
+/**
+ * When the headroom is scrolled we want it
+ * to have a bottom shadow.
+ */
+const StyledHeadroom = styled(Headroom)`
+  > .headroom.headroom--scrolled {
+    box-shadow: 0px 2px 2px -2px rgba(0, 0, 0, 0.15);
+  }
+`;
 
 const StyledWrapper = styled.div`
   --bar-height: 3.5rem;
@@ -45,12 +61,22 @@ const ButtonSet = styled.div`
   justify-self: end;
 `;
 
-export const TopBar = () => (
-  <StyledWrapper>
-    <UpgradeWrapper>Upgrade</UpgradeWrapper>
-    <LogoLink to="/">Margaret</LogoLink>
-    <ButtonSet>Buttons</ButtonSet>
-  </StyledWrapper>
-);
+export default class TopBar extends Component {
+  static propTypes = { pinnable: PropTypes.bool };
 
-export default TopBar;
+  static defaultProps = { pinnable: true };
+
+  state = {};
+
+  render() {
+    return (
+      <StyledHeadroom disable={!this.props.pinnable}>
+        <StyledWrapper>
+          <UpgradeWrapper>Upgrade</UpgradeWrapper>
+          <LogoLink to="/">Margaret</LogoLink>
+          <ButtonSet>Buttons</ButtonSet>
+        </StyledWrapper>
+      </StyledHeadroom>
+    );
+  }
+}

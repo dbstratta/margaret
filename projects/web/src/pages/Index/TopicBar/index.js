@@ -10,7 +10,7 @@ import styled from 'styled-components';
 
 const StyledNav = styled.nav`
   --nav-height: 2.5rem;
-  --bottom-shadow: 0px 2px 2px -2px rgba(0, 0, 0, 0.25);
+  --bottom-shadow: 0px 2px 2px -2px rgba(0, 0, 0, 0.15);
 
   position: sticky;
   top: 0;
@@ -37,6 +37,8 @@ const NavWrapper = styled.div`
 
 const NavControl = styled.button`
   display: none;
+
+  border: none;
 
   margin-right: ${({ left }) => (left ? 'var(--sm-space)' : 0)};
   margin-left: ${({ right }) => (right ? 'var(--sm-space)' : 0)};
@@ -137,7 +139,7 @@ export default class TopicBar extends Component {
    * (the element the IntersectionObserver is observing)
    * changes its intersection state with respect to the viewport.
    */
-  handleIntersectionChange = ({ isIntersecting }) =>
+  handleBarIntersectionChange = ({ isIntersecting }) =>
     this.setState({ bottomShadow: !isIntersecting });
 
   registerListWrapper = (listWrapperElem) => {
@@ -159,7 +161,7 @@ export default class TopicBar extends Component {
   render() {
     return (
       <Fragment>
-        <Observer onChange={this.handleIntersectionChange}>
+        <Observer onChange={this.handleBarIntersectionChange}>
           <Sentinel />
         </Observer>
         <StyledNav bottomShadow={this.state.bottomShadow}>
