@@ -82,6 +82,6 @@
     "stylelint-config-standard": "18.0.0",
     "stylelint-config-styled-components": "0.1.1",
     "stylelint-processor-styled-components": "1.2.2",
-    "why-did-you-update": "0.1.0"
+    "why-did-you-update": "0.1.1"
   }
 }
