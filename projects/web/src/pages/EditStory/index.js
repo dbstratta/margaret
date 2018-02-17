@@ -1,6 +1,6 @@
 import React from 'react';
 
-import StoryEditor from '../../components/StoryEditor';
+// import StoryEditor from '../../components/StoryEditor';
 
 const EditStory = () => <div>edit story</div>;
 

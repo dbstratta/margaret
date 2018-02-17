@@ -45,10 +45,10 @@ const Grid = styled.section`
   }
 `;
 
-const HeroGrid = ({ feed, loading }) => (
+const HeroGrid = ({ data, loading }) => (
   <Grid>
     LOADING: {`${loading}`}
-    FEED: {JSON.stringify(feed)}
+    FEED: {JSON.stringify(data)}
     LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM
     LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM
     LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM
@@ -84,16 +84,18 @@ const nodePropType = PropTypes.shape({
   }),
 });
 
-const edgePropType = PropTypes.arrayOf(nodePropType);
-const feedPropType = PropTypes.objectOf(edgePropType);
+const edgePropType = PropTypes.shape({ node: nodePropType });
+const feedPropType = PropTypes.shape({
+  edges: PropTypes.arrayOf(edgePropType),
+});
 
 HeroGrid.propTypes = {
-  feed: feedPropType,
+  data: PropTypes.shape({ feed: feedPropType }),
   loading: PropTypes.bool.isRequired,
 };
 
 HeroGrid.defaultProps = {
-  feed: null,
+  data: null,
 };
 
 const featuredFeedQuery = gql`
@@ -122,9 +124,9 @@ const EnhancedHeroGrid = () => (
         return 'error';
       }
 
-      return <HeroGrid feed={data.feed} loading={loading} />;
+      return <HeroGrid data={data} loading={loading} />;
     }}
   </Query>
 );
 
-export default HeroGrid;
+export default EnhancedHeroGrid;
