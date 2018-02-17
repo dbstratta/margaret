@@ -48,14 +48,14 @@ const NavControl = styled.button`
   }
 `;
 
-const ListWrapper = styled.div`
+const TopicListWrapper = styled.div`
   height: inherit;
 
   overflow: scroll;
   scroll-behavior: smooth;
 `;
 
-const StyledList = styled.ul`
+const TopicList = styled.ul`
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: auto;
@@ -101,16 +101,16 @@ const topics = [
   { path: '/', topic: 'Home' },
   { path: '/topic/technology', topic: 'Technology' },
   { path: '/topic/culture', topic: 'Culture' },
-  { path: '/topic/technology', topic: 'Technology' },
-  { path: '/topic/culture', topic: 'Culture' },
-  { path: '/topic/technology', topic: 'Technology' },
-  { path: '/topic/culture', topic: 'Culture' },
-  { path: '/topic/technology', topic: 'Technology' },
-  { path: '/topic/culture', topic: 'Culture' },
-  { path: '/topic/technology', topic: 'Technology' },
-  { path: '/topic/culture', topic: 'Culture' },
-  { path: '/topic/technology', topic: 'Technology' },
-  { path: '/topic/culture', topic: 'Culture' },
+  { path: '/topic/technology', topic: 'Technology2' },
+  { path: '/topic/culture', topic: 'Culture2' },
+  { path: '/topic/technology', topic: 'Technology3' },
+  { path: '/topic/culture', topic: 'Culture3' },
+  { path: '/topic/technology', topic: 'Technology4' },
+  { path: '/topic/culture', topic: 'Culture4' },
+  { path: '/topic/technology', topic: 'Technology5' },
+  { path: '/topic/culture', topic: 'Culture5' },
+  { path: '/topic/technology', topic: 'Technology6' },
+  { path: '/topic/culture', topic: 'Culture6' },
 ];
 
 const activeClassName = 'nav-link-active';
@@ -124,15 +124,61 @@ const StyledLink = styled(NavLink).attrs({ activeClassName })`
   }
 `;
 
-const renderTopics = topicList =>
+const renderTopics = (topicList, addTopicElem) =>
   topicList.map(({ path, topic }) => (
-    <StyledItem>
+    <StyledItem ref={addTopicElem} key={topic}>
       <StyledLink to={path}>{topic}</StyledLink>
     </StyledItem>
   ));
 
 export default class TopicBar extends Component {
   state = { bottomShadow: false };
+
+  componentDidMount() {
+    this.visibleTopicRange = [0, 0];
+
+    const topicIntersectionObserverOptions = {
+      root: this.topicListElem,
+      threshold: 1,
+    };
+
+    this.topicIntersectionObserver = new IntersectionObserver(
+      this.handleTopicVisibilityChange,
+      topicIntersectionObserverOptions,
+    );
+
+    // Observe every topic element.
+    this.topicElems.map(topicElem => this.topicIntersectionObserver.observe(topicElem));
+  }
+
+  componentWillUnmount() {
+    this.topicIntersectionObserver.disconnect();
+  }
+
+  /**
+   * This Intersection Observer will the visibility of every
+   * topic element.
+   */
+
+  topicElems = [];
+  topicIntersectionObserver = null;
+  visibleTopicRange = null;
+  topicListElem = null;
+  topicListWrapperElem = null;
+
+  addTopicElem = (elem) => {
+    this.topicElems = [...this.topicElems, elem];
+  };
+
+  handleTopicVisibilityChange = entries => entries;
+
+  addTopicListElem = (elem) => {
+    this.topicListElem = elem;
+  };
+
+  addTopicListWrapperElem = (elem) => {
+    this.topicListWrapperElem = elem;
+  };
 
   /**
    * Callback that is called when the sentinel
@@ -141,14 +187,6 @@ export default class TopicBar extends Component {
    */
   handleBarIntersectionChange = ({ isIntersecting }) =>
     this.setState({ bottomShadow: !isIntersecting });
-
-  registerListWrapper = (listWrapperElem) => {
-    this.listWrapperElem = listWrapperElem;
-  };
-
-  registerList = (listElem) => {
-    this.listElem = listElem;
-  };
 
   handleLeftNavControlClick = () => {
     this.listWrapperElem.scrollLeft = 0;
@@ -169,9 +207,11 @@ export default class TopicBar extends Component {
             <NavControl onClick={this.handleLeftNavControlClick} left>
               &lt;
             </NavControl>
-            <ListWrapper innerRef={this.registerListWrapper}>
-              <StyledList innerRef={this.registerList}>{renderTopics(topics)}</StyledList>
-            </ListWrapper>
+            <TopicListWrapper innerRef={this.addTopicListWrapperElem}>
+              <TopicList innerRef={this.addTopicListElem}>
+                {renderTopics(topics, this.addTopicElem)}
+              </TopicList>
+            </TopicListWrapper>
             <NavControl onClick={this.handleRightNavControlClick} right>
               &gt;
             </NavControl>

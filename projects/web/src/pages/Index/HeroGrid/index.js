@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { graphql } from 'react-apollo';
+import PropTypes from 'prop-types';
+import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 
@@ -44,8 +45,10 @@ const Grid = styled.section`
   }
 `;
 
-const HeroGrid = () => (
+const HeroGrid = ({ feed, loading }) => (
   <Grid>
+    LOADING: {`${loading}`}
+    FEED: {JSON.stringify(feed)}
     LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM
     LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM
     LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM
@@ -70,6 +73,29 @@ const HeroGrid = () => (
   </Grid>
 );
 
+const nodePropType = PropTypes.shape({
+  title: PropTypes.string.isRequired,
+  author: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+  }).isRequired,
+  publication: PropTypes.shape({
+    displayName: PropTypes.string.isRequired,
+  }),
+});
+
+const edgePropType = PropTypes.arrayOf(nodePropType);
+const feedPropType = PropTypes.objectOf(edgePropType);
+
+HeroGrid.propTypes = {
+  feed: feedPropType,
+  loading: PropTypes.bool.isRequired,
+};
+
+HeroGrid.defaultProps = {
+  feed: null,
+};
+
 const featuredFeedQuery = gql`
   query FeaturedFeed {
     feed(first: 8) {
@@ -89,8 +115,16 @@ const featuredFeedQuery = gql`
   }
 `;
 
-const withData = graphql(featuredFeedQuery);
+const EnhancedHeroGrid = () => (
+  <Query query={featuredFeedQuery}>
+    {({ data, loading, error }) => {
+      if (error) {
+        return 'error';
+      }
 
-const enhance = withData;
+      return <HeroGrid feed={data.feed} loading={loading} />;
+    }}
+  </Query>
+);
 
-export default enhance(HeroGrid);
+export default EnhancedHeroGrid;
