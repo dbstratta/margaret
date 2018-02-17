@@ -124,61 +124,56 @@ const StyledLink = styled(NavLink).attrs({ activeClassName })`
   }
 `;
 
-const renderTopics = (topicList, addTopicElem) =>
-  topicList.map(({ path, topic }) => (
-    <StyledItem ref={addTopicElem} key={topic}>
-      <StyledLink to={path}>{topic}</StyledLink>
-    </StyledItem>
+const renderTopics = (topicList, { addElement, handleChange, rootElement }) =>
+  topicList.map(({ path, topic }, index) => (
+    <Observer
+      onChange={handleChange(index)}
+      threshold={1}
+      key={topic}
+      disabled={!rootElement}
+      root={rootElement}
+    >
+      <StyledItem ref={addElement}>
+        {console.log(rootElement)}
+        <StyledLink to={path}>{topic}</StyledLink>
+      </StyledItem>
+    </Observer>
   ));
 
 export default class TopicBar extends Component {
-  state = { bottomShadow: false };
+  state = {
+    bottomShadow: false,
+    leftNavControlDisabled: true,
+    rightNavControlDisabled: false,
+    topicListWrapperElement: null,
+  };
 
-  componentDidMount() {
-    this.visibleTopicRange = [0, 0];
-
-    const topicIntersectionObserverOptions = {
-      root: this.topicListElem,
-      threshold: 1,
-    };
-
-    this.topicIntersectionObserver = new IntersectionObserver(
-      this.handleTopicVisibilityChange,
-      topicIntersectionObserverOptions,
-    );
-
-    // Observe every topic element.
-    this.topicElems.map(topicElem => this.topicIntersectionObserver.observe(topicElem));
-  }
-
-  componentWillUnmount() {
-    this.topicIntersectionObserver.disconnect();
-  }
-
-  /**
-   * This Intersection Observer will the visibility of every
-   * topic element.
-   */
-
-  topicElems = [];
-  topicIntersectionObserver = null;
-  visibleTopicRange = null;
-  topicListElem = null;
-  topicListWrapperElem = null;
+  visibleTopicRange = [0, 0];
 
   addTopicElem = (elem) => {
-    this.topicElems = [...this.topicElems, elem];
+    const elements = this.topicElements || [];
+
+    this.topicElements = [...elements, elem];
   };
 
-  handleTopicVisibilityChange = entries => entries;
+  setVisibleTopicRange = (first, last) => {
+    this.visibleTopicRange = [first, last];
 
-  addTopicListElem = (elem) => {
-    this.topicListElem = elem;
+    if (first === 0) {
+      this.setState({ leftNavControlDisabled: true });
+    }
   };
 
-  addTopicListWrapperElem = (elem) => {
-    this.topicListWrapperElem = elem;
+  handleTopicVisibilityChange = index => (event) => {};
+
+  /**
+   * We store the node
+   */
+  addTopicListElement = (el) => {
+    this.topicListElement = el;
   };
+
+  addTopicListWrapperElement = el => this.setState({ topicListWrapperElement: el });
 
   /**
    * Callback that is called when the sentinel
@@ -204,15 +199,27 @@ export default class TopicBar extends Component {
         </Observer>
         <StyledNav bottomShadow={this.state.bottomShadow}>
           <NavWrapper>
-            <NavControl onClick={this.handleLeftNavControlClick} left>
+            <NavControl
+              left
+              onClick={this.handleLeftNavControlClick}
+              disabled={this.state.leftNavControlDisabled}
+            >
               &lt;
             </NavControl>
-            <TopicListWrapper innerRef={this.addTopicListWrapperElem}>
-              <TopicList innerRef={this.addTopicListElem}>
-                {renderTopics(topics, this.addTopicElem)}
+            <TopicListWrapper innerRef={this.addTopicListWrapperElement}>
+              <TopicList innerRef={this.addTopicListElement}>
+                {renderTopics(topics, {
+                  addElement: this.addTopicElem,
+                  handleChange: this.handleTopicVisibilityChange,
+                  rootElement: this.state.topicListWrapperElement,
+                })}
               </TopicList>
             </TopicListWrapper>
-            <NavControl onClick={this.handleRightNavControlClick} right>
+            <NavControl
+              right
+              onClick={this.handleRightNavControlClick}
+              disabled={this.state.rightNavControlDisabled}
+            >
               &gt;
             </NavControl>
           </NavWrapper>

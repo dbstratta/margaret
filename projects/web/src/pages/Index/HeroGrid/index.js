@@ -127,4 +127,4 @@ const EnhancedHeroGrid = () => (
   </Query>
 );
 
-export default EnhancedHeroGrid;
+export default HeroGrid;
