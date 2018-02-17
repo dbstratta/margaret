@@ -4,6 +4,7 @@
  */
 
 import React, { Component, Fragment } from 'react';
+import { findDOMNode } from 'react-dom';
 import { NavLink } from 'react-router-dom';
 import Observer from '@researchgate/react-intersection-observer';
 import styled from 'styled-components';
@@ -36,16 +37,10 @@ const NavWrapper = styled.div`
 `;
 
 const NavControl = styled.button`
-  display: none;
-
   border: none;
 
   margin-right: ${({ left }) => (left ? 'var(--sm-space)' : 0)};
   margin-left: ${({ right }) => (right ? 'var(--sm-space)' : 0)};
-
-  @media (min-width: ${props => props.theme.breakpoints.xl}) {
-    display: initial;
-  }
 `;
 
 const TopicListWrapper = styled.div`
@@ -90,7 +85,7 @@ const StyledItem = styled.li`
  * it means that the topic bar is stuck to the top. If the sentinel is
  * shown, it means that the topic bar isn't stuck.
  */
-const Sentinel = styled.div`
+const StickySentinel = styled.div`
   visibility: hidden;
 `;
 
@@ -124,17 +119,10 @@ const StyledLink = styled(NavLink).attrs({ activeClassName })`
   }
 `;
 
-const renderTopics = (topicList, { addElement, handleChange, rootElement }) =>
+const renderTopics = (topicList, { addElement, handleChange }) =>
   topicList.map(({ path, topic }, index) => (
-    <Observer
-      onChange={handleChange(index)}
-      threshold={1}
-      key={topic}
-      disabled={!rootElement}
-      root={rootElement}
-    >
+    <Observer onChange={handleChange(index)} threshold={1} key={topic}>
       <StyledItem ref={addElement}>
-        {console.log(rootElement)}
         <StyledLink to={path}>{topic}</StyledLink>
       </StyledItem>
     </Observer>
@@ -143,66 +131,93 @@ const renderTopics = (topicList, { addElement, handleChange, rootElement }) =>
 export default class TopicBar extends Component {
   state = {
     bottomShadow: false,
-    leftNavControlDisabled: true,
-    rightNavControlDisabled: false,
-    topicListWrapperElement: null,
+    visibleTopicRange: [0, 0],
   };
 
-  visibleTopicRange = [0, 0];
+  /**
+   * We store the topic React elements to be able
+   * to scrollIntoView() them among other things.
+   */
+  topicElements = [];
 
   addTopicElem = (elem) => {
-    const elements = this.topicElements || [];
-
-    this.topicElements = [...elements, elem];
+    this.topicElements = [...this.topicElements, elem];
   };
 
-  setVisibleTopicRange = (first, last) => {
-    this.visibleTopicRange = [first, last];
-
-    if (first === 0) {
-      this.setState({ leftNavControlDisabled: true });
+  /**
+   * Handler for the topics Intersection Observer.
+   * It updates the visible range of topics.
+   */
+  handleTopicVisibilityChange = index => (event) => {
+    // A topic element is leaving the visible range.
+    if (event.intersectionRatio < 1) {
+      if (index === this.state.visibleTopicRange[0]) {
+        this.setState(({ visibleTopicRange }) => ({
+          visibleTopicRange: [index + 1, visibleTopicRange[1]],
+        }));
+      } else if (index <= this.state.visibleTopicRange[1]) {
+        this.setState(({ visibleTopicRange }) => ({
+          visibleTopicRange: [visibleTopicRange[0], index - 1],
+        }));
+      }
+      // A topic element is entering the visible range.
+    } else {
+      // eslint-disable-next-line no-lonely-if
+      if (index < this.state.visibleTopicRange[0]) {
+        this.setState(({ visibleTopicRange }) => ({
+          visibleTopicRange: [index, visibleTopicRange[1]],
+        }));
+      } else if (index > this.state.visibleTopicRange[1]) {
+        this.setState(({ visibleTopicRange }) => ({
+          visibleTopicRange: [visibleTopicRange[0], index],
+        }));
+      }
     }
   };
 
-  handleTopicVisibilityChange = index => (event) => {};
-
-  /**
-   * We store the node
-   */
   addTopicListElement = (el) => {
     this.topicListElement = el;
   };
 
-  addTopicListWrapperElement = el => this.setState({ topicListWrapperElement: el });
-
-  /**
-   * Callback that is called when the sentinel
-   * (the element the IntersectionObserver is observing)
-   * changes its intersection state with respect to the viewport.
-   */
-  handleBarIntersectionChange = ({ isIntersecting }) =>
+  handleStickySentinelVisibilityChange = ({ isIntersecting }) =>
     this.setState({ bottomShadow: !isIntersecting });
 
+  canScrollLeft = () => this.state.visibleTopicRange[0] > 0;
+
+  canScrollRight = () => this.state.visibleTopicRange[1] < this.topicElements.length - 1;
+
   handleLeftNavControlClick = () => {
-    this.listWrapperElem.scrollLeft = 0;
+    if (this.canScrollLeft()) {
+      const elementToScrollTo = this.topicElements[this.state.visibleTopicRange[0] - 1];
+
+      // We need the native DOM node to use scrollIntoView.
+      // eslint-disable-next-line react/no-find-dom-node
+      findDOMNode(elementToScrollTo).scrollIntoView({ block: 'nearest', inline: 'end' });
+    }
   };
 
   handleRightNavControlClick = () => {
-    this.listWrapperElem.scrollLeft = this.listElem.scrollWidth;
+    if (this.canScrollRight()) {
+      const elementToScrollTo = this.topicElements[this.state.visibleTopicRange[1] + 1];
+
+      // We need the native DOM node to use scrollIntoView.
+      // eslint-disable-next-line react/no-find-dom-node
+      findDOMNode(elementToScrollTo).scrollIntoView({ block: 'nearest', inline: 'start' });
+    }
   };
 
   render() {
     return (
       <Fragment>
-        <Observer onChange={this.handleBarIntersectionChange}>
-          <Sentinel />
+        <Observer onChange={this.handleStickySentinelVisibilityChange}>
+          <StickySentinel />
         </Observer>
         <StyledNav bottomShadow={this.state.bottomShadow}>
           <NavWrapper>
             <NavControl
               left
               onClick={this.handleLeftNavControlClick}
-              disabled={this.state.leftNavControlDisabled}
+              disabled={!this.canScrollLeft()}
             >
               &lt;
             </NavControl>
@@ -211,14 +226,13 @@ export default class TopicBar extends Component {
                 {renderTopics(topics, {
                   addElement: this.addTopicElem,
                   handleChange: this.handleTopicVisibilityChange,
-                  rootElement: this.state.topicListWrapperElement,
                 })}
               </TopicList>
             </TopicListWrapper>
             <NavControl
               right
               onClick={this.handleRightNavControlClick}
-              disabled={this.state.rightNavControlDisabled}
+              disabled={!this.canScrollRight()}
             >
               &gt;
             </NavControl>
