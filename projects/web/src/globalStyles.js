@@ -17,6 +17,10 @@ injectGlobal`
     --lg-font-size: 1.4rem;
     --xl-font-size: 2.5rem;
 
+    --primary-font-color: hsla(0, 0%, 0%, 0.84);
+    --secondary-font-color: hsla(0, 0%, 0%, 0.54);
+    --tertiary-font-color: hsla(0, 0%, 0%, 0.15);
+
     --base-space: 0.2rem;
     --xs-space: calc(var(--base-space) * 3);
     --sm-space: calc(var(--base-space) * 5);
@@ -39,6 +43,7 @@ injectGlobal`
 
   html {
     font-family: var(--sans-serif-font-family);
+    color: var(--primary-font-color);
   }
 
   body {

@@ -37,10 +37,18 @@ const NavWrapper = styled.div`
 `;
 
 const NavControl = styled.button`
+  --display: none;
+
+  display: var(--display);
+
   border: none;
 
   margin-right: ${({ left }) => (left ? 'var(--sm-space)' : 0)};
   margin-left: ${({ right }) => (right ? 'var(--sm-space)' : 0)};
+
+  @media (min-width: ${props => props.theme.breakpoints.md}) {
+    --display: initial;
+  }
 `;
 
 const TopicListWrapper = styled.div`
@@ -91,6 +99,8 @@ const StickySentinel = styled.div`
 
 /**
  * The links to show in the topic bar.
+ *
+ * Maybe in the future we can pull them from the API.
  */
 const topics = [
   { path: '/', topic: 'Home' },
@@ -110,12 +120,13 @@ const topics = [
 
 const activeClassName = 'nav-link-active';
 const StyledLink = styled(NavLink).attrs({ activeClassName })`
+  color: var(--secondary-font-color);
   font-size: 0.82rem;
 
   text-decoration: none;
 
   &.${activeClassName} {
-    color: red;
+    color: var(--primary-font-color);
   }
 `;
 
@@ -175,10 +186,6 @@ export default class TopicBar extends Component {
     }
   };
 
-  addTopicListElement = (el) => {
-    this.topicListElement = el;
-  };
-
   handleStickySentinelVisibilityChange = ({ isIntersecting }) =>
     this.setState({ bottomShadow: !isIntersecting });
 
@@ -221,8 +228,8 @@ export default class TopicBar extends Component {
             >
               &lt;
             </NavControl>
-            <TopicListWrapper innerRef={this.addTopicListWrapperElement}>
-              <TopicList innerRef={this.addTopicListElement}>
+            <TopicListWrapper>
+              <TopicList>
                 {renderTopics(topics, {
                   addElement: this.addTopicElem,
                   handleChange: this.handleTopicVisibilityChange,
