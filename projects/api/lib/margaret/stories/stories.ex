@@ -130,6 +130,28 @@ defmodule Margaret.Stories do
   end
 
   @doc """
+  Gets the summary of a story.
+
+  ## Examples
+
+      iex> get_summary(%Story{})
+      "Lorem ipsum."
+
+      iex> get_summary(%Story{})
+      ""
+
+  """
+  @spec get_summary(Story.t()) :: String.t()
+  def get_summary(%Story{content: %{"blocks" => blocks}}) do
+    IO.inspect(blocks, label: "BLOCKS")
+
+    case blocks do
+      [_, %{"text" => summary} | _] -> summary
+      _ -> ""
+    end
+  end
+
+  @doc """
   Gets the author of a story.
 
   ## Examples

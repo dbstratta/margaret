@@ -14,6 +14,7 @@ injectGlobal`
     --xs-font-size: 0.8rem;
     --sm-font-size: 0.82rem;
     --md-font-size: 1rem;
+    --ml-font-size: 1.2rem;
     --lg-font-size: 1.4rem;
     --xl-font-size: 2.5rem;
 
@@ -59,6 +60,12 @@ injectGlobal`
   @media (min-width: ${theme.breakpoints.xl}) {
     :root {
       --main-content-width: 70%;
+    }
+  }
+
+  @media (min-width: ${theme.breakpoints.xxl}) {
+    :root {
+      --main-content-width: 60%;
     }
   }
 `;

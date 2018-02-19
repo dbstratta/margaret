@@ -28,6 +28,7 @@ const StyledNav = styled.nav`
 
 const NavWrapper = styled.div`
   display: flex;
+  justify-content: center;
   align-items: center;
 
   width: var(--main-content-width);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import Index from '../../pages/Index';
+import Home from '../../pages/Home';
 import EditStory from '../../pages/EditStory';
 import Story from '../../pages/Story';
 import Profile from '../../pages/Profile';
@@ -9,7 +9,7 @@ import Publication from '../../pages/Publication';
 
 export const App = () => (
   <Switch>
-    <Route exact path="/" component={Index} />
+    <Route exact path="/" component={Home} />
     <Route path="/p/:storyHash" component={EditStory} />
     <Route path="/topic/:topic" component={Story} />
     <Route exact path="/@:username" component={Profile} />

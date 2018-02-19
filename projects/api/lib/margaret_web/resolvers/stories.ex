@@ -54,6 +54,16 @@ defmodule MargaretWeb.Resolvers.Stories do
   end
 
   @doc """
+  Resolves the summary of the story.
+  """
+  @spec resolve_summary(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, String.t()}
+  def resolve_summary(story, _, _) do
+    summary = Stories.get_summary(story)
+
+    {:ok, summary}
+  end
+
+  @doc """
   Resolves the publication of the story.
   """
   @spec resolve_publication(Story.t(), map(), Absinthe.Resolution.t()) ::
@@ -137,6 +147,12 @@ defmodule MargaretWeb.Resolvers.Stories do
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
     |> Helpers.transform_connection(total_count: total_count)
+  end
+
+  def resolve_is_under_publication(story, _args, _resolution) do
+    is_under_publication = Stories.under_publication?(story)
+
+    {:ok, is_under_publication}
   end
 
   @doc """

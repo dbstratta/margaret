@@ -63,7 +63,9 @@ defmodule MargaretWeb.Schema.StoryTypes do
     field(:unique_hash, non_null(:string))
 
     @desc "The summary of the story."
-    field(:summary, :string)
+    field :summary, :string do
+      resolve(&Resolvers.Stories.resolve_summary/3)
+    end
 
     @desc "The publication of the story, if it has one."
     field :publication, :publication do
@@ -104,6 +106,10 @@ defmodule MargaretWeb.Schema.StoryTypes do
 
     @desc "The license of the story."
     field(:license, non_null(:story_license))
+
+    field :is_under_publication, non_null(:boolean) do
+      resolve(&Resolvers.Stories.resolve_is_under_publication/3)
+    end
 
     field :viewer_can_star, non_null(:boolean) do
       middleware(Middleware.RequireAuthenticated, resolve: false)
