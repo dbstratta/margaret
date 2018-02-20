@@ -14,17 +14,18 @@ metadata:
   name: api-deployment
   labels:
     app: margaret
-    pod: api
+    tier: api
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: margaret
-      pod: api
+      tier: api
   template:
     metadata:
       labels:
-        app: api
+        app: margaret
+        tier: api
     spec:
       containers:
       - name: api

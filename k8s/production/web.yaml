@@ -4,7 +4,7 @@ metadata:
   name: web-service
   labels:
     app: margaret
-    pod: web
+    tier: web
 
 ---
 
@@ -14,7 +14,7 @@ metadata:
   name: web-deployment
   labels:
     app: margaret
-    pod: web
+    tier: web
 spec:
   replicas: 1
   selector:
@@ -24,7 +24,8 @@ spec:
   template:
     metadata:
       labels:
-        app: web
+        app: margaret
+        tier: web
     spec:
       containers:
       - name: web
