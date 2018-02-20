@@ -15,7 +15,7 @@
     "@researchgate/react-intersection-observer": "0.6.0",
     "apollo-cache-inmemory": "1.1.9",
     "apollo-client": "2.2.5",
-    "apollo-link": "1.1.0",
+    "apollo-link": "1.2.0",
     "apollo-link-http": "1.3.3",
     "date-fns": "1.29.0",
     "draft-js": "0.10.5",
