@@ -11,7 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "@playlyfe/gql": "2.6.0",
-    "babel-eslint": "8.2.1",
+    "babel-eslint": "8.2.2",
     "codecov": "3.0.0",
     "eslint": "4.18.0",
     "eslint-config-airbnb": "16.1.0",
