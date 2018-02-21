@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: development
+  labels:
+    app: web
+spec:
+  selector:
+    app: web
+  ports:
+  - port: 80
+    targetPort: 3000
+
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: web
+  namespace: development
+  labels:
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      namespace: development
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: margaret_web
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000

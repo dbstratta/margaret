@@ -1,32 +1,38 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: web-service
+  name: web
+  namespace: production
   labels:
-    app: margaret
-    tier: web
+    app: web
+spec:
+  selector:
+    app: web
+  ports:
+  - port: 80
+    targetPort: 3000
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-deployment
+  name: web
+  namespace: production
   labels:
-    app: margaret
-    tier: web
+    app: web
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: margaret
-      pod: web
+      app: web
   template:
     metadata:
+      namespace: production
       labels:
-        app: margaret
-        tier: web
+        app: web
     spec:
       containers:
       - name: web
         image: mrgaret/web:latest
+        ports:
+        - containerPort: 3000
