@@ -37,7 +37,8 @@ const Meta = styled.div`
 const Image = styled(Link)`
   flex: 0 0 50%;
 
-  min-height: 6rem;
+  min-height: 6.4rem;
+  max-height: 9rem;
 
   background-image: url(${props => props.src});
   background-size: cover;
@@ -83,6 +84,8 @@ const renderImage = (story, loading) => {
   if (loading) {
     const Placeholder = styled.div`
       flex: 0 0 50%;
+      min-height: 6.4rem;
+      max-height: 9rem;
     `;
 
     return <Placeholder />;

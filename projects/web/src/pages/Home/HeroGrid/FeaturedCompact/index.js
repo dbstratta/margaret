@@ -13,7 +13,7 @@ const Article = styled.article`
 `;
 
 const Title = styled.h3`
-  font-size: var(--md-font-size);
+  font-size: calc(var(--sm-font-size) * (1 + 1 / 8));
 
   margin: 0;
 `;
@@ -59,8 +59,10 @@ const renderMeta = (story, loading) => {
   return <Meta>{authorName}</Meta>;
 };
 
-const renderStories = (stories, loading) =>
-  stories.map((story, index) => (
+const renderStories = (stories, loading) => {
+  const storyList = loading ? Array.from({ length: 3 }) : stories;
+
+  return storyList.map((story, index) => (
     <Fragment key={loading ? index : story.id}>
       <Article>
         {renderTitle(story, loading)}
@@ -69,6 +71,7 @@ const renderStories = (stories, loading) =>
       <Separator />
     </Fragment>
   ));
+};
 
 const FeaturedCompact = ({ stories, loading, className }) => (
   <StoryList className={className}>{renderStories(stories, loading)}</StoryList>

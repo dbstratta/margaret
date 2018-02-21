@@ -43,14 +43,17 @@ const Grid = styled.section`
   }
 
   @media (min-width: ${props => props.theme.breakpoints.xl}) {
+    --width: calc(var(--main-content-width) + (100% - var(--main-content-width)) * 7 / 8);
+
     --grid-template-columns: [grid-left] 5fr repeat(3, 2fr) [grid-right];
-    --grid-template-rows: [grid-top] auto auto auto [grid-bottom];
+    --grid-template-rows: [grid-top] auto auto 1fr [grid-bottom];
+
+    height: 34rem;
+
     grid-template-areas:
       'lg  sm1      sm2  sm3'
       'lg  compact  md   md '
       'lg  more     md   md ';
-
-    --width: calc(var(--main-content-width) + (100% - var(--main-content-width)) * 7 / 8);
   }
 `;
 

@@ -64,7 +64,7 @@ const Image = styled(Link)`
 
 const renderTitle = (story, loading) => {
   const loader = (
-    <ContentLoader width={400} height={15}>
+    <ContentLoader width={400} height={18}>
       <rect x="0" y="0" rx="5" ry="5" width="80%" height="100%" />
     </ContentLoader>
   );
@@ -106,7 +106,7 @@ const renderImage = (story, loading) => {
   if (loading) {
     const Placeholder = styled.div`
       flex: 0 0 auto;
-      height: 6rem;
+      height: 6.4rem;
     `;
 
     return <Placeholder />;
