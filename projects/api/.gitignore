@@ -1,8 +1,7 @@
 # App artifacts
-/_build
-/db
-/deps
-/*.ez
+_build
+deps
+*.ez
 
 # Generated on crash by the VM
 erl_crash.dump
@@ -13,4 +12,4 @@ erl_crash.dump
 # Alternatively, you may comment the line below and commit the
 # secrets files as long as you replace their contents by environment
 # variables.
-/config/*.secret.exs
+config/*.secret.exs

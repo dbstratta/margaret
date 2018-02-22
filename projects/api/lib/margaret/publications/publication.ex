@@ -25,7 +25,11 @@ defmodule Margaret.Publications.Publication do
 
     field(:logo, :string)
     field(:description, :string)
+
+    field(:email, :string)
     field(:website, :string)
+    field(:twitter_username, :string)
+    field(:facebook_pagename, :string)
 
     has_many(:publication_memberships, PublicationMembership)
     many_to_many(:members, User, join_through: PublicationMembership)

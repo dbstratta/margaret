@@ -13,6 +13,7 @@
 alias Margaret.{
   Repo,
   Accounts.User,
+  Stories.Story,
   Publications,
   Tags.Tag
 }
@@ -48,3 +49,29 @@ Repo.insert!(%PublicationMembership{
   publication: margaret_publication,
   role: :owner
 })
+
+Enum.each(0..7, fn _ ->
+  Repo.insert!(%Story{
+    content: %{
+      "blocks" => [
+        %{"text" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
+        %{
+          "text" =>
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolo
+      re magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        }
+      ]
+    },
+    author: diego,
+    unique_hash:
+      :sha512
+      |> :crypto.hash(UUID.uuid4())
+      |> Base.encode32()
+      |> String.slice(0..16)
+      |> String.downcase(),
+    audience: :all,
+    published_at: NaiveDateTime.utc_now(),
+    license: :all_rights_reserved,
+    tags: [margaret_tag]
+  })
+end)

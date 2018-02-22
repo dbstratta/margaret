@@ -11,7 +11,11 @@ defmodule Margaret.Repo.Migrations.AddPublicationsTable do
 
       add(:logo, :string)
       add(:description, :string)
+
+      add(:email, :string)
       add(:website, :string)
+      add(:twitter_username, :string)
+      add(:facebook_pagename, :string)
 
       timestamps()
     end

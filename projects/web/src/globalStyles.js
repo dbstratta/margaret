@@ -8,8 +8,8 @@ injectGlobal`
     --primary-color: hsla(212, 100%, 60%, 1);
     --background-color: hsla(360, 100%, 100%, 1);
 
-    --sans-serif-font-family: 'Open Sans', sans-serif;
-    --serif-font-family: 'Open Sans', sans-serif;
+    --sans-serif-font-family: 'Source Sans Pro', sans-serif;
+    --serif-font-family: 'Lora', serif;
 
     --xs-font-size: 0.8rem;
     --sm-font-size: 0.82rem;
