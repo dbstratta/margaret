@@ -16,7 +16,7 @@
     "apollo-cache-inmemory": "1.1.9",
     "apollo-client": "2.2.5",
     "apollo-link": "1.2.0",
-    "apollo-link-http": "1.4.0",
+    "apollo-link-http": "1.5.0",
     "date-fns": "1.29.0",
     "draft-js": "0.10.5",
     "final-form": "4.2.0",
