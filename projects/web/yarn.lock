@@ -498,7 +498,7 @@ apollo-link@1.2.1, apollo-link@^1.2.1:
     apollo-utilities "^1.0.0"
     zen-observable-ts "^0.8.6"
 
-apollo-link@^1.0.0, apollo-link@^1.0.6, apollo-link@^1.1.0:
+apollo-link@^1.0.0, apollo-link@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/apollo-link/-/apollo-link-1.1.0.tgz#9d573b16387ee0d8e147b1f319e42c8c562f18f7"
   dependencies:
@@ -6108,11 +6108,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@4.17.4:
-  version "4.17.4"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
-
-"lodash@>=3.5 <5", lodash@^4.11.1, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.15.0, lodash@^4.17.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.6.1:
+lodash@4.17.5, "lodash@>=3.5 <5", lodash@^4.11.1, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.15.0, lodash@^4.17.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.6.1:
   version "4.17.5"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
 
@@ -7657,15 +7653,14 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-apollo@2.1.0-beta.2:
-  version "2.1.0-beta.2"
-  resolved "https://registry.yarnpkg.com/react-apollo/-/react-apollo-2.1.0-beta.2.tgz#3bf4ca91f27bc602d197933ba54fdab0115b7316"
+react-apollo@2.1.0-beta.3:
+  version "2.1.0-beta.3"
+  resolved "https://registry.yarnpkg.com/react-apollo/-/react-apollo-2.1.0-beta.3.tgz#f24534409d46f9e3fc1b21ced1553940522be869"
   dependencies:
-    apollo-link "^1.0.6"
     fbjs "^0.8.16"
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.2"
-    lodash "4.17.4"
+    lodash "4.17.5"
     prop-types "^15.6.0"
 
 react-app-rewire-hot-loader@1.0.0:
