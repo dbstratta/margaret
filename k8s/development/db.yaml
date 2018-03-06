@@ -41,7 +41,7 @@ spec:
         app: db
     spec:
       containers:
-      - image: postgres:10.2
+      - image: postgres:10.3
         name: postgres
         ports:
         - containerPort: 5432

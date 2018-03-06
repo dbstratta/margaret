@@ -4,7 +4,6 @@
   "[elixir]": {
     "editor.quickSuggestions": true
   },
-  "codemetrics.basics.CodeLensHiddenUnder": 16,
   "jest.autoEnable": false,
   "elixirLS.dialyzerEnabled": false,
   "python.formatting.yapfArgs": ["--style ./.style.yapf"],

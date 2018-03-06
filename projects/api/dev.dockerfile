@@ -1,4 +1,4 @@
-FROM elixir:1.6.1
+FROM elixir:1.6.2
 
 LABEL name="margaret_api_dev"
 LABEL version="1.0.0"
@@ -24,5 +24,7 @@ RUN mix deps.get && mix deps.compile
 COPY . .
 
 RUN mix compile
+
+EXPOSE 4000
 
 CMD ["mix", "phx.server"]
