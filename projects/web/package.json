@@ -73,7 +73,7 @@
     "react-app-rewire-hot-loader": "1.0.0",
     "react-app-rewire-polished": "1.0.3",
     "react-app-rewire-styled-components": "3.0.0",
-    "react-app-rewired": "1.4.1",
+    "react-app-rewired": "1.5.0",
     "react-hot-loader": "4.0.0",
     "react-test-renderer": "16.2.0",
     "redux-devtools-extension": "2.13.2",
