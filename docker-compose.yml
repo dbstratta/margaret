@@ -37,7 +37,7 @@ services:
 
 
   postgres:
-    image: postgres:10.2
+    image: postgres:10.3
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 

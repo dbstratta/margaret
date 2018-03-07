@@ -1,19 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: db
+  name: postgres
   namespace: development
 spec:
   ports:
   - port: 5432
   selector:
-    app: db
+    app: postgres
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: db-pv-claim
+  name: postgres-pv-claim
   namespace: development
 spec:
   accessModes:
@@ -26,19 +26,19 @@ spec:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: db
+  name: postgres
   namespace: development
 spec:
   selector:
     matchLabels:
-      app: db
+      app: postgres
   strategy:
     type: Recreate
   template:
     metadata:
       namespace: development
       labels:
-        app: db
+        app: postgres
     spec:
       containers:
       - image: postgres:10.3
@@ -47,9 +47,9 @@ spec:
         - containerPort: 5432
           name: postgres
         volumeMounts:
-        - name: db-persistent-storage
+        - name: postgres-persistent-storage
           mountPath: /var/lib/postgresql/data
       volumes:
-        - name: db-persistent-storage
+        - name: postgres-persistent-storage
           persistentVolumeClaim:
-            claimName: db-pv-claim
+            claimName: postgres-pv-claim

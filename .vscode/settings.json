@@ -6,6 +6,7 @@
   },
   "jest.autoEnable": false,
   "elixirLS.dialyzerEnabled": false,
-  "python.formatting.yapfArgs": ["--style ./.style.yapf"],
-  "python.formatting.provider": "yapf"
+  "python.formatting.yapfArgs": [],
+  "python.formatting.provider": "yapf",
+  "python.pythonPath": "/usr/bin/python3"
 }

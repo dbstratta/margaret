@@ -1,6 +1,9 @@
 # Dependencies.
 node_modules
 
+# Secrets
+k8s/**/secrets.yaml
+
 # Testing.
 coverage
 
