@@ -3916,9 +3916,9 @@ fill-range@^2.1.0:
     repeat-element "^1.1.2"
     repeat-string "^1.5.2"
 
-final-form@4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/final-form/-/final-form-4.3.0.tgz#b378774d835530814e849f10162556f164a9c14b"
+final-form@4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/final-form/-/final-form-4.3.1.tgz#ab6953609352fc1b1c290f8a9074197c8cc5cc93"
 
 finalhandler@1.1.0:
   version "1.1.0"
