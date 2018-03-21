@@ -7781,9 +7781,9 @@ react-app-rewire-polished@1.0.3:
   dependencies:
     babel-plugin-polished "^1.1.0"
 
-react-app-rewire-styled-components@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/react-app-rewire-styled-components/-/react-app-rewire-styled-components-3.0.1.tgz#888298a0f02bf181ec3d283fd11f08287cdb49ee"
+react-app-rewire-styled-components@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-app-rewire-styled-components/-/react-app-rewire-styled-components-3.0.2.tgz#e1acfaff2738af7ff4c4ad557ebd4599d6cda862"
   dependencies:
     babel-plugin-styled-components "^1.1.4"
     react-app-rewired "^1.2.0"
