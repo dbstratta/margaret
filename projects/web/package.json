@@ -70,7 +70,7 @@
     "jest-enzyme": "6.0.0",
     "jest-styled-components": "5.0.0",
     "prettier": "1.11.1",
-    "react-app-rewire-hot-loader": "1.0.0",
+    "react-app-rewire-hot-loader": "1.0.1",
     "react-app-rewire-polished": "1.0.3",
     "react-app-rewire-styled-components": "3.0.0",
     "react-app-rewired": "1.5.0",
