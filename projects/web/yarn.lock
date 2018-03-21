@@ -7735,9 +7735,9 @@ react-apollo@2.1.0-rc.5:
     lodash "4.17.5"
     prop-types "^15.6.0"
 
-react-app-rewire-hot-loader@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-app-rewire-hot-loader/-/react-app-rewire-hot-loader-1.0.0.tgz#9956fd66bb62ecf1f5e90836d203b1bff24e9d98"
+react-app-rewire-hot-loader@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-app-rewire-hot-loader/-/react-app-rewire-hot-loader-1.0.1.tgz#511f06d85e1c05d3ea1c3cdaede352e1871183ba"
   dependencies:
     webpack "^3.6.0"
 
