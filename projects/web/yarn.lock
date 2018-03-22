@@ -7759,9 +7759,9 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-apollo@2.1.0-rc.5:
-  version "2.1.0-rc.5"
-  resolved "https://registry.yarnpkg.com/react-apollo/-/react-apollo-2.1.0-rc.5.tgz#ea607e05071dce40d2ed38155614a8c9fb660556"
+react-apollo@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-apollo/-/react-apollo-2.1.0.tgz#b94c4aca513776d90c368f20a65f99e98fdfea17"
   dependencies:
     fbjs "^0.8.16"
     hoist-non-react-statics "^2.3.1"
