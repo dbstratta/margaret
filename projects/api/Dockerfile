@@ -1,5 +1,5 @@
 # Build stage
-FROM elixir:1.6.4-alpine@sha256:5027c3eec4a15f99bd17db1f725869f0932e0dee5f57adea38a12a9c557436a7 AS builder
+FROM elixir:1.6.4-alpine@sha256:c2cc196a6dcba395c1ffbeb1f4ebb85d4f89b874aa20d18ba313c9520da534e5 AS builder
 
 LABEL name="margaret_api"
 LABEL version="1.0.0"
