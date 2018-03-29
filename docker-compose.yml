@@ -1,7 +1,7 @@
 version: '3'
 services:
   nginx-proxy:
-    image: jwilder/nginx-proxy
+    image: jwilder/nginx-proxy:latest@sha256:41baa12ba7db9f36b1528540eae43cccf8c0c702072a7486130e2d674c482e78
     ports:
       - "80:80"
     volumes:
@@ -37,12 +37,12 @@ services:
 
 
   postgres:
-    image: postgres:10.3
+    image: postgres:10.3@sha256:e2688f79c920bbd5bcb8e1ed54aef522c7e93a1a5eab32e10b4b020d49b4b925
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
   redis:
-    image: redis:4.0.8
+    image: redis:4.0.8@sha256:26c93c5b06eaa323bb1089500f42b0dd158138772348b865e364127f1d554982
     volumes:
       - redis_data:/data
 
