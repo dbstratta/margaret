@@ -68,7 +68,7 @@
     "eslint-plugin-react": "7.7.0",
     "jest": "22.4.3",
     "jest-enzyme": "6.0.0",
-    "jest-styled-components": "5.0.0",
+    "jest-styled-components": "5.0.1",
     "prettier": "1.11.1",
     "react-app-rewire-hot-loader": "1.0.1",
     "react-app-rewire-polished": "1.0.3",
