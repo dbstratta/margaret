@@ -17,7 +17,7 @@ COPY . .
 
 RUN yarn build
 
-FROM nginx:1.13.10-alpine@sha256:8cbbbf68ef2d22852dfcccbe371aaa2d34b3bccb49c34cc0c2b18434a01e8cb3
+FROM nginx:1.13.11-alpine@sha256:e2d1ab469c1a398159bb5c7d4672bfebb8e607f35b465b00a4840c3853b703a1
 
 COPY --from=builder /usr/src/app/build/ /usr/share/nginx/html/
 
