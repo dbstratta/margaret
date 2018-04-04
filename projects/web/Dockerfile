@@ -1,4 +1,4 @@
-FROM node:9.10.1@sha256:aca3f9288813d657ba31c7788a14ff1fdebd35950dde2f3c3a1f040d27afa189 AS builder
+FROM node:9.10.1@sha256:0f2443df7bd7e207a32f3eb8f827fe2648152254cf02e5ecb3f30fc1c5e5659b AS builder
 
 ENV NODE_ENV=${NODE_ENV:-production}
 
