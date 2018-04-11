@@ -4322,9 +4322,9 @@ fill-range@^4.0.0:
     repeat-string "^1.6.1"
     to-regex-range "^2.1.0"
 
-final-form@4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/final-form/-/final-form-4.4.0.tgz#3eaa1305d7b03d1e5698ace5ff361d4d20d44ac0"
+final-form@4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/final-form/-/final-form-4.5.0.tgz#289f8cc5d01f42b9680f812e77ffc437707b1d2b"
 
 finalhandler@1.1.0:
   version "1.1.0"
