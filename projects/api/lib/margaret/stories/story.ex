@@ -15,7 +15,6 @@ defmodule Margaret.Stories.Story do
   alias Margaret.{
     Repo,
     Accounts.User,
-    Stories.StoryView,
     Stars.Star,
     Comments.Comment,
     Publications.Publication,
@@ -44,8 +43,6 @@ defmodule Margaret.Stories.Story do
 
     has_many(:stars, Star)
     has_many(:comments, Comment)
-    # A view refers to a user viewing (reading) the story.
-    has_many(:views, StoryView)
 
     # Stories can be published under a publication.
     belongs_to(:publication, Publication)

@@ -6,47 +6,47 @@ defmodule MargaretWeb.Helpers.GraphQLErrors do
   @type t :: Absinthe.Type.Field.error_result()
 
   @doc """
-  Creates an error tuple.
+  Returns an error tuple to use in GraphQL resolvers.
   """
-  @spec error_creator(any()) :: t()
-  def error_creator(reason), do: {:error, reason}
+  @spec error(any()) :: t()
+  def error(reason), do: {:error, reason}
 
   @doc """
   Returns the `Unauthorized` error.
   """
   @spec unauthorized :: t()
-  def unauthorized, do: error_creator("Unauthorized")
+  def unauthorized, do: error("Unauthorized")
 
   @spec deactivated :: t()
-  def deactivated, do: error_creator("Your account was deactivated")
+  def deactivated, do: error("Your account was deactivated")
 
   @doc """
   Returns the `Something went wrong` error.
   """
   @spec something_went_wrong :: t()
-  def something_went_wrong, do: error_creator("Something went wrong")
+  def something_went_wrong, do: error("Something went wrong")
 
   @doc """
   Returns the `Not implemented` error.
   """
   @spec not_implemented :: t()
-  def not_implemented, do: error_creator("Not implemented")
+  def not_implemented, do: error("Not implemented")
 
   @doc """
-  Returns the `doesn't exist` error.
+  Returns the `not found` error.
   """
-  @spec doesnt_exist(String.t()) :: t()
-  def doesnt_exist(thing), do: error_creator("#{thing} doesn't exist")
+  @spec not_found(String.t()) :: t()
+  def not_found(thing), do: error("#{thing} not found")
 
-  @spec story_doesnt_exist :: t()
-  def story_doesnt_exist, do: doesnt_exist("Story")
+  @spec story_not_found :: t()
+  def story_not_found, do: not_found("Story")
 
-  @spec publication_doesnt_exist :: t()
-  def publication_doesnt_exist, do: doesnt_exist("Publication")
+  @spec publication_not_found :: t()
+  def publication_not_found, do: not_found("Publication")
 
-  @spec invitation_doesnt_exist :: t()
-  def invitation_doesnt_exist, do: doesnt_exist("Invitation")
+  @spec invitation_not_found :: t()
+  def invitation_not_found, do: not_found("Invitation")
 
-  @spec user_doesnt_exist :: t()
-  def user_doesnt_exist, do: doesnt_exist("User")
+  @spec user_not_found :: t()
+  def user_not_found, do: not_found("User")
 end

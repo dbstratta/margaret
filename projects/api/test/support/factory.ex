@@ -18,7 +18,7 @@ defmodule Margaret.Factory do
   }
 
   alias Accounts.{User, SocialLogin}
-  alias Stories.{Story, StoryView}
+  alias Stories.Story
   alias Comments.Comment
   alias Publications.{Publication, PublicationInvitation, PublicationMembership}
   alias Notifications.{Notification, UserNotification}
@@ -53,13 +53,6 @@ defmodule Margaret.Factory do
       unique_hash: sequence(:unique_hash, &"unique_hash-#{&1}"),
       audience: :all,
       license: :all_rights_reserved
-    }
-  end
-
-  def story_view_factory do
-    %StoryView{
-      story: build(:story),
-      viewer: build(:user)
     }
   end
 

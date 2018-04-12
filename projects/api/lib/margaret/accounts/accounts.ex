@@ -194,6 +194,7 @@ defmodule Margaret.Accounts do
   defp do_maybe_include_deactivated(false, query), do: User.active(query)
   defp do_maybe_include_deactivated(true, query), do: query
 
+  @spec member?(User.t()) :: boolean()
   def member?(%User{}), do: false
 
   @doc """
@@ -237,6 +238,13 @@ defmodule Margaret.Accounts do
     |> Repo.insert!()
   end
 
+  @spec form_username_from_email(String.t()) :: String.t()
+  defp form_username_from_email(email) do
+    email
+    |> String.split("@")
+    |> List.first()
+  end
+
   @doc """
   Gets or inserts a user by given email.
 
@@ -246,32 +254,37 @@ defmodule Margaret.Accounts do
   When inserting the user, we try to set its username
   to the part before the `@` in the email.
   If it's already taken we take a UUID.
-
-  TODO: Accept more attrs when inserting.
   """
-  @spec get_or_insert_user(String.t()) :: {:ok, User.t()} | {:error, any()}
-  def get_or_insert_user(email) do
+  @spec get_or_insert_user(String.t(), map()) :: {:ok, User.t()} | {:error, any()}
+  def get_or_insert_user(email, attrs \\ %{}) do
     email
     |> get_user_by_email(include_deactivated: true)
-    |> do_get_or_insert_user(email)
+    |> do_get_or_insert_user(email, attrs)
   end
 
-  @spec do_get_or_insert_user(User.t() | nil, String.t()) :: {:ok, User.t()} | {:error, any()}
-  defp do_get_or_insert_user(%User{} = user, _email), do: {:ok, user}
+  @spec do_get_or_insert_user(User.t() | nil, String.t(), map()) ::
+          {:ok, User.t()} | {:error, any()}
+  defp do_get_or_insert_user(%User{} = user, _email, _attrs), do: {:ok, user}
 
-  defp do_get_or_insert_user(nil, email) do
-    [username | _] = String.split(email, "@")
+  defp do_get_or_insert_user(nil, email, attrs) do
+    username_from_email = form_username_from_email(email)
 
-    username = if eligible_username?(username), do: username, else: UUID.uuid4()
+    username =
+      if eligible_username?(username_from_email) do
+        username_from_email
+      else
+        UUID.uuid4()
+      end
 
-    attrs = %{username: username, email: email}
-
-    insert_user(attrs)
+    attrs
+    |> Map.put(:username, username)
+    |> Map.put(:email, email)
+    |> insert_user()
   end
 
-  @spec get_or_insert_user!(String.t()) :: User.t() | no_return()
-  def get_or_insert_user!(email) do
-    case get_or_insert_user(email) do
+  @spec get_or_insert_user!(String.t(), map()) :: User.t() | no_return()
+  def get_or_insert_user!(email, attrs \\ %{}) do
+    case get_or_insert_user(email, attrs) do
       {:ok, user} ->
         user
 
@@ -319,13 +332,21 @@ defmodule Margaret.Accounts do
   end
 
   @doc """
+  Verifies the email of a user with a unverified email.
+  """
+  @spec verify_email(User.t()) :: {:ok, User.t()} | any()
+  def verify_email(%User{unverified_email: email} = user) when not is_nil(email) do
+    attrs = %{email: email, unverified_email: nil}
+
+    update_user(user, attrs)
+  end
+
+  @doc """
   Activates a user.
 
-  If the user was not deactivated it doesn't
-  do anything.
+  If the user was not deactivated it doesn't do anything.
   """
-  def activate_user(%User{deactivated_at: nil} = user), do: {:ok, user}
-
+  @spec activate_user(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def activate_user(%User{} = user) do
     update_user(user, %{deactivated_at: nil})
   end
@@ -356,6 +377,7 @@ defmodule Margaret.Accounts do
   @doc """
   Deletes a user.
   """
+  @spec delete_user!(User.t()) :: User.t() | no_return()
   def delete_user!(%User{} = user), do: Repo.delete!(user)
 
   @doc """
@@ -427,20 +449,20 @@ defmodule Margaret.Accounts do
   end
 
   @doc """
-  Links a user to a social account.
+  Links a social login to a user.
   """
-  @spec link_user_to_social_login(User.t(), social_credentials()) ::
+  @spec link_social_login_to_user(User.t(), social_credentials()) ::
           {:ok, SocialLogin.t()} | {:error, Ecto.Changeset.t()}
-  def link_user_to_social_login(%User{id: user_id}, {provider, uid}) do
+  def link_social_login_to_user(%User{id: user_id}, {provider, uid}) do
     attrs = %{user_id: user_id, provider: provider, uid: uid}
 
     insert_social_login(attrs)
   end
 
-  @spec link_user_to_social_login!(User.t(), social_credentials()) ::
+  @spec link_social_login_to_user!(User.t(), social_credentials()) ::
           SocialLogin.t() | no_return()
-  def link_user_to_social_login!(%User{} = user, social_info) do
-    case link_user_to_social_login(user, social_info) do
+  def link_social_login_to_user!(%User{} = user, social_info) do
+    case link_social_login_to_user(user, social_info) do
       {:ok, social_login} ->
         social_login
 

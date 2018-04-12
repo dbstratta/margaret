@@ -53,12 +53,18 @@ defmodule MargaretWeb.Resolvers.Bookmarkable do
   end
 
   defp do_resolve_unbookmark(%Story{id: story_id} = story, viewer_id) do
-    Bookmarks.delete_bookmark(%{user_id: viewer_id, story_id: story_id})
+    if bookmark = Bookmarks.get_bookmark(user_id: viewer_id, story_id: story_id) do
+      Bookmarks.delete_bookmark(bookmark)
+    end
+
     {:ok, %{bookmarkable: story}}
   end
 
   defp do_resolve_unbookmark(%Comment{id: comment_id} = comment, viewer_id) do
-    Bookmarks.delete_bookmark(%{user_id: viewer_id, comment_id: comment_id})
+    if bookmark = Bookmarks.get_bookmark(user_id: viewer_id, comment_id: comment_id) do
+      Bookmarks.delete_bookmark(bookmark)
+    end
+
     {:ok, %{bookmarkable: comment}}
   end
 

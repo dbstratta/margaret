@@ -7,7 +7,7 @@
     ".iex.exs",
     ".credo.exs"
   ],
-  import_deps: [:ecto, :plug, :absinthe],
+  import_deps: [:ecto, :plug, :phoenix, :absinthe],
   locals_without_parens: [
     defenum: 3
   ]

@@ -4,14 +4,22 @@ defmodule MargaretWeb.Helpers do
   """
 
   @doc """
+  Returns an ok tuple with the thing to use in GraphQL resolvers.
+  """
+  @spec ok(any()) :: Absinthe.Type.Field.ok_result()
+  def ok(thing), do: {:ok, thing}
+
+  @doc """
   Formats the errors from a changeset.
   """
+  @spec format_changeset(Ecto.Changeset.t()) :: [String.t()]
   def format_changeset(%Ecto.Changeset{} = changeset) do
     changeset
     |> Ecto.Changeset.traverse_errors(&format_changeset_error/1)
     |> Enum.map(fn {key, value} -> "#{key} #{value}" end)
   end
 
+  @spec format_changeset_error({String.t(), map()}) :: String.t()
   defp format_changeset_error({msg, opts}) do
     Enum.reduce(opts, msg, fn {key, value}, acc ->
       String.replace(acc, "%{#{key}}", to_string(value), global: true)
@@ -32,16 +40,18 @@ defmodule MargaretWeb.Helpers do
     connection
 
   """
-  @spec put_total_count(any, non_neg_integer | nil) :: any
+  @spec put_total_count(any, non_neg_integer() | nil) :: any()
   def put_total_count(connection, nil), do: connection
   def put_total_count(connection, total_count), do: Map.put(connection, :total_count, total_count)
 
   @doc """
   """
+  @spec transform_edges(map()) :: map()
   def transform_edges(connection) do
     Map.update!(connection, :edges, &Enum.map(&1, fn edge -> put_edge_fields(edge) end))
   end
 
+  @spec put_edge_fields(map()) :: map()
   defp put_edge_fields(%{node: {nodes, fields}} = edge) when is_list(nodes) do
     node = Enum.find(nodes, &(not is_nil(&1)))
 
@@ -52,6 +62,7 @@ defmodule MargaretWeb.Helpers do
 
   defp put_edge_fields(edge), do: edge
 
+  @spec do_put_edge_fields(map(), map(), map()) :: map()
   defp do_put_edge_fields(edge, node, fields) do
     edge
     |> Map.merge(fields)
@@ -60,6 +71,8 @@ defmodule MargaretWeb.Helpers do
 
   @doc """
   """
+  @spec transform_connection({:ok, map()} | map(), Keyword.t()) :: {:ok, map()}
+  @spec transform_connection({:error, any()}, Keyword.t()) :: {:error, any()}
   def transform_connection(tuple_or_connection, opts \\ [])
 
   def transform_connection({:ok, connection}, opts), do: transform_connection(connection, opts)
@@ -68,11 +81,9 @@ defmodule MargaretWeb.Helpers do
   def transform_connection(connection, opts) do
     total_count = Keyword.get(opts, :total_count)
 
-    connection =
-      connection
-      |> put_total_count(total_count)
-      |> transform_edges()
-
-    {:ok, connection}
+    connection
+    |> put_total_count(total_count)
+    |> transform_edges()
+    |> ok()
   end
 end

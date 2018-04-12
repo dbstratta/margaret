@@ -9,7 +9,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   alias MargaretWeb.Helpers
   alias Margaret.{Repo, Accounts, Stories, Stars, Bookmarks, Publications, Comments}
   alias Accounts.User
-  alias Stories.{Story, StoryView}
+  alias Stories.Story
   alias Stars.Star
   alias Comments.Comment
 
@@ -103,8 +103,6 @@ defmodule MargaretWeb.Resolvers.Stories do
         story in Story,
         left_join: star in Star,
         on: star.story_id == story.id,
-        left_join: view in StoryView,
-        on: view.story_id == story.id,
         group_by: story.id,
         order_by: [desc: count(star.id)]
       )
@@ -245,7 +243,7 @@ defmodule MargaretWeb.Resolvers.Stories do
         |> do_resolve_update_story(story, attrs)
 
       _ ->
-        Helpers.GraphQLErrors.story_doesnt_exist()
+        Helpers.GraphQLErrors.story_not_found()
     end
   end
 
@@ -264,7 +262,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_delete_story(%{story_id: story_id}, %{context: %{viewer: viewer}}) do
     case Stories.get_story(story_id) do
       %Story{} = story -> do_resolve_delete_story(story, viewer)
-      _ -> Helpers.GraphQLErrors.story_doesnt_exist()
+      _ -> Helpers.GraphQLErrors.story_not_found()
     end
   end
 

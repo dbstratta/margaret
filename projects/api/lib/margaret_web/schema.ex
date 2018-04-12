@@ -24,7 +24,8 @@ defmodule MargaretWeb.Schema do
     CommentableTypes,
     TagTypes,
     UpdatableTypes,
-    DeletableTypes
+    DeletableTypes,
+    SearchTypes
   }
 
   alias Middleware.{RequireAuthenticated, RequireActive, HandleChangesetErrors}
@@ -47,6 +48,7 @@ defmodule MargaretWeb.Schema do
   import_types(TagTypes)
   import_types(UpdatableTypes)
   import_types(DeletableTypes)
+  import_types(SearchTypes)
 
   @desc "The root query type."
   query do
@@ -55,6 +57,7 @@ defmodule MargaretWeb.Schema do
     import_fields(:story_queries)
     import_fields(:publication_queries)
     import_fields(:collection_queries)
+    import_fields(:search_queries)
   end
 
   @desc "The root mutation type."

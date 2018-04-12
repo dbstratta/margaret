@@ -20,7 +20,7 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
   end
 
   defp do_resolve_send_publication_invitation(nil = _publication, _invitee_id, _inviter, _role),
-    do: Helpers.GraphQLErrors.publication_doesnt_exist()
+    do: Helpers.GraphQLErrors.publication_not_found()
 
   defp do_resolve_send_publication_invitation(publication, invitee_id, inviter, role) do
     with %User{} = invitee <- Accounts.get_user(invitee_id),
@@ -31,7 +31,7 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
       {:ok, %{invitation: invitation}}
     else
       nil ->
-        Helpers.GraphQLErrors.user_doesnt_exist()
+        Helpers.GraphQLErrors.user_not_found()
 
       false ->
         Helpers.GraphQLErrors.unauthorized()
@@ -116,7 +116,7 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
          invitation <- Publications.reject_invitation!(invitation) do
       {:ok, %{invitation: invitation}}
     else
-      nil -> Helpers.GraphQLErrors.invitation_doesnt_exist()
+      nil -> Helpers.GraphQLErrors.invitation_not_found()
       false -> Helpers.GraphQLErrors.unauthorized()
     end
   end

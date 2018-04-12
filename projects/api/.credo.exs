@@ -48,12 +48,19 @@
       #     {Credo.Check.Design.DuplicatedCode, false}
       #
       checks: [
+        #
+        ## Consistency Checks
+        #
         {Credo.Check.Consistency.ExceptionNames},
         {Credo.Check.Consistency.LineEndings},
         {Credo.Check.Consistency.ParameterPatternMatching},
         {Credo.Check.Consistency.SpaceAroundOperators},
         {Credo.Check.Consistency.SpaceInParentheses},
         {Credo.Check.Consistency.TabsOrSpaces},
+
+        #
+        ## Design Checks
+        #
 
         # You can customize the priority of any check
         # Priority values are: `low, normal, high, higher`
@@ -74,9 +81,13 @@
         #
         {Credo.Check.Design.TagTODO, exit_status: 0},
         {Credo.Check.Design.TagFIXME, exit_status: 0},
+
+        #
+        ## Readability Checks
+        #
         {Credo.Check.Readability.FunctionNames},
         {Credo.Check.Readability.LargeNumbers},
-        {Credo.Check.Readability.MaxLineLength, priority: :low, max_length: 80},
+        {Credo.Check.Readability.MaxLineLength, priority: :low, max_length: 100},
         {Credo.Check.Readability.ModuleAttributeNames},
         {Credo.Check.Readability.ModuleDoc, exit_status: 0},
         {Credo.Check.Readability.ModuleNames},
@@ -91,6 +102,10 @@
         {Credo.Check.Readability.VariableNames},
         {Credo.Check.Readability.Semicolons},
         {Credo.Check.Readability.SpaceAfterCommas},
+
+        #
+        ## Refactoring Oportunities
+        #
         {Credo.Check.Refactor.DoubleBooleanNegation},
         {Credo.Check.Refactor.CondStatements},
         {Credo.Check.Refactor.CyclomaticComplexity},
@@ -102,6 +117,10 @@
         {Credo.Check.Refactor.Nesting, exit_status: 0},
         {Credo.Check.Refactor.PipeChainStart},
         {Credo.Check.Refactor.UnlessWithElse},
+
+        #
+        ## Warnings
+        #
         {Credo.Check.Warning.BoolOperationOnSameValues},
         {Credo.Check.Warning.ExpensiveEmptyEnumCheck},
         {Credo.Check.Warning.IExPry},
@@ -127,6 +146,7 @@
         {Credo.Check.Warning.MapGetUnsafePass, false},
         {Credo.Check.Consistency.MultiAliasImportRequireUse, false}
 
+        #
         # Custom checks can be created using `mix credo.gen.check`.
         #
       ]

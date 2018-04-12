@@ -1,12 +1,12 @@
 defmodule MargaretWeb.Resolvers.Accounts do
   @moduledoc """
   The Account GraphQL resolvers.
-  TODO: Try to clean up queries using defined API instead.
   """
 
   import Ecto.Query
   alias Absinthe.Relay
 
+  import MargaretWeb.Helpers, only: [ok: 1]
   alias MargaretWeb.Helpers
 
   alias Margaret.{
@@ -31,15 +31,16 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves the currently logged in user.
   """
-  def resolve_viewer(_, %{context: %{viewer: viewer}}), do: {:ok, viewer}
+  def resolve_viewer(_, %{context: %{viewer: viewer}}), do: ok(viewer)
 
   @doc """
   Resolves a user by its username.
   """
   def resolve_user(%{username: username}, _) do
-    user = Accounts.get_user_by_username(username)
-
-    {:ok, user}
+    case Accounts.get_user_by_username(username) do
+      %User{} = user -> ok(user)
+      nil -> Helpers.GraphQLErrors.user_not_found()
+    end
   end
 
   @doc """
@@ -164,9 +165,10 @@ defmodule MargaretWeb.Resolvers.Accounts do
         where: pm.member_id == ^user_id and p.name == ^publication_name
       )
 
-    publication = Repo.one(query)
-
-    {:ok, publication}
+    case Repo.one(query) do
+      %Publication{} = publication -> ok(publication)
+      nil -> Helpers.GraphQLErrors.publication_not_found()
+    end
   end
 
   @doc """
@@ -202,7 +204,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
     |> Helpers.transform_connection(total_count: total_count)
   end
 
-  def resolve_notifications(_, _, _), do: {:ok, nil}
+  def resolve_notifications(_, _, _), do: ok(nil)
 
   @doc """
   Resolves a connection of users.
@@ -214,12 +216,6 @@ defmodule MargaretWeb.Resolvers.Accounts do
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
     |> Helpers.transform_connection(total_count: total_count)
-  end
-
-  @doc """
-  Resolves a user creation.
-  """
-  def resolve_create_user(_args, _) do
   end
 
   @doc """
@@ -258,27 +254,26 @@ defmodule MargaretWeb.Resolvers.Accounts do
   @doc """
   Resolves if the user is the viewer.
   """
-  def resolve_is_viewer(%User{id: user_id}, _, %{context: %{viewer: %{id: user_id}}}) do
-    {:ok, true}
-  end
+  def resolve_is_viewer(%User{id: user_id}, _, %{context: %{viewer: %{id: user_id}}}),
+    do: ok(true)
 
-  def resolve_is_viewer(_, _, _), do: {:ok, false}
+  def resolve_is_viewer(_, _, _), do: ok(false)
 
   @doc """
   Resolves if the viewer can follow the user.
   """
   def resolve_viewer_can_follow(user, _, %{context: %{viewer: viewer}}) do
-    can_follow = Follows.can_follow?(follower: viewer, user: user)
-
-    {:ok, can_follow}
+    [follower: viewer, user: user]
+    |> Follows.can_follow?()
+    |> ok()
   end
 
   @doc """
   Resolves whether the viewer has followed this user.
   """
   def resolve_viewer_has_followed(user, _, %{context: %{viewer: viewer}}) do
-    has_followed = Follows.has_followed?(follower: viewer, user: user)
-
-    {:ok, has_followed}
+    [follower: viewer, user: user]
+    |> Follows.has_followed?()
+    |> ok()
   end
 end

@@ -16,6 +16,16 @@ defmodule MargaretWeb.AuthController do
   """
   def request(conn, _params), do: send_resp(conn, 400, "")
 
+  @spec get_email_from_provided_info(Plug.Conn.t()) :: String.t()
+  defp get_email_from_provided_info(%Plug.Conn{} = conn) do
+    conn.assigns.ueberauth_auth.extra.raw_info.user.email
+  end
+
+  @spec get_attrs_from_provided_info(Plug.Conn.t()) :: map()
+  defp get_attrs_from_provided_info(%Plug.Conn{} = _conn) do
+    %{}
+  end
+
   @doc """
   Callback handler for OAuth2 redirects.
   """
@@ -25,19 +35,21 @@ defmodule MargaretWeb.AuthController do
   end
 
   def callback(%{assigns: %{ueberauth_auth: %{provider: provider, uid: uid}}} = conn, _params) do
-    %{"email" => email} = conn.assigns.ueberauth_auth.extra.raw_info.user
+    email = get_email_from_provided_info(conn)
+    attrs = get_attrs_from_provided_info(conn)
+
     social_credentials = {to_string(provider), to_string(uid)}
 
-    token = get_token(email, social_credentials)
+    token = get_token(email, social_credentials, attrs)
 
     json(conn, %{token: token})
   end
 
-  @spec get_token(String.t(), Accounts.social_credentials()) :: Guardian.Token.token()
-  defp get_token(email, social_credentials) do
+  @spec get_token(String.t(), Accounts.social_credentials(), map()) :: Guardian.Token.token()
+  defp get_token(email, social_credentials, attrs) do
     get_user_and_get_token!(social_credentials)
   rescue
-    _ -> insert_user_and_get_token!(email, social_credentials)
+    _ -> insert_user_and_get_token!(email, social_credentials, attrs)
   end
 
   defp get_user_and_get_token!(social_credentials) do
@@ -50,15 +62,15 @@ defmodule MargaretWeb.AuthController do
     token
   end
 
-  @spec insert_user_and_get_token!(String.t(), Accounts.social_credentials()) ::
+  @spec insert_user_and_get_token!(String.t(), Accounts.social_credentials(), map()) ::
           Guardian.Token.token() | no_return()
-  defp insert_user_and_get_token!(email, social_credentials) do
+  defp insert_user_and_get_token!(email, social_credentials, attrs) do
     user =
       email
-      |> Accounts.get_or_insert_user!()
+      |> Accounts.get_or_insert_user!(attrs)
       |> Accounts.activate_user!()
 
-    Accounts.link_user_to_social_login!(user, social_credentials)
+    Accounts.link_social_login_to_user!(user, social_credentials)
 
     {:ok, token, _} = MargaretWeb.Guardian.encode_and_sign(user)
 

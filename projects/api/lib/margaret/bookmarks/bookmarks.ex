@@ -93,6 +93,7 @@ defmodule Margaret.Bookmarks do
   @doc """
   Inserts a bookmark.
   """
+  @spec insert_bookmark(map()) :: {:ok, Bookmark.t()} | {:error, any()}
   def insert_bookmark(attrs) do
     attrs
     |> Bookmark.changeset()
@@ -114,7 +115,7 @@ defmodule Margaret.Bookmarks do
       42
 
   """
-  @spec get_bookmarked_count(User.t()) :: non_neg_integer
+  @spec get_bookmarked_count(User.t()) :: non_neg_integer()
   def get_bookmarked_count(%User{} = user) do
     query = Bookmark.by_user(user)
 

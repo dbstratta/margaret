@@ -24,7 +24,13 @@ defmodule MargaretWeb.Router do
   scope "/" do
     pipe_through(:graphql)
 
-    forward("/graphql", Absinthe.Plug, schema: MargaretWeb.Schema)
+    forward(
+      "/graphql",
+      Absinthe.Plug,
+      schema: MargaretWeb.Schema,
+      analyze_complexity: true,
+      max_complexity: 50
+    )
 
     forward(
       "/graphiql",

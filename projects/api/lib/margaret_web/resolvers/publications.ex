@@ -191,7 +191,7 @@ defmodule MargaretWeb.Resolvers.Publications do
     end
   end
 
-  defp do_resolve_update_publication(nil, _), do: Helpers.GraphQLErrors.publication_doesnt_exist()
+  defp do_resolve_update_publication(nil, _), do: Helpers.GraphQLErrors.publication_not_found()
 
   @doc """
   Resolves the kick of a publication member.
@@ -220,14 +220,14 @@ defmodule MargaretWeb.Resolvers.Publications do
          {:ok, _} <- Publications.kick_member(publication, user) do
       {:ok, %{publication: publication}}
     else
-      nil -> Helpers.GraphQLErrors.user_doesnt_exist()
+      nil -> Helpers.GraphQLErrors.user_not_found()
       false -> Helpers.GraphQLErrors.unauthorized()
       {:error, _reason} = error -> error
     end
   end
 
   defp do_resolve_kick_member(nil = _publication, _member_id, _kicker),
-    do: Helpers.GraphQLErrors.publication_doesnt_exist()
+    do: Helpers.GraphQLErrors.publication_not_found()
 
   @doc """
   Resolves the deletion of a publication.

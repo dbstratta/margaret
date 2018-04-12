@@ -17,7 +17,7 @@ defmodule Margaret.Stories do
   }
 
   alias Accounts.User
-  alias Stories.{Story, StoryView}
+  alias Stories.Story
   alias Collections.Collection
 
   @doc """
@@ -292,16 +292,6 @@ defmodule Margaret.Stories do
   """
   @spec get_comment_count(Story.t()) :: non_neg_integer()
   def get_comment_count(%Story{} = story), do: Comments.get_comment_count(story: story)
-
-  @doc """
-  Gets the view count of a story.
-  """
-  @spec get_view_count(Story.t()) :: non_neg_integer()
-  def get_view_count(%Story{} = story) do
-    query = StoryView.by_story(story)
-
-    Repo.aggregate(query, :count, :id)
-  end
 
   @doc """
   Returns `true` if the story is under a publication.

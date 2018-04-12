@@ -18,7 +18,7 @@ alias Margaret.{
 }
 
 alias Accounts.{User, SocialLogin}
-alias Stories.{Story, StoryView}
+alias Stories.Story
 alias Comments.Comment
 alias Publications.{Publication, PublicationInvitation, PublicationMembership}
 alias Collections.{Collection, CollectionStory}

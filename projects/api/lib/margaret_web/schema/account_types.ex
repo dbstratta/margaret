@@ -214,19 +214,6 @@ defmodule MargaretWeb.Schema.AccountTypes do
 
   object :account_mutations do
     @desc """
-    Creates a new user.
-    """
-    payload field(:create_user) do
-      input do
-        field(:username, non_null(:string))
-      end
-
-      output do
-        field(:user, non_null(:user))
-      end
-    end
-
-    @desc """
     Updates the currently logged in user.
     """
     payload field(:update_viewer) do

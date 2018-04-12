@@ -1,8 +1,6 @@
 defmodule Margaret.Accounts.User do
   @moduledoc """
   The User schema and changesets.
-
-  TODO: Add email verification functionality.
   """
 
   use Ecto.Schema
@@ -32,6 +30,11 @@ defmodule Margaret.Accounts.User do
   schema "users" do
     field(:username, :string)
     field(:email, :string)
+
+    # When the user request a change of email, we store the new email in this field.
+    # When the user verifies the email, we pass it to the `email` field and put `nil`
+    # in this one.
+    field(:unverified_email, :string)
 
     field(:first_name, :string)
     field(:last_name, :string)
@@ -116,6 +119,7 @@ defmodule Margaret.Accounts.User do
     permitted_attrs = ~w(
       username
       email
+      unverified_email
       bio
       website
       location
@@ -128,6 +132,7 @@ defmodule Margaret.Accounts.User do
     |> cast(attrs, permitted_attrs)
     |> validate_format(:username, @username_regex)
     |> validate_format(:email, @email_regex)
+    |> validate_format(:unverified_email, @email_regex)
     |> unique_constraint(:username)
     |> unique_constraint(:email)
   end
