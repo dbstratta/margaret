@@ -13,6 +13,7 @@ defmodule Margaret.Stories do
     Stars,
     Publications,
     Collections,
+    Follows,
     Tags
   }
 
@@ -222,6 +223,37 @@ defmodule Margaret.Stories do
   end
 
   @doc """
+  Gets the followers of the author of the story and of the publication,
+  if the story is under one.
+
+  ## Examples
+
+      iex> get_followers(%Story{})
+      [%User{}, %User{}]
+
+      iex> get_followers(%Story{}, include_publication_followers: true)
+      [%User{}, %User{}, %User{}]
+
+  """
+  @spec get_followers(Story.t(), Keyword.t()) :: [User.t()]
+  def get_followers(%Story{} = story, opts \\ []) do
+    author_followers =
+      story
+      |> get_author()
+      |> Follows.get_followers()
+
+    if Keyword.get(opts, :include_publication_followers, true) and under_publication?(story) do
+      story
+      |> get_publication()
+      |> Follows.get_followers()
+      |> Enum.concat(author_followers)
+      |> Enum.uniq()
+    else
+      author_followers
+    end
+  end
+
+  @doc """
   Gets the word count of a story.
 
   ## Examples
@@ -412,6 +444,7 @@ defmodule Margaret.Stories do
     |> maybe_insert_tags(attrs)
     |> insert_story(attrs)
     |> maybe_insert_in_collection(attrs)
+    |> maybe_notify_followers_of_new_story(attrs)
     |> Repo.transaction()
   end
 
@@ -465,6 +498,7 @@ defmodule Margaret.Stories do
     Multi.new()
     |> maybe_insert_tags(attrs)
     |> update_story(story, attrs)
+    |> maybe_notify_followers_of_new_story(story, attrs)
     |> Repo.transaction()
   end
 
@@ -500,6 +534,50 @@ defmodule Margaret.Stories do
   end
 
   defp maybe_insert_tags(multi, _attrs), do: multi
+
+  @doc """
+  Notifies the followers of the author or publication if
+  the story is in one that there's a new story.
+  """
+  @spec maybe_notify_followers_of_new_story(Multi.t(), map()) :: Multi.t()
+  def maybe_notify_followers_of_new_story(multi, story \\ nil, attrs)
+
+  def maybe_notify_followers_of_new_story(multi, nil, _attrs) do
+    # TODO:
+    notify_followers_fn = fn %{story: story} ->
+      followers = get_followers(story)
+    end
+
+    Multi.run(multi, :notify_followers_of_new_story, notify_followers_fn)
+  end
+
+  def maybe_notify_followers_of_new_story(multi, %Story{} = story, attrs) do
+    cond do
+      # If the story has already been published, don't notify anyone.
+      has_been_published?(story) ->
+        multi
+
+      # If it wasn't published before and it is intended to publish now or
+      # to schedule its publication.
+      # TODO:
+      not has_been_published?(story) and Map.has_key?(attrs, :published_at) ->
+        case NaiveDateTime.compare(Map.fetch!(attrs, :published_at), NaiveDateTime.utc_now()) do
+          :lt ->
+            notify_followers_fn = fn _ ->
+              nil
+            end
+
+            Multi.run(multi, :notify_followers_of_new_story, notify_followers_fn)
+
+          comp when comp in [:eq, :gt] ->
+            schedule_notification_fn = fn _ ->
+              nil
+            end
+
+            Multi.run(multi, :schedule_notification_of_new_story, schedule_notification_fn)
+        end
+    end
+  end
 
   @doc """
   Removes a story from its publication.

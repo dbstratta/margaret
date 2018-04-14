@@ -68,6 +68,6 @@ defmodule Margaret.Collections.CollectionStory do
   Filters the collection stories by collection.
   """
   @spec by_collection(Ecto.Queryable.t(), Collection.t()) :: Ecto.Query.t()
-  def by_collection(query \\ Story, %Collection{id: collection_id}),
+  def by_collection(query \\ CollectionStory, %Collection{id: collection_id}),
     do: where(query, [..., cs], cs.collection_id == ^collection_id)
 end

@@ -203,23 +203,24 @@ defmodule MargaretWeb.Resolvers.Stories do
   Resolves a story creation.
   """
   def resolve_create_story(%{publication_id: publication_id} = args, %{
-        context: %{viewer: %{id: viewer_id}}
+        context: %{viewer: viewer}
       }) do
     # If the user wants to create the story under a publication,
     # we have to check that they have permission.
     publication_id
-    |> Publications.can_write_stories?(viewer_id)
-    |> do_resolve_create_story(args, viewer_id)
+    |> Publications.can_write_stories?(viewer)
+    |> do_resolve_create_story(args, viewer)
   end
 
-  def resolve_create_story(args, %{context: %{viewer: %{id: viewer_id}}}) do
+  def resolve_create_story(args, %{context: %{viewer: viewer}}) do
     # If there's no publication, we can safely create the story.
-    do_resolve_create_story(true, args, viewer_id)
+    do_resolve_create_story(true, args, viewer)
   end
 
-  defp do_resolve_create_story(true, args, author_id) do
+  defp do_resolve_create_story(true, args, %User{id: author_id}) do
     args
     |> Map.put(:author_id, author_id)
+    |> maybe_update_published_at()
     |> Stories.insert_story()
     |> case do
       {:ok, %{story: story}} -> {:ok, %{story: story}}
@@ -248,6 +249,8 @@ defmodule MargaretWeb.Resolvers.Stories do
   end
 
   defp do_resolve_update_story(true, story, attrs) do
+    attrs = maybe_update_published_at(attrs, story)
+
     case Stories.update_story(story, attrs) do
       {:ok, %{story: story}} -> {:ok, %{story: story}}
       {:error, _, %Ecto.Changeset{} = changeset, _} -> {:error, changeset}
@@ -255,6 +258,26 @@ defmodule MargaretWeb.Resolvers.Stories do
   end
 
   defp do_resolve_update_story(false, _, _), do: Helpers.GraphQLErrors.unauthorized()
+
+  @spec maybe_update_published_at(map(), Story.t()) :: map()
+  defp maybe_update_published_at(attrs, story \\ nil)
+
+  defp maybe_update_published_at(%{publish_now: true} = attrs, nil) do
+    update_published_at(attrs)
+  end
+
+  defp maybe_update_published_at(%{publish_now: true} = attrs, %Story{published_at: nil}) do
+    update_published_at(attrs)
+  end
+
+  defp maybe_update_published_at(attrs, _story), do: attrs
+
+  @spec update_published_at(map()) :: map()
+  defp update_published_at(attrs) do
+    attrs
+    |> Map.delete(:publish_now)
+    |> Map.put(:published_at, NaiveDateTime.utc_now())
+  end
 
   @doc """
   Resolves a story deletion.

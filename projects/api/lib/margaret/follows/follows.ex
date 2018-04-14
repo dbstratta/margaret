@@ -45,6 +45,16 @@ defmodule Margaret.Follows do
   def get_follow(clauses) when length(clauses) == 2, do: Repo.get_by(Follow, clauses)
 
   @doc """
+  Gets all the followers of a followee.
+  """
+  @spec get_followers(User.t() | Publication.t()) :: [User.t()]
+  def get_followers(followee) do
+    followee
+    |> Follow.by_followee()
+    |> Repo.all()
+  end
+
+  @doc """
   Gets the followee count of a user.
 
   ## Examples

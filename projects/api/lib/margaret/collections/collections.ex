@@ -106,6 +106,18 @@ defmodule Margaret.Collections do
   end
 
   @doc """
+  Returns the part of the story in the collection if its in any.
+  `nil` otherwise.
+  """
+  @spec get_story_part(Story.t()) :: non_neg_integer() | nil
+  def get_story_part(%Story{} = story) do
+    case get_collection_story(story) do
+      %CollectionStory{part: part} -> part
+      nil -> nil
+    end
+  end
+
+  @doc """
   Returns `true` if the story is in the collection.
   `false` otherwise.
 
@@ -225,6 +237,15 @@ defmodule Margaret.Collections do
   """
   @spec get_next_part_number(Collection.t()) :: pos_integer()
   def get_next_part_number(%Collection{} = collection), do: get_story_count(collection) + 1
+
+  @doc """
+  Gets a collection story by a story id.
+  Returns `nil` if the story isn't in a collection.
+  """
+  @spec get_collection_story(Story.t()) :: CollectionStory.t() | nil
+  def get_collection_story(%Story{id: story_id}) do
+    Repo.get_by(CollectionStory, story_id: story_id)
+  end
 
   @doc """
   Inserts a collection story.

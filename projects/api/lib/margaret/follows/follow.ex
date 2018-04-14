@@ -75,6 +75,14 @@ defmodule Margaret.Follows.Follow do
     do: where(query, [..., f], f.publication_id == ^publication_id)
 
   @doc """
+  Filters the follows by followee.
+  """
+  @spec by_followee(Ecto.Queryable.t(), User.t() | Publication.t()) :: Ecto.Queryable.t()
+  def by_followee(query \\ Follow, followee)
+  def by_followee(query, %User{} = user), do: by_user(query, user)
+  def by_followee(query, %Publication{} = publication), do: by_publication(query, publication)
+
+  @doc """
   Preloads the follower of a follow.
   """
   @spec preload_follower(t()) :: t()
