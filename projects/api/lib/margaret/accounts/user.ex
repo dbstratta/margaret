@@ -16,11 +16,13 @@ defmodule Margaret.Accounts.User do
     Stories.Story,
     Comments.Comment,
     Stars.Star,
-    Bookmarks.Bookmark
+    Bookmarks.Bookmark,
+    Follows
   }
 
-  alias Accounts.{SocialLogin, Follow}
+  alias Accounts.SocialLogin
   alias Publications.{Publication, PublicationMembership}
+  alias Follows.Follow
 
   @type t :: %User{}
 
@@ -78,6 +80,8 @@ defmodule Margaret.Accounts.User do
       join_keys: [follower_id: :id, user_id: :id]
     )
 
+    embeds_one(:settings, Accounts.Settings, on_replace: :update)
+
     timestamps()
   end
 
@@ -105,6 +109,7 @@ defmodule Margaret.Accounts.User do
     %User{}
     |> cast(attrs, permitted_attrs)
     |> validate_required(required_attrs)
+    |> cast_embed(:settings, required: true)
     |> validate_format(:username, @username_regex)
     |> validate_format(:email, @email_regex)
     |> unique_constraint(:username)
@@ -130,6 +135,7 @@ defmodule Margaret.Accounts.User do
 
     user
     |> cast(attrs, permitted_attrs)
+    |> cast_embed(:settings, with: &Accounts.Settings.update_changeset/2)
     |> validate_format(:username, @username_regex)
     |> validate_format(:email, @email_regex)
     |> validate_format(:unverified_email, @email_regex)
@@ -194,4 +200,20 @@ defmodule Margaret.Accounts.User do
   @spec preload_social_logins(Ecto.Queryable.t() | t()) :: Ecto.Query.t() | t()
   def preload_social_logins(%User{} = user), do: Repo.preload(user, :social_logins)
   def preload_social_logins(%Ecto.Query{} = query), do: preload(query, [..., u], :social_logins)
+
+  @doc """
+  Ecto query helper to filter user settings that have enabled
+  notifications for new stories.
+
+  ## Examples
+
+      iex> from u in User, where: new_story_notifications_enabled(u.settings)
+      #Ecto.Query<...>
+
+  """
+  defmacro new_story_notifications_enabled(settings) do
+    quote do
+      fragment("(?->'notifications'->>'new_stories')::boolean = true", unquote(settings))
+    end
+  end
 end

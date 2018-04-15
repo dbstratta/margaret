@@ -28,7 +28,12 @@ diego =
     email: "strattadb@gmail.com",
     location: "Montevideo, Uruguay",
     is_admin: true,
-    is_employee: true
+    is_employee: true,
+    settings: %{
+      notifications: %{
+        new_stories: true
+      }
+    }
   })
 
 margaret_tag =

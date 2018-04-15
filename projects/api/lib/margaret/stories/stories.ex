@@ -3,6 +3,7 @@ defmodule Margaret.Stories do
   The Stories context.
   """
 
+  import Ecto.Query
   alias Ecto.Multi
 
   alias Margaret.{
@@ -20,6 +21,9 @@ defmodule Margaret.Stories do
   alias Accounts.User
   alias Stories.Story
   alias Collections.Collection
+  alias Follows.Follow
+
+  import User
 
   @doc """
   Gets a single story by its id.
@@ -223,34 +227,31 @@ defmodule Margaret.Stories do
   end
 
   @doc """
-  Gets the followers of the author of the story and of the publication,
-  if the story is under one.
-
-  ## Examples
-
-      iex> get_followers(%Story{})
-      [%User{}, %User{}]
-
-      iex> get_followers(%Story{}, include_publication_followers: true)
-      [%User{}, %User{}, %User{}]
-
+  Gets the list of notifiable users for a new story.
   """
-  @spec get_followers(Story.t(), Keyword.t()) :: [User.t()]
-  def get_followers(%Story{} = story, opts \\ []) do
-    author_followers =
-      story
-      |> get_author()
-      |> Follows.get_followers()
+  @spec get_notifiable_users_of_new_story(Story.t()) :: [User.t()]
+  def get_notifiable_users_of_new_story(%Story{} = story) do
+    publication_followers =
+      if under_publication?(story) do
+        dynamic([..., f], f.publication_id == ^story.publication_id)
+      else
+        false
+      end
 
-    if Keyword.get(opts, :include_publication_followers, true) and under_publication?(story) do
-      story
-      |> get_publication()
-      |> Follows.get_followers()
-      |> Enum.concat(author_followers)
-      |> Enum.uniq()
-    else
-      author_followers
-    end
+    query =
+      from(
+        u in User,
+        where: is_nil(u.deactivated_at),
+        where: u.id != ^story.author_id,
+        join: f in Follow,
+        on: f.follower_id == u.id,
+        where: f.user_id == ^story.author_id,
+        or_where: ^publication_followers,
+        group_by: u.id,
+        having: new_story_notifications_enabled(u.settings)
+      )
+
+    Repo.all(query)
   end
 
   @doc """
@@ -444,7 +445,7 @@ defmodule Margaret.Stories do
     |> maybe_insert_tags(attrs)
     |> insert_story(attrs)
     |> maybe_insert_in_collection(attrs)
-    |> maybe_notify_followers_of_new_story(attrs)
+    |> maybe_notify_users_of_new_story(attrs)
     |> Repo.transaction()
   end
 
@@ -498,7 +499,7 @@ defmodule Margaret.Stories do
     Multi.new()
     |> maybe_insert_tags(attrs)
     |> update_story(story, attrs)
-    |> maybe_notify_followers_of_new_story(story, attrs)
+    |> maybe_notify_users_of_new_story(story, attrs)
     |> Repo.transaction()
   end
 
@@ -539,19 +540,19 @@ defmodule Margaret.Stories do
   Notifies the followers of the author or publication if
   the story is in one that there's a new story.
   """
-  @spec maybe_notify_followers_of_new_story(Multi.t(), map()) :: Multi.t()
-  def maybe_notify_followers_of_new_story(multi, story \\ nil, attrs)
+  @spec maybe_notify_users_of_new_story(Multi.t(), map()) :: Multi.t()
+  def maybe_notify_users_of_new_story(multi, story \\ nil, attrs)
 
-  def maybe_notify_followers_of_new_story(multi, nil, _attrs) do
+  def maybe_notify_users_of_new_story(multi, nil, _attrs) do
     # TODO:
-    notify_followers_fn = fn %{story: story} ->
-      followers = get_followers(story)
+    notify_users_fn = fn %{story: story} ->
+      followers = get_notifiable_users_of_new_story(story)
     end
 
-    Multi.run(multi, :notify_followers_of_new_story, notify_followers_fn)
+    Multi.run(multi, :notify_users_of_new_story, notify_users_fn)
   end
 
-  def maybe_notify_followers_of_new_story(multi, %Story{} = story, attrs) do
+  def maybe_notify_users_of_new_story(multi, %Story{} = story, attrs) do
     cond do
       # If the story has already been published, don't notify anyone.
       has_been_published?(story) ->
@@ -561,20 +562,25 @@ defmodule Margaret.Stories do
       # to schedule its publication.
       # TODO:
       not has_been_published?(story) and Map.has_key?(attrs, :published_at) ->
-        case NaiveDateTime.compare(Map.fetch!(attrs, :published_at), NaiveDateTime.utc_now()) do
-          :lt ->
-            notify_followers_fn = fn _ ->
+        case NaiveDateTime.compare(attrs.published_at, NaiveDateTime.utc_now()) do
+          comparison when comparison in [:lt, :eq] ->
+            notify_users_fn = fn _ ->
               nil
             end
 
-            Multi.run(multi, :notify_followers_of_new_story, notify_followers_fn)
+            Multi.run(multi, :notify_users_of_new_story, notify_users_fn)
 
-          comp when comp in [:eq, :gt] ->
-            schedule_notification_fn = fn _ ->
-              nil
+          :gt ->
+            schedule_notification = fn _ ->
+              time = attrs.published_at
+
+              Exq.enqueue_at(Exq, "new_story", time, Margaret.Workers.Notifications, [
+                story.id,
+                to_string(time)
+              ])
             end
 
-            Multi.run(multi, :schedule_notification_of_new_story, schedule_notification_fn)
+            Multi.run(multi, :schedule_notification_of_new_story, schedule_notification)
         end
     end
   end

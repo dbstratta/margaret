@@ -24,6 +24,8 @@ defmodule Margaret.Repo.Migrations.AddUsersTable do
 
       add(:deactivated_at, :naive_datetime, default: nil)
 
+      add(:settings, :map, null: false)
+
       timestamps()
     end
 

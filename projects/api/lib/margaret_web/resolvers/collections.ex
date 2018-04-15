@@ -6,6 +6,7 @@ defmodule MargaretWeb.Resolvers.Collections do
   import Ecto.Query
   alias Absinthe.Relay
 
+  import MargaretWeb.Helpers, only: [ok: 1]
   alias MargaretWeb.Helpers
 
   alias Margaret.{
@@ -24,9 +25,9 @@ defmodule MargaretWeb.Resolvers.Collections do
   Resolves the author of the collection.
   """
   def resolve_author(collection, _, _) do
-    author = Collections.get_author(collection)
-
-    {:ok, author}
+    collection
+    |> Collections.get_author()
+    |> ok()
   end
 
   def resolve_stories(_collection, _args, _) do
@@ -46,9 +47,9 @@ defmodule MargaretWeb.Resolvers.Collections do
   Resolves the tags of the collection.
   """
   def resolve_tags(collection, _, _) do
-    tags = Collections.get_tags(collection)
-
-    {:ok, tags}
+    collection
+    |> Collections.get_tags()
+    |> ok()
   end
 
   @doc """
@@ -65,6 +66,8 @@ defmodule MargaretWeb.Resolvers.Collections do
     {:ok, has_bookmarked}
   end
 
+  @doc """
+  """
   def resolve_collection(%{slug: slug}, _) do
     collection = Collections.get_collection_by_slug(slug)
 
