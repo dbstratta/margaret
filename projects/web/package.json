@@ -51,7 +51,7 @@
   "devDependencies": {
     "@storybook/addon-actions": "3.4.1",
     "@storybook/addon-links": "3.4.1",
-    "@storybook/react": "3.4.1",
+    "@storybook/react": "3.4.2",
     "babel-core": "6.26.0",
     "babel-eslint": "8.2.2",
     "babel-plugin-graphql-tag": "1.5.0",
