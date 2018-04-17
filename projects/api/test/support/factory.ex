@@ -45,7 +45,7 @@ defmodule Margaret.Factory do
     %User{
       username: sequence(:username, &"user#{&1}"),
       email: sequence(:email, &"user#{&1}@margaret.test"),
-      settings: build(:user_settinsg)
+      settings: build(:user_settings)
     }
   end
 
