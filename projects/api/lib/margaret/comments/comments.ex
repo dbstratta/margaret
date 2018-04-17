@@ -105,7 +105,7 @@ defmodule Margaret.Comments do
     query
     |> join(:inner, [c], u in assoc(c, :author))
     |> User.active()
-    |> Repo.aggregate(:count, :id)
+    |> Repo.count()
   end
 
   @spec get_commentable_from_clauses(Keyword.t()) :: commentable()

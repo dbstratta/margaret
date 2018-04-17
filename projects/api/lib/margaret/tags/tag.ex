@@ -10,7 +10,8 @@ defmodule Margaret.Tags.Tag do
 
   alias Margaret.{
     Stories.Story,
-    Publications.Publication
+    Publications.Publication,
+    Collections.Collection
   }
 
   @type t :: %Tag{}
@@ -19,7 +20,7 @@ defmodule Margaret.Tags.Tag do
     # The text of the tag.
     field(:title, :string)
 
-    many_to_many(:collections, Publication, join_through: "collection_tags")
+    many_to_many(:collections, Collection, join_through: "collection_tags")
     many_to_many(:stories, Story, join_through: "story_tags")
     many_to_many(:publications, Publication, join_through: "publication_tags")
 
@@ -50,4 +51,10 @@ defmodule Margaret.Tags.Tag do
   """
   @spec by_titles(Ecto.Queryable.t(), [String.t()]) :: Ecto.Query.t()
   def by_titles(query \\ Tag, titles), do: where(query, [..., t], t.title in ^titles)
+end
+
+defimpl String.Chars, for: Margaret.Tags.Tag do
+  alias Margaret.Tags.Tag
+
+  def to_string(%Tag{title: title}), do: title
 end

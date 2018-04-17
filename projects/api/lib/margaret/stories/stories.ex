@@ -311,7 +311,7 @@ defmodule Margaret.Stories do
         Story
       end
 
-    Repo.aggregate(query, :count, :id)
+    Repo.count(query)
   end
 
   @doc """
@@ -582,6 +582,9 @@ defmodule Margaret.Stories do
 
             Multi.run(multi, :schedule_notification_of_new_story, schedule_notification)
         end
+
+      true ->
+        multi
     end
   end
 

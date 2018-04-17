@@ -2,10 +2,9 @@ defmodule Margaret.Repo do
   use Ecto.Repo, otp_app: :margaret
 
   @doc """
-  Dynamically loads the repository url from the
-  DATABASE_URL environment variable.
   """
-  def init(_, opts) do
-    {:ok, Keyword.put(opts, :url, System.get_env("DATABASE_URL"))}
+  @spec count(Ecto.Queryable.t(), Keyword.t()) :: non_neg_integer()
+  def count(query, opts \\ []) do
+    aggregate(query, :count, :id, opts)
   end
 end

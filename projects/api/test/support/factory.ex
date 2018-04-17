@@ -27,6 +27,16 @@ defmodule Margaret.Factory do
   alias Follows.Follow
   alias Tags.Tag
 
+  def notification_settings_factory do
+    %Accounts.Settings.Notifications{}
+  end
+
+  def user_settings_factory do
+    %Accounts.Settings{
+      notifications: build(:notification_settings)
+    }
+  end
+
   @doc """
   User factory.
   """
@@ -34,7 +44,8 @@ defmodule Margaret.Factory do
   def user_factory do
     %User{
       username: sequence(:username, &"user#{&1}"),
-      email: sequence(:email, &"user#{&1}@margaret.test")
+      email: sequence(:email, &"user#{&1}@margaret.test"),
+      settings: build(:user_settinsg)
     }
   end
 

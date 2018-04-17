@@ -4,6 +4,7 @@ defmodule Margaret.Accounts.User do
   """
 
   use Ecto.Schema
+  use Arc.Ecto.Schema
   import Ecto.{Query, Changeset}
 
   alias __MODULE__
@@ -41,8 +42,7 @@ defmodule Margaret.Accounts.User do
     field(:first_name, :string)
     field(:last_name, :string)
 
-    # TODO: Use Arc and Arc Ecto to manage file uploads.
-    field(:avatar, :string)
+    field(:avatar, Accounts.Avatar.Type)
     field(:bio, :string)
     field(:website, :string)
     field(:location, :string)
@@ -108,6 +108,7 @@ defmodule Margaret.Accounts.User do
 
     %User{}
     |> cast(attrs, permitted_attrs)
+    |> cast_attachments(attrs, [:avatar])
     |> validate_required(required_attrs)
     |> cast_embed(:settings, required: true)
     |> validate_format(:username, @username_regex)
