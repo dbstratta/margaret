@@ -5,36 +5,64 @@ defmodule Margaret.Helpers do
 
   @doc """
   """
-  def maybe_put_assoc(%Ecto.Changeset{} = changeset, attrs, opts \\ []) do
-    key = Keyword.get(opts, :key)
+  @spec maybe_put_assoc(Ecto.Changeset.t(), map(), Keyword.t()) :: Ecto.Changeset.t()
+  def maybe_put_assoc(%Ecto.Changeset{} = changeset, attrs, opts) do
+    key = Keyword.fetch!(opts, :key)
 
-    do_maybe_put_assoc(changeset, attrs, key)
-  end
-
-  defp do_maybe_put_assoc(changeset, _attrs, nil), do: changeset
-
-  defp do_maybe_put_assoc(changeset, attrs, key) do
-    if Map.has_key?(attrs, key) do
-      put_assoc(changeset, key, Map.get(attrs, key))
-    else
-      changeset
+    case Map.get(attrs, key) do
+      value when not is_nil(value) -> put_assoc(changeset, key, value)
+      nil -> changeset
     end
   end
 
   @doc """
   """
-  def maybe_put_tags_assoc(%Ecto.Changeset{} = changeset, attrs) do
-    maybe_put_assoc(changeset, attrs, key: :tags)
-  end
+  @spec maybe_put_tags_assoc(Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
+  def maybe_put_tags_assoc(%Ecto.Changeset{} = changeset, attrs),
+    do: maybe_put_assoc(changeset, attrs, key: :tags)
 
   @doc """
-  TODO: Document this.
+  Converts the keys of a map from strings to atoms.
+  Optionally converts specified values too.
+
+  Useful when deserializing data from external services.
+
+  ## Examples
+
+      iex> atomify_map(%{"hello" => "world"})
+      %{hello: "world"}
+
+      iex> atomify_map(%{"hello" => "world"}, values: [:hello])
+      %{hello: :world}
+
   """
-  def atomify_map(map, opts \\ []) do
+  def atomify_map(map, opts \\ []) when is_map(map) do
     map = for {key, value} <- map, into: %{}, do: {String.to_atom(key), value}
 
     values = Keyword.get(opts, :values, [])
 
     Enum.reduce(values, map, fn key, map -> Map.update!(map, key, &String.to_atom(&1)) end)
   end
+
+  @doc """
+  Changeset validator that validates the data exported by DraftJS.
+
+  ## Examples
+
+      iex> validate_draftjs_data(:content, data)
+      []
+
+      iex> validate_draftjs_data(:content, invalid_data)
+      [content: "invalid data"]
+
+      iex> validate_change(changeset, :content, &validate_draftjs_data/2)
+      %Ecto.Changeset{}
+
+  """
+  @spec validate_draftjs_data(atom(), map()) :: [any()]
+  def validate_draftjs_data(_, data) when is_map(data) do
+    []
+  end
+
+  def validate_draftjs_data(field, _data), do: [{field, "invalid data"}]
 end

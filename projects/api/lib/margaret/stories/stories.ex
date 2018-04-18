@@ -472,9 +472,8 @@ defmodule Margaret.Stories do
   # we try to insert the story in the collection.
   @spec maybe_insert_in_collection(Multi.t(), map()) :: Multi.t()
   defp maybe_insert_in_collection(multi, %{collection_id: collection_id}) do
-    insert_in_collectin_fn = fn %{story: %Story{id: story_id} = story} ->
-      with %Collection{id: collection_id} = collection <-
-             Collections.get_collection(collection_id),
+    insert_in_collection = fn %{story: %Story{id: story_id} = story} ->
+      with %Collection{} = collection <- Collections.get_collection(collection_id),
            author = author(story),
            true <- Collections.can_add_stories_to_collection?(collection, author),
            part = Collections.next_part_number(collection),
@@ -486,7 +485,7 @@ defmodule Margaret.Stories do
       end
     end
 
-    Multi.run(multi, :collection, insert_in_collectin_fn)
+    Multi.run(multi, :collection, insert_in_collection)
   end
 
   defp maybe_insert_in_collection(multi, _attrs), do: multi

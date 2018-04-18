@@ -85,6 +85,7 @@ defmodule Margaret.Stories.Story do
     %Story{}
     |> cast(attrs, permitted_attrs)
     |> validate_required(required_attrs)
+    |> validate_change(:content, &Helpers.validate_draftjs_data/2)
     |> assoc_constraint(:author)
     |> assoc_constraint(:publication)
     |> Helpers.maybe_put_tags_assoc(attrs)
