@@ -11,7 +11,7 @@ defmodule MargaretWeb.Resolvers.Notifications do
   @doc """
   """
   def resolve_object(notification, _, _) do
-    object = Notifications.get_object(notification)
+    object = Notifications.object(notification)
 
     {:ok, object}
   end
@@ -19,7 +19,7 @@ defmodule MargaretWeb.Resolvers.Notifications do
   @doc """
   """
   def resolve_actor(notification, _, _) do
-    actor = Notifications.get_actor(notification)
+    actor = Notifications.actor(notification)
 
     {:ok, actor}
   end

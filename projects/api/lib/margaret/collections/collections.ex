@@ -59,12 +59,12 @@ defmodule Margaret.Collections do
 
   ## Examples
 
-      iex> get_author(%Collection{})
+      iex> author(%Collection{})
       %User{}
 
   """
-  @spec get_author(Collection.t()) :: User.t()
-  def get_author(%Collection{} = collection) do
+  @spec author(Collection.t()) :: User.t()
+  def author(%Collection{} = collection) do
     collection
     |> Collection.preload_author()
     |> Map.get(:author)
@@ -75,15 +75,15 @@ defmodule Margaret.Collections do
 
   ## Examples
 
-      iex> get_publication(%Collection{})
+      iex> publication(%Collection{})
       %Publication{}
 
-      iex> get_publication(%Collection{})
+      iex> publication(%Collection{})
       nil
 
   """
-  @spec get_publication(Collection.t()) :: Publication.t() | nil
-  def get_publication(%Collection{} = collection) do
+  @spec publication(Collection.t()) :: Publication.t() | nil
+  def publication(%Collection{} = collection) do
     collection
     |> Collection.preload_publication()
     |> Map.get(:publication)
@@ -94,12 +94,12 @@ defmodule Margaret.Collections do
 
   ## Examples
 
-      iex> get_tags(%Collection{})
+      iex> tags(%Collection{})
       [%Tag{}]
 
   """
-  @spec get_tags(Collection.t()) :: [Tag.t()]
-  def get_tags(%Collection{} = collection) do
+  @spec tags(Collection.t()) :: [Tag.t()]
+  def tags(%Collection{} = collection) do
     collection
     |> Collection.preload_tags()
     |> Map.get(:tags)
@@ -109,8 +109,8 @@ defmodule Margaret.Collections do
   Returns the part of the story in the collection if its in any.
   `nil` otherwise.
   """
-  @spec get_story_part(Story.t()) :: non_neg_integer() | nil
-  def get_story_part(%Story{} = story) do
+  @spec story_part(Story.t()) :: non_neg_integer() | nil
+  def story_part(%Story{} = story) do
     case get_collection_story(story) do
       %CollectionStory{part: part} -> part
       nil -> nil
@@ -129,7 +129,7 @@ defmodule Margaret.Collections do
   """
   @spec in_collection?(Collection.t(), Story.t()) :: boolean()
   def in_collection?(%Collection{id: collection_id}, %Story{} = story) do
-    case Stories.get_collection(story) do
+    case Stories.collection(story) do
       %Collection{id: story_collection_id} when story_collection_id === collection_id -> true
       _ -> false
     end
@@ -182,7 +182,7 @@ defmodule Margaret.Collections do
   @spec move_story(Story.t(), pos_integer()) :: {:ok, Story.t()} | {:error, any()}
   def move_story(%Story{} = story, part) do
     story
-    |> Stories.get_collection()
+    |> Stories.collection()
     |> do_move_story(story, part)
   end
 
@@ -215,12 +215,12 @@ defmodule Margaret.Collections do
 
   ## Examples
 
-      iex> get_story_count(%Collection{})
+      iex> story_count(%Collection{})
       2
 
   """
-  @spec get_story_count(Collection.t()) :: non_neg_integer()
-  def get_story_count(%Collection{} = collection) do
+  @spec story_count(Collection.t()) :: non_neg_integer()
+  def story_count(%Collection{} = collection) do
     collection
     |> CollectionStory.by_collection(collection)
     |> Repo.aggregate(:count, :id)
@@ -231,12 +231,12 @@ defmodule Margaret.Collections do
 
   ## Examples
 
-      iex> get_next_part_number(%Collection{})
+      iex> next_part_number(%Collection{})
       3
 
   """
-  @spec get_next_part_number(Collection.t()) :: pos_integer()
-  def get_next_part_number(%Collection{} = collection), do: get_story_count(collection) + 1
+  @spec next_part_number(Collection.t()) :: pos_integer()
+  def next_part_number(%Collection{} = collection), do: story_count(collection) + 1
 
   @doc """
   Gets a collection story by a story id.

@@ -26,7 +26,7 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves the owner of the publication.
   """
   def resolve_owner(publication, _, _) do
-    owner = Publications.get_owner(publication)
+    owner = Publications.owner(publication)
 
     {:ok, owner}
   end
@@ -45,7 +45,7 @@ defmodule MargaretWeb.Resolvers.Publications do
         select: {u, %{role: pm.role, member_since: pm.inserted_at}}
       )
 
-    total_count = Publications.get_member_count(publication)
+    total_count = Publications.member_count(publication)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -58,7 +58,7 @@ defmodule MargaretWeb.Resolvers.Publications do
   def resolve_stories(%Publication{id: publication_id} = publication, args, _) do
     query = from(s in Story, where: s.publication_id == ^publication_id)
 
-    total_count = Publications.get_story_count(publication)
+    total_count = Publications.story_count(publication)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -79,7 +79,7 @@ defmodule MargaretWeb.Resolvers.Publications do
         select: {u, %{followed_at: f.inserted_at}}
       )
 
-    total_count = Follows.get_follower_count(%{publication_id: publication_id})
+    total_count = Follows.follower_count(%{publication_id: publication_id})
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -90,7 +90,7 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves the tags of the publication.
   """
   def resolve_tags(%Publication{} = publication, _, _) do
-    tags = Publications.get_tags(publication)
+    tags = Publications.tags(publication)
 
     {:ok, tags}
   end

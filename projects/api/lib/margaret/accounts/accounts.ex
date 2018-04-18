@@ -172,12 +172,12 @@ defmodule Margaret.Accounts do
 
   ## Examples
 
-      iex> get_user_count()
+      iex> user_count()
       42
 
   """
-  @spec get_user_count(Keyword.t()) :: non_neg_integer()
-  def get_user_count(opts \\ []) do
+  @spec user_count(Keyword.t()) :: non_neg_integer()
+  def user_count(opts \\ []) do
     User
     |> maybe_include_deactivated(opts)
     |> Repo.aggregate(:count, :id)
@@ -481,15 +481,15 @@ defmodule Margaret.Accounts do
 
   ## Examples
 
-      iex> get_story_count(%User{})
+      iex> story_count(%User{})
       42
 
-      iex> get_story_count(%User{}, published_only: true)
+      iex> story_count(%User{}, published_only: true)
       0
 
   """
-  @spec get_story_count(User.t(), Keyword.t()) :: non_neg_integer()
-  def get_story_count(%User{} = author, opts \\ []) do
+  @spec story_count(User.t(), Keyword.t()) :: non_neg_integer()
+  def story_count(%User{} = author, opts \\ []) do
     query =
       if Keyword.get(opts, :published_only, false) do
         Story.published()
@@ -506,30 +506,30 @@ defmodule Margaret.Accounts do
 
   ## Examples
 
-      iex> get_follower_count(%User{})
+      iex> follower_count(%User{})
       42
 
-      iex> get_follower_count(%User{})
+      iex> follower_count(%User{})
       0
 
   """
-  @spec get_follower_count(User.t()) :: non_neg_integer()
-  def get_follower_count(%User{} = user), do: Follows.get_follower_count(user: user)
+  @spec follower_count(User.t()) :: non_neg_integer()
+  def follower_count(%User{} = user), do: Follows.follower_count(user: user)
 
   @doc """
   Gets the publication count of the user.
 
   ## Examples
 
-      iex> get_publication_count(%User{})
+      iex> publication_count(%User{})
       42
 
-      iex> get_publication_count(%User{})
+      iex> publication_count(%User{})
       0
 
   """
-  @spec get_publication_count(User.t()) :: non_neg_integer()
-  def get_publication_count(%User{} = user) do
+  @spec publication_count(User.t()) :: non_neg_integer()
+  def publication_count(%User{} = user) do
     query = PublicationMembership.by_member(user)
 
     Repo.aggregate(query, :count, :id)

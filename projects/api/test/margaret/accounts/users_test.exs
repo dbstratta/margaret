@@ -4,6 +4,7 @@ defmodule Margaret.UsersTest do
   @valid_attrs %{
     username: "user#{System.unique_integer()}",
     email: "user#{System.unique_integer([:positive])}@example.com"
+    settings: Factory.build(:user_settings),
   }
 
   @invalid_attrs %{

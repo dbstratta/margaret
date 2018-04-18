@@ -3,6 +3,8 @@ defmodule MargaretWeb.Resolvers.Nodes do
   The Node GraphQL resolvers.
   """
 
+  import MargaretWeb.Helpers, only: [ok: 1]
+
   alias Margaret.{Accounts, Stories, Publications, Collections, Comments, Notifications, Tags}
   alias Accounts.User
   alias Stories.Story
@@ -29,9 +31,9 @@ defmodule MargaretWeb.Resolvers.Nodes do
   Resolves the node from its type and global ID.
   """
   def resolve_node(%{type: :user, id: user_id}, _) do
-    user = Accounts.get_user(user_id)
-
-    {:ok, user}
+    user_id
+    |> Accounts.get_user()
+    |> ok()
   end
 
   def resolve_node(%{type: :story, id: story_id}, %{context: %{viewer: viewer}}) do
@@ -41,21 +43,21 @@ defmodule MargaretWeb.Resolvers.Nodes do
   def resolve_node(%{type: :story, id: story_id}, _), do: resolve_story(story_id, nil)
 
   def resolve_node(%{type: :publication, id: publication_id}, _) do
-    publication = Publications.get_publication(publication_id)
-
-    {:ok, publication}
+    publication_id
+    |> Publications.get_publication()
+    |> ok()
   end
 
   def resolve_node(%{type: :publication_invitation, id: invitation_id}, _) do
-    publication_invitation = Publications.get_invitation(invitation_id)
-
-    {:ok, publication_invitation}
+    invitation_id
+    |> Publications.get_invitation()
+    |> ok()
   end
 
   def resolve_node(%{type: :collection, id: collection_id}, _) do
-    collections = Collections.get_collection(collection_id)
-
-    {:ok, collections}
+    collection_id
+    |> Collections.get_collection()
+    |> ok()
   end
 
   def resolve_node(%{type: :comment, id: comment_id}, %{context: %{viewer: viewer}}) do
@@ -63,9 +65,9 @@ defmodule MargaretWeb.Resolvers.Nodes do
   end
 
   def resolve_node(%{type: :tag, id: tag_id}, _) do
-    tag = Tags.get_tag(tag_id)
-
-    {:ok, tag}
+    tag_id
+    |> Tags.get_tag()
+    |> ok()
   end
 
   defp resolve_story(story_id, viewer) do

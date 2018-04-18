@@ -97,14 +97,14 @@ defmodule Margaret.Stars do
 
   ## Examples
 
-      iex> get_star_count(story: %Story{})
+      iex> star_count(story: %Story{})
       42
 
-      iex> get_star_count(comment: %Comment{})
+      iex> star_count(comment: %Comment{})
       0
 
   """
-  def get_star_count(clauses) do
+  def star_count(clauses) do
     query =
       clauses
       |> get_starrable_from_clauses()
@@ -132,14 +132,14 @@ defmodule Margaret.Stars do
 
   ## Examples
 
-      iex> get_starred_count(%User{})
+      iex> starred_count(%User{})
       42
 
-      iex> get_starred_count(%User{})
+      iex> starred_count(%User{})
       0
 
   """
-  def get_starred_count(%User{} = user) do
+  def starred_count(%User{} = user) do
     query = Star.by_user(user)
 
     Repo.aggregate(query, :count, :id)

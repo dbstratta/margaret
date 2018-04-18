@@ -82,6 +82,15 @@ defmodule Margaret.Follows.Follow do
   def by_followee(query, %User{} = user), do: by_user(query, user)
   def by_followee(query, %Publication{} = publication), do: by_publication(query, publication)
 
+  def followees(query \\ Follow, %User{} = user, opts \\ []) do
+    query
+    |> Follow.by_follower(user)
+    |> join(:left, [f], u in assoc(f, :user))
+    |> User.active()
+    |> join(:left, [f], p in assoc(f, :publication))
+    |> select([f, u, p], {[u, p], %{followed_at: f.inserted_at}})
+  end
+
   @doc """
   Preloads the follower of a follow.
   """

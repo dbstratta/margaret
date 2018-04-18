@@ -109,26 +109,26 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> get_title(%Story{})
+      iex> title(%Story{})
       "Title"
 
   """
-  @spec get_title(Story.t()) :: String.t()
-  def get_title(%Story{content: %{"blocks" => [%{"text" => title} | _]}}), do: title
+  @spec title(Story.t()) :: String.t()
+  def title(%Story{content: %{"blocks" => [%{"text" => title} | _]}}), do: title
 
   @doc """
   Gets the slug of a story.
 
   ## Examples
 
-      iex> get_slug(%Story{})
+      iex> slug(%Story{})
       "title-abc123ba"
 
   """
-  @spec get_slug(Story.t()) :: String.t()
-  def get_slug(%Story{unique_hash: unique_hash} = story) do
+  @spec slug(Story.t()) :: String.t()
+  def slug(%Story{unique_hash: unique_hash} = story) do
     story
-    |> Stories.get_title()
+    |> Stories.title()
     |> Slugger.slugify_downcase()
     |> Kernel.<>("-")
     |> Kernel.<>(unique_hash)
@@ -139,15 +139,15 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> get_summary(%Story{})
+      iex> summary(%Story{})
       "Lorem ipsum."
 
-      iex> get_summary(%Story{})
+      iex> summary(%Story{})
       ""
 
   """
-  @spec get_summary(Story.t()) :: String.t()
-  def get_summary(%Story{content: %{"blocks" => blocks}}) do
+  @spec summary(Story.t()) :: String.t()
+  def summary(%Story{content: %{"blocks" => blocks}}) do
     IO.inspect(blocks, label: "BLOCKS")
 
     case blocks do
@@ -161,12 +161,12 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> get_author(%Story{})
+      iex> author(%Story{})
       %User{}
 
   """
-  @spec get_author(Story.t()) :: User.t()
-  def get_author(%Story{} = story) do
+  @spec author(Story.t()) :: User.t()
+  def author(%Story{} = story) do
     story
     |> Story.preload_author()
     |> Map.get(:author)
@@ -177,12 +177,12 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> get_tags(%Story{})
+      iex> tags(%Story{})
       [%Tag{}]
 
   """
-  @spec get_tags(Story.t()) :: [Tag.t()]
-  def get_tags(%Story{} = story) do
+  @spec tags(Story.t()) :: [Tag.t()]
+  def tags(%Story{} = story) do
     story
     |> Story.preload_tags()
     |> Map.get(:tags)
@@ -193,15 +193,15 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> get_publication(%Story{})
+      iex> publication(%Story{})
       %Publication{}
 
-      iex> get_publication(%Story{})
+      iex> publication(%Story{})
       nil
 
   """
-  @spec get_publication(Story.t()) :: Publication.t() | nil
-  def get_publication(%Story{} = story) do
+  @spec publication(Story.t()) :: Publication.t() | nil
+  def publication(%Story{} = story) do
     story
     |> Story.preload_publication()
     |> Map.get(:publication)
@@ -212,18 +212,18 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> get_collection(%Story{})
+      iex> collection(%Story{})
       %Collection{}
 
-      iex> get_collection(%Story{})
+      iex> collection(%Story{})
       nil
 
   """
-  @spec get_collection(Story.t()) :: Collection.t() | nil
-  def get_collection(%Story{} = story) do
+  @spec collection(Story.t()) :: Collection.t() | nil
+  def collection(%Story{} = story) do
     story
     |> Story.preload_collection()
-    |> Map.get(:collection)
+    |> Map.fetch!(:collection)
   end
 
   @doc """
@@ -259,12 +259,12 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> get_word_count(%Story{})
+      iex> word_count(%Story{})
       42
 
   """
-  @spec get_word_count(Story.t()) :: non_neg_integer()
-  def get_word_count(%Story{content: %{"blocks" => blocks}}) do
+  @spec word_count(Story.t()) :: non_neg_integer()
+  def word_count(%Story{content: %{"blocks" => blocks}}) do
     blocks
     |> Enum.map_join(" ", &Map.get(&1, "text"))
     |> String.split()
@@ -276,16 +276,16 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> get_read_time(%Story{})
+      iex> read_time(%Story{})
       12
 
   """
-  @spec get_read_time(Story.t()) :: non_neg_integer()
-  def get_read_time(%Story{} = story) do
+  @spec read_time(Story.t()) :: non_neg_integer()
+  def read_time(%Story{} = story) do
     avg_wpm = 275
 
     story
-    |> get_word_count()
+    |> word_count()
     |> div(avg_wpm)
     |> case do
       0 -> 1
@@ -298,12 +298,12 @@ defmodule Margaret.Stories do
 
   ## Examples
 
-      iex> get_story_count()
+      iex> story_count()
       815
 
   """
-  @spec get_story_count(Keyword.t()) :: non_neg_integer()
-  def get_story_count(opts \\ []) do
+  @spec story_count(Keyword.t()) :: non_neg_integer()
+  def story_count(opts \\ []) do
     query =
       if Keyword.get(opts, :published_only, false) do
         Story.published()
@@ -317,14 +317,14 @@ defmodule Margaret.Stories do
   @doc """
   Gets the star count of a story.
   """
-  @spec get_star_count(Story.t()) :: non_neg_integer()
-  def get_star_count(%Story{} = story), do: Stars.get_star_count(story: story)
+  @spec star_count(Story.t()) :: non_neg_integer()
+  def star_count(%Story{} = story), do: Stars.star_count(story: story)
 
   @doc """
   Gets the comment count of a story.
   """
-  @spec get_comment_count(Story.t()) :: non_neg_integer()
-  def get_comment_count(%Story{} = story), do: Comments.get_comment_count(story: story)
+  @spec comment_count(Story.t()) :: non_neg_integer()
+  def comment_count(%Story{} = story), do: Comments.comment_count(story: story)
 
   @doc """
   Returns `true` if the story is under a publication.
@@ -337,7 +337,7 @@ defmodule Margaret.Stories do
   Returns `true` if the story is in a collection.
   """
   @spec in_collection?(Story.t()) :: boolean()
-  def in_collection?(%Story{} = story), do: !!get_collection(story)
+  def in_collection?(%Story{} = story), do: !!collection(story)
 
   @doc """
   Returns `true` if the story has been published.
@@ -475,9 +475,9 @@ defmodule Margaret.Stories do
     insert_in_collectin_fn = fn %{story: %Story{id: story_id} = story} ->
       with %Collection{id: collection_id} = collection <-
              Collections.get_collection(collection_id),
-           author = get_author(story),
+           author = author(story),
            true <- Collections.can_add_stories_to_collection?(collection, author),
-           part = Collections.get_next_part_number(collection),
+           part = Collections.next_part_number(collection),
            attrs = %{collection_id: collection_id, story_id: story_id, part: part} do
         Collections.insert_collection_story(attrs)
       else

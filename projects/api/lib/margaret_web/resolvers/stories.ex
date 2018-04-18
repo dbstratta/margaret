@@ -6,6 +6,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   import Ecto.Query
   alias Absinthe.Relay
 
+  import MargaretWeb.Helpers, only: [ok: 1]
   alias MargaretWeb.Helpers
   alias Margaret.{Repo, Accounts, Stories, Stars, Bookmarks, Publications, Comments}
   alias Accounts.User
@@ -18,9 +19,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   """
   @spec resolve_story(map(), Absinthe.Resolution.t()) :: {:ok, Story.t() | nil}
   def resolve_story(%{unique_hash: unique_hash}, _) do
-    story = Stories.get_story_by_unique_hash(unique_hash)
-
-    {:ok, story}
+    unique_hash
+    |> Stories.get_story_by_unique_hash()
+    |> ok()
   end
 
   @doc """
@@ -28,9 +29,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   """
   @spec resolve_title(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, String.t()}
   def resolve_title(story, _, _) do
-    title = Stories.get_title(story)
-
-    {:ok, title}
+    story
+    |> Stories.title()
+    |> ok()
   end
 
   @doc """
@@ -38,9 +39,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   """
   @spec resolve_author(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, User.t()}
   def resolve_author(story, _, _) do
-    author = Stories.get_author(story)
-
-    {:ok, author}
+    story
+    |> Stories.author()
+    |> ok()
   end
 
   @doc """
@@ -48,9 +49,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   """
   @spec resolve_slug(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, String.t()}
   def resolve_slug(story, _, _) do
-    slug = Stories.get_slug(story)
-
-    {:ok, slug}
+    story
+    |> Stories.slug()
+    |> ok()
   end
 
   @doc """
@@ -58,9 +59,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   """
   @spec resolve_summary(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, String.t()}
   def resolve_summary(story, _, _) do
-    summary = Stories.get_summary(story)
-
-    {:ok, summary}
+    story
+    |> Stories.summary()
+    |> ok()
   end
 
   @doc """
@@ -69,16 +70,16 @@ defmodule MargaretWeb.Resolvers.Stories do
   @spec resolve_publication(Story.t(), map(), Absinthe.Resolution.t()) ::
           {:ok, Publication.t() | nil}
   def resolve_publication(story, _args, _resolution) do
-    publication = Stories.get_publication(story)
-
-    {:ok, publication}
+    story
+    |> Stories.publication()
+    |> ok()
   end
 
   @spec resolve_tags(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, [Tag.t()]}
   def resolve_tags(story, _args, _resolution) do
-    tags = Stories.get_tags(story)
-
-    {:ok, tags}
+    story
+    |> Stories.tags()
+    |> ok()
   end
 
   @doc """
@@ -86,9 +87,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   """
   @spec resolve_read_time(Story.t(), map(), Absinthe.Resolution.t()) :: {:ok, pos_integer()}
   def resolve_read_time(story, _args, _resolution) do
-    read_time = Stories.get_read_time(story)
-
-    {:ok, read_time}
+    story
+    |> Stories.read_time()
+    |> ok()
   end
 
   @doc """
@@ -108,7 +109,7 @@ defmodule MargaretWeb.Resolvers.Stories do
       )
 
     # TODO: Only count stories in that feed.
-    total_count = Stories.get_story_count()
+    total_count = Stories.story_count()
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -126,7 +127,7 @@ defmodule MargaretWeb.Resolvers.Stories do
       |> Star.by_story(story)
       |> select([u, s], {u, %{starred_at: s.inserted_at}})
 
-    total_count = Stories.get_star_count(story)
+    total_count = Stories.star_count(story)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -140,7 +141,7 @@ defmodule MargaretWeb.Resolvers.Stories do
       |> join(:inner, [c], u in assoc(c, :author))
       |> User.active()
 
-    total_count = Stories.get_comment_count(story)
+    total_count = Stories.comment_count(story)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -148,9 +149,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   end
 
   def resolve_is_under_publication(story, _args, _resolution) do
-    is_under_publication = Stories.under_publication?(story)
-
-    {:ok, is_under_publication}
+    story
+    |> Stories.under_publication?()
+    |> ok()
   end
 
   @doc """
@@ -162,9 +163,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   Resolves whether the viewer has starred this story.
   """
   def resolve_viewer_has_starred(story, _args, %{context: %{viewer: viewer}}) do
-    has_starred = Stars.has_starred?(user: viewer, story: story)
-
-    {:ok, has_starred}
+    [user: viewer, story: story]
+    |> Stars.has_starred?()
+    |> ok()
   end
 
   @doc """
@@ -173,9 +174,9 @@ defmodule MargaretWeb.Resolvers.Stories do
   def resolve_viewer_can_bookmark(_story, _args, _resolution), do: {:ok, true}
 
   def resolve_viewer_has_bookmarked(story, _args, %{context: %{viewer: viewer}}) do
-    has_bookmarked = Bookmarks.has_bookmarked?(user: viewer, story: story)
-
-    {:ok, has_bookmarked}
+    [user: viewer, story: story]
+    |> Bookmarks.has_bookmarked?()
+    |> ok()
   end
 
   @doc """
@@ -187,16 +188,16 @@ defmodule MargaretWeb.Resolvers.Stories do
   Resolves whether the viewer can update the story.
   """
   def resolve_viewer_can_update(story, _, %{context: %{viewer: viewer}}) do
-    can_update_story = Stories.can_update_story?(story, viewer)
-
-    {:ok, can_update_story}
+    story
+    |> Stories.can_update_story?(viewer)
+    |> ok()
   end
 
   @doc """
   Resolves whether the viewer can delete the story.
   """
   def resolve_viewer_can_delete(%Story{id: author_id}, _, %{context: %{viewer: %{id: author_id}}}) do
-    {:ok, true}
+    ok(true)
   end
 
   @doc """

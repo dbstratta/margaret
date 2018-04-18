@@ -40,12 +40,12 @@ defmodule Margaret.Bookmarks do
 
   ## Examples
 
-      iex> get_user(%Bookmark{})
+      iex> user(%Bookmark{})
       %User{}
 
   """
-  @spec get_user(Bookmark.t()) :: User.t()
-  def get_user(%Bookmark{} = bookmark) do
+  @spec user(Bookmark.t()) :: User.t()
+  def user(%Bookmark{} = bookmark) do
     bookmark
     |> Bookmark.preload_user()
     |> Map.get(:user)
@@ -111,12 +111,12 @@ defmodule Margaret.Bookmarks do
 
   ## Examples
 
-      iex> get_bookmarked_count(%User{})
+      iex> bookmarked_count(%User{})
       42
 
   """
-  @spec get_bookmarked_count(User.t()) :: non_neg_integer()
-  def get_bookmarked_count(%User{} = user) do
+  @spec bookmarked_count(User.t()) :: non_neg_integer()
+  def bookmarked_count(%User{} = user) do
     query = Bookmark.by_user(user)
 
     Repo.aggregate(query, :count, :id)

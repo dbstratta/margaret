@@ -51,7 +51,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   """
   def resolve_stories(%User{id: author_id} = user, args, %{context: %{viewer: %{id: author_id}}}) do
     query = Story.by_author(user)
-    total_count = Accounts.get_story_count(user)
+    total_count = Accounts.story_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -64,7 +64,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
       |> Story.by_author()
       |> Story.public()
 
-    total_count = Accounts.get_story_count(user, public_only: true)
+    total_count = Accounts.story_count(user, public_only: true)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -76,18 +76,10 @@ defmodule MargaretWeb.Resolvers.Accounts do
 
   Also resolves the `followed_at` attribute.
   """
-  def resolve_followers(%User{id: user_id} = user, args, _) do
-    query =
-      from(
-        u in User,
-        join: f in Follow,
-        on: f.follower_id == u.id,
-        where: is_nil(u.deactivated_at),
-        where: f.user_id == ^user_id,
-        select: {u, %{followed_at: f.inserted_at}}
-      )
+  def resolve_followers(%User{} = user, args, _) do
+    query = User.followers(user)
 
-    total_count = Accounts.get_follower_count(user)
+    total_count = Accounts.follower_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -106,7 +98,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
       |> join(:left, [f], p in assoc(f, :publication))
       |> select([f, u, p], {[u, p], %{followed_at: f.inserted_at}})
 
-    total_count = Follows.get_followee_count(user)
+    total_count = Follows.followee_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -124,7 +116,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
       |> join(:left, [star], comment in assoc(star, :comment))
       |> select([star, story, comment], {[story, comment], %{starred_at: star.inserted_at}})
 
-    total_count = Stars.get_starred_count(user)
+    total_count = Stars.starred_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -144,7 +136,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
       |> join(:left, [b], c in assoc(b, :comment))
       |> select([b, s, c], {[s, c], %{bookmarked_at: b.inserted_at}})
 
-    total_count = Bookmarks.get_bookmarked_count(user)
+    total_count = Bookmarks.bookmarked_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -181,7 +173,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
       |> PublicationMembership.by_member(user)
       |> select([p, pm], {p, %{role: pm.role, member_since: pm.inserted_at}})
 
-    total_count = Accounts.get_publication_count(user)
+    total_count = Accounts.publication_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -197,7 +189,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
       |> join(:inner, [n], un in assoc(n, :user_notifications))
       |> UserNotification.by_user(user)
 
-    total_count = Notifications.get_notification_count(user)
+    total_count = Notifications.notification_count(user)
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)
@@ -211,7 +203,7 @@ defmodule MargaretWeb.Resolvers.Accounts do
   """
   def resolve_users(args, _) do
     query = User.active()
-    total_count = Accounts.get_user_count()
+    total_count = Accounts.user_count()
 
     query
     |> Relay.Connection.from_query(&Repo.all/1, args)

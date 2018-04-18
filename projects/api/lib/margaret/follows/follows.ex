@@ -47,8 +47,8 @@ defmodule Margaret.Follows do
   @doc """
   Gets all the followers of a followee.
   """
-  @spec get_followers(User.t() | Publication.t()) :: [User.t()]
-  def get_followers(followee) do
+  @spec followers(User.t() | Publication.t()) :: [User.t()]
+  def followers(followee) do
     followee
     |> Follow.by_followee()
     |> Repo.all()
@@ -59,12 +59,12 @@ defmodule Margaret.Follows do
 
   ## Examples
 
-    iex> get_followee_count(%User{})
+    iex> followee_count(%User{})
     42
 
   """
-  @spec get_followee_count(User.t()) :: non_neg_integer()
-  def get_followee_count(%User{} = user) do
+  @spec followee_count(User.t()) :: non_neg_integer()
+  def followee_count(%User{} = user) do
     query = Follow.by_follower(user)
 
     Repo.aggregate(query, :count, :id)
@@ -75,15 +75,15 @@ defmodule Margaret.Follows do
 
   ## Examples
 
-    iex> get_follower_count([user: %User{}])
+    iex> follower_count([user: %User{}])
     42
 
-    iex> get_follower_count([publication: %Publication{}])
+    iex> follower_count([publication: %Publication{}])
     815
 
   """
-  @spec get_follower_count(Keyword.t()) :: non_neg_integer
-  def get_follower_count(clauses) do
+  @spec follower_count(Keyword.t()) :: non_neg_integer
+  def follower_count(clauses) do
     query =
       clauses
       |> get_followable_from_clauses()
@@ -95,7 +95,7 @@ defmodule Margaret.Follows do
     query
     |> join(:inner, [c], u in assoc(c, :follower))
     |> User.active()
-    |> Repo.aggregate(:count, :id)
+    |> Repo.count()
   end
 
   @doc """

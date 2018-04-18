@@ -16,7 +16,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   Resolves the author of the comment.
   """
   def resolve_author(comment, _, _) do
-    author = Comments.get_author(comment)
+    author = Comments.author(comment)
 
     {:ok, author}
   end
@@ -47,7 +47,7 @@ defmodule MargaretWeb.Resolvers.Comments do
     connection =
       connection
       |> Map.update!(:edges, transform_edges)
-      |> Map.put(:total_count, Stars.get_star_count(%{comment_id: comment_id}))
+      |> Map.put(:total_count, Stars.star_count(%{comment_id: comment_id}))
 
     {:ok, connection}
   end
@@ -56,7 +56,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   Resolves the story of the comment.
   """
   def resolve_story(comment, _, _) do
-    story = Comments.get_story(comment)
+    story = Comments.story(comment)
 
     {:ok, story}
   end
@@ -65,7 +65,7 @@ defmodule MargaretWeb.Resolvers.Comments do
   Resolves the parent comment of the comment.
   """
   def resolve_parent(comment, _, _) do
-    parent = Comments.get_parent(comment)
+    parent = Comments.parent(comment)
 
     {:ok, parent}
   end
@@ -79,7 +79,7 @@ defmodule MargaretWeb.Resolvers.Comments do
     {:ok, connection} = Relay.Connection.from_query(query, &Repo.all/1, args)
 
     connection =
-      Map.put(connection, :total_count, Comments.get_comment_count(%{comment_id: comment_id}))
+      Map.put(connection, :total_count, Comments.comment_count(%{comment_id: comment_id}))
 
     {:ok, connection}
   end

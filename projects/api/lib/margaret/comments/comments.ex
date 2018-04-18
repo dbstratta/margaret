@@ -51,33 +51,33 @@ defmodule Margaret.Comments do
   def get_comment!(id), do: Repo.get!(Comment, id)
 
   @doc """
-  Gets the story of a comment.
+  Returns the story of a comment.
   """
-  @spec get_story(Comment.t()) :: Story.t()
-  def get_story(%Comment{} = comment) do
+  @spec story(Comment.t()) :: Story.t()
+  def story(%Comment{} = comment) do
     comment
     |> Comment.preload_story()
-    |> Map.get(:story)
+    |> Map.fetch!(:story)
   end
 
   @doc """
-  Gets the author of a comment.
+  Returns the author of a comment.
   """
-  @spec get_author(Comment.t()) :: User.t()
-  def get_author(%Comment{} = comment) do
+  @spec author(Comment.t()) :: User.t()
+  def author(%Comment{} = comment) do
     comment
     |> Comment.preload_author()
-    |> Map.get(:author)
+    |> Map.fetch!(:author)
   end
 
   @doc """
-  Gets the parent of a comment.
+  Returns the parent of a comment.
   """
-  @spec get_parent(Comment.t()) :: User.t()
-  def get_parent(%Comment{} = comment) do
+  @spec parent(Comment.t()) :: User.t()
+  def parent(%Comment{} = comment) do
     comment
     |> Comment.preload_parent()
-    |> Map.get(:parent)
+    |> Map.fetch!(:parent)
   end
 
   @doc """
@@ -85,15 +85,15 @@ defmodule Margaret.Comments do
 
   ## Examples
 
-      iex> get_comment_count([story: %Story{}])
+      iex> comment_count([story: %Story{}])
       815
 
-      iex> get_comment_count([comment: %Comment{}])
+      iex> comment_count([comment: %Comment{}])
       42
 
   """
-  @spec get_comment_count(Keyword.t()) :: non_neg_integer()
-  def get_comment_count(clauses) do
+  @spec comment_count(Keyword.t()) :: non_neg_integer()
+  def comment_count(clauses) do
     query =
       clauses
       |> get_commentable_from_clauses()
@@ -123,7 +123,7 @@ defmodule Margaret.Comments do
   @spec can_see_comment?(Comment.t(), User.t()) :: boolean
   def can_see_comment?(%Comment{} = comment, %User{} = user) do
     comment
-    |> get_story()
+    |> story()
     |> Stories.can_see_story?(user)
   end
 

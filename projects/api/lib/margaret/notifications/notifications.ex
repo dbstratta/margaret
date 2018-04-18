@@ -39,15 +39,15 @@ defmodule Margaret.Notifications do
 
   ## Examples
 
-      iex> get_actor(%Notification{})
+      iex> actor(%Notification{})
       %User{}
 
-      iex> get_actor(%Notification{})
+      iex> actor(%Notification{})
       nil
 
   """
-  @spec get_actor(Notification.t()) :: User.t() | nil
-  def get_actor(%Notification{} = notification) do
+  @spec actor(Notification.t()) :: User.t() | nil
+  def actor(%Notification{} = notification) do
     notification
     |> Notification.preload_actor()
     |> Map.get(:actor)
@@ -58,35 +58,35 @@ defmodule Margaret.Notifications do
 
   ## Examples
 
-      iex> get_object(%Notification{})
+      iex> object(%Notification{})
       %Story{}
 
-      iex> get_object(%Notification{})
+      iex> object(%Notification{})
       %Publication{}
 
   """
-  @spec get_object(Notification.t()) :: notification_object
-  def get_object(%Notification{story_id: story_id} = notification) when not is_nil(story_id) do
+  @spec object(Notification.t()) :: notification_object
+  def object(%Notification{story_id: story_id} = notification) when not is_nil(story_id) do
     notification
     |> Notification.preload_story()
     |> Map.get(:story)
   end
 
-  def get_object(%Notification{comment_id: comment_id} = notification)
+  def object(%Notification{comment_id: comment_id} = notification)
       when not is_nil(comment_id) do
     notification
     |> Notification.preload_comment()
     |> Map.get(:comment)
   end
 
-  def get_object(%Notification{publication_id: publication_id} = notification)
+  def object(%Notification{publication_id: publication_id} = notification)
       when not is_nil(publication_id) do
     notification
     |> Notification.preload_publication()
     |> Map.get(:publication)
   end
 
-  def get_object(%Notification{user_id: user_id} = notification) when not is_nil(user_id) do
+  def object(%Notification{user_id: user_id} = notification) when not is_nil(user_id) do
     notification
     |> Notification.preload_user()
     |> Map.get(:user)
@@ -216,13 +216,13 @@ defmodule Margaret.Notifications do
   @doc """
   Gets the notificatino count of a user.
   """
-  @spec get_notification_count(User.t()) :: non_neg_integer
-  def get_notification_count(%User{} = user) do
+  @spec notification_count(User.t()) :: non_neg_integer
+  def notification_count(%User{} = user) do
     query =
       Notification
       |> join(:inner, [n], un in assoc(n, :user_notifications))
       |> UserNotification.by_user(user)
 
-    Repo.aggregate(query, :count, :id)
+    Repo.count(query)
   end
 end

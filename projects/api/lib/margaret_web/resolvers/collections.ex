@@ -26,7 +26,7 @@ defmodule MargaretWeb.Resolvers.Collections do
   """
   def resolve_author(collection, _, _) do
     collection
-    |> Collections.get_author()
+    |> Collections.author()
     |> ok()
   end
 
@@ -38,7 +38,7 @@ defmodule MargaretWeb.Resolvers.Collections do
   Resolves the publication of the collection.
   """
   def resolve_publication(collection, _, _) do
-    publication = Collections.get_publication(collection)
+    publication = Collections.publication(collection)
 
     {:ok, publication}
   end
@@ -48,7 +48,7 @@ defmodule MargaretWeb.Resolvers.Collections do
   """
   def resolve_tags(collection, _, _) do
     collection
-    |> Collections.get_tags()
+    |> Collections.tags()
     |> ok()
   end
 

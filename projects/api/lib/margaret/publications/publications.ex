@@ -62,11 +62,11 @@ defmodule Margaret.Publications do
 
   @doc """
   """
-  @spec get_tags(Publication.t()) :: [Tag.t()]
-  def get_tags(%Publication{} = publication) do
+  @spec tags(Publication.t()) :: [Tag.t()]
+  def tags(%Publication{} = publication) do
     publication
     |> Publication.preload_tags()
-    |> Map.get(:tags)
+    |> Map.fetch!(:tags)
   end
 
   @doc """
@@ -75,15 +75,15 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-      iex> get_member_role(%Publication{}, %User{})
+      iex> member_role(%Publication{}, %User{})
       :owner
 
-      iex> get_member_role(%Publication{}, %User{})
+      iex> member_role(%Publication{}, %User{})
       nil
 
   """
-  @spec get_member_role(Publication.t(), User.t()) :: role() | nil
-  def get_member_role(%Publication{id: publication_id}, %User{id: user_id}) do
+  @spec member_role(Publication.t(), User.t()) :: role() | nil
+  def member_role(%Publication{id: publication_id}, %User{id: user_id}) do
     case get_membership(publication_id: publication_id, member_id: user_id) do
       %PublicationMembership{role: role} -> role
       nil -> nil
@@ -95,22 +95,22 @@ defmodule Margaret.Publications do
 
   ## Examples
 
-    iex> get_member_count(%Publication{})
+    iex> member_count(%Publication{})
     3
 
   """
-  @spec get_member_count(Publication.t()) :: non_neg_integer()
-  def get_member_count(%Publication{} = publication) do
+  @spec member_count(Publication.t()) :: non_neg_integer()
+  def member_count(%Publication{} = publication) do
     query = PublicationMembership.by_publication(publication)
 
-    Repo.aggregate(query, :count, :id)
+    Repo.count(query)
   end
 
   @doc """
   Returns the story count of the publication.
   """
-  @spec get_story_count(Publication.t(), Keyword.t()) :: non_neg_integer()
-  def get_story_count(%Publication{} = publication, opts \\ []) do
+  @spec story_count(Publication.t(), Keyword.t()) :: non_neg_integer()
+  def story_count(%Publication{} = publication, opts \\ []) do
     query = Story.under_publication(publication)
 
     query =
@@ -126,9 +126,9 @@ defmodule Margaret.Publications do
   @doc """
   Gets the follower count of a publication.
   """
-  @spec get_follower_count(Publication.t()) :: non_neg_integer()
-  def get_follower_count(%Publication{} = publication),
-    do: Follows.get_follower_count(publication: publication)
+  @spec follower_count(Publication.t()) :: non_neg_integer()
+  def follower_count(%Publication{} = publication),
+    do: Follows.follower_count(publication: publication)
 
   @doc """
   Checks that the user's role in the publication
@@ -145,10 +145,10 @@ defmodule Margaret.Publications do
   """
   @spec check_role(Publication.t(), User.t(), [role(), ...] | role()) :: boolean()
   def check_role(publication, user, permitted_roles) when is_list(permitted_roles) do
-    get_member_role(publication, user) in permitted_roles
+    member_role(publication, user) in permitted_roles
   end
 
-  def check_role(publication, user, role), do: get_member_role(publication, user) === role
+  def check_role(publication, user, role), do: member_role(publication, user) === role
 
   @doc """
   Returns true if the user is a member
@@ -164,7 +164,7 @@ defmodule Margaret.Publications do
 
   """
   @spec member?(Publication.t(), User.t()) :: boolean()
-  def member?(publication, user), do: !!get_member_role(publication, user)
+  def member?(publication, user), do: !!member_role(publication, user)
 
   @doc """
   Returns true if the user is a editor
@@ -370,7 +370,7 @@ defmodule Margaret.Publications do
   """
   @spec can_kick?(Publication.t(), User.t(), User.t()) :: boolean()
   def can_kick?(publication, kicker, user) do
-    case get_member_role(publication, user) do
+    case member_role(publication, user) do
       nil -> false
       :owner -> false
       :admin -> check_role(publication, kicker, ~w(owner)a)
@@ -524,8 +524,8 @@ defmodule Margaret.Publications do
   @doc """
   Gets the owner of the publication.
   """
-  @spec get_owner(Publication.t()) :: User.t()
-  def get_owner(%Publication{} = publication) do
+  @spec owner(Publication.t()) :: User.t()
+  def owner(%Publication{} = publication) do
     query =
       User
       |> join(:inner, [u], pm in assoc(u, :publication_memberships))

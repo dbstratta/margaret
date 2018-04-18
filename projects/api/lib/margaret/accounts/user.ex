@@ -195,6 +195,17 @@ defmodule Margaret.Accounts.User do
   @spec employee(Ecto.Queryable.t()) :: Ecto.Query.t()
   def employee(query \\ User), do: where(query, [..., u], u.is_employee)
 
+  def followers(query \\ User, %User{id: user_id}, opts \\ []) do
+    from(
+      u in query,
+      join: f in Follow,
+      on: f.follower_id == u.id,
+      where: is_nil(u.deactivated_at),
+      where: f.user_id == ^user_id,
+      select: {u, %{followed_at: f.inserted_at}}
+    )
+  end
+
   @doc """
   Preloads the social logins of a user.
   """
@@ -212,6 +223,7 @@ defmodule Margaret.Accounts.User do
       #Ecto.Query<...>
 
   """
+  @spec new_story_notifications_enabled(any()) :: Macro.t()
   defmacro new_story_notifications_enabled(settings) do
     quote do
       fragment("(?->'notifications'->>'new_stories')::boolean = true", unquote(settings))
