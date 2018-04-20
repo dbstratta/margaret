@@ -15,7 +15,8 @@ defmodule Margaret.Notifications.Notification do
     Notifications.UserNotification,
     Stories.Story,
     Publications.Publication,
-    Comments.Comment
+    Comments.Comment,
+    Helpers
   }
 
   @type t :: %Notification{}
@@ -72,7 +73,7 @@ defmodule Margaret.Notifications.Notification do
     |> assoc_constraint(:publication)
     |> assoc_constraint(:user)
     |> check_constraint(:action, name: :only_one_not_null_object)
-    |> maybe_put_notified_users(attrs)
+    |> maybe_put_notified_users_assoc(attrs)
     |> validate_action()
   end
 
@@ -82,11 +83,9 @@ defmodule Margaret.Notifications.Notification do
     changeset
   end
 
-  defp maybe_put_notified_users(%Ecto.Changeset{} = changeset, %{notified_users: notified_users}) do
-    put_assoc(changeset, :notified_users, notified_users)
-  end
-
-  defp maybe_put_notified_users(%Ecto.Changeset{} = changeset, _attrs), do: changeset
+  @spec maybe_put_notified_users_assoc(Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
+  defp maybe_put_notified_users_assoc(%Ecto.Changeset{} = changeset, attrs),
+    do: Helpers.maybe_put_assoc(changeset, attrs, key: :notified_users)
 
   @doc """
   Filters the notifications by actor.

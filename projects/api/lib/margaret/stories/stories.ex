@@ -15,6 +15,7 @@ defmodule Margaret.Stories do
     Publications,
     Collections,
     Follows,
+    Notifications,
     Tags
   }
 
@@ -22,6 +23,7 @@ defmodule Margaret.Stories do
   alias Stories.Story
   alias Collections.Collection
   alias Follows.Follow
+  alias Notifications.Notification
 
   import User
 
@@ -539,16 +541,32 @@ defmodule Margaret.Stories do
   Notifies the followers of the author or publication if
   the story is in one that there's a new story.
   """
-  @spec maybe_notify_users_of_new_story(Multi.t(), map()) :: Multi.t()
+  @spec maybe_notify_users_of_new_story(Multi.t(), Story.t(), map()) :: Multi.t()
   def maybe_notify_users_of_new_story(multi, story \\ nil, attrs)
 
-  def maybe_notify_users_of_new_story(multi, nil, _attrs) do
-    # TODO:
-    notify_users_fn = fn %{story: story} ->
-      followers = get_notifiable_users_of_new_story(story)
-    end
+  def maybe_notify_users_of_new_story(multi, nil, %{published_at: published_at}) do
+    # If it is a new story and it is inteded to be published now.
+    case NaiveDateTime.compare(published_at, NaiveDateTime.utc_now()) do
+      :lt ->
+        notify_users_fn = fn %{story: story} ->
+          notified_users = get_notifiable_users_of_new_story(story)
 
-    Multi.run(multi, :notify_users_of_new_story, notify_users_fn)
+          notification_attrs = %{
+            actor_id: story.author_id,
+            action: "added",
+            story_id: story.id,
+            notified_users: notified_users
+          }
+
+          Notifications.insert_notification(notification_attrs)
+        end
+
+        Multi.run(multi, :notify_users_of_new_story, notify_users_fn)
+
+      # It's not intended to be published now. So we don't notify anyone.
+      _ ->
+        multi
+    end
   end
 
   def maybe_notify_users_of_new_story(multi, %Story{} = story, attrs) do

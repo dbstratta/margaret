@@ -214,6 +214,26 @@ defmodule Margaret.Notifications do
   end
 
   @doc """
+  Marks as read a user notification
+
+  ## Examples
+
+      iex> read(%UserNotification{})
+      {:ok, %UserNotification{}}
+
+  """
+  @spec read(UserNotification.t()) :: {:ok, UserNotification.t()} | {:error, Ecto.Changeset.t()}
+  def read(%UserNotification{} = user_notification) do
+    update_user_notification(user_notification, %{read_at: NaiveDateTime.utc_now()})
+  end
+
+  defp update_user_notification(%UserNotification{} = user_notification, attrs) do
+    user_notification
+    |> UserNotification.update_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
   Gets the notificatino count of a user.
   """
   @spec notification_count(User.t()) :: non_neg_integer
