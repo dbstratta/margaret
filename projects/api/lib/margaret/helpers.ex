@@ -1,7 +1,7 @@
 defmodule Margaret.Helpers do
   @moduledoc false
 
-  import Ecto.Changeset
+  import Ecto.{Query, Changeset}
 
   @doc """
   """
@@ -65,4 +65,20 @@ defmodule Margaret.Helpers do
   end
 
   def validate_draftjs_data(field, _data), do: [{field, "invalid data"}]
+
+  @doc """
+  """
+  defmacro lower(a) do
+    quote do
+      fragment("lower(?)", unquote(a))
+    end
+  end
+
+  @doc """
+  """
+  defmacro upper(a) do
+    quote do
+      fragment("upper(?)", unquote(a))
+    end
+  end
 end

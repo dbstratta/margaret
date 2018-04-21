@@ -16,7 +16,8 @@ defmodule Margaret.Stories do
     Collections,
     Follows,
     Notifications,
-    Tags
+    Tags,
+    Workers
   }
 
   alias Accounts.User
@@ -592,17 +593,10 @@ defmodule Margaret.Stories do
 
             Multi.run(multi, :notify_users_of_new_story, notify_users_fn)
 
+          # If the date of publication is in the future, enqueue
+          # a notification to be inserted at that time.
           :gt ->
-            schedule_notification = fn _ ->
-              time = attrs.published_at
-
-              Exq.enqueue_at(Exq, "new_story", time, Margaret.Workers.Notifications, [
-                story.id,
-                to_string(time)
-              ])
-            end
-
-            Multi.run(multi, :schedule_notification_of_new_story, schedule_notification)
+            Workers.Notifications.NewStory.enqueue_notification(multi)
         end
 
       true ->
@@ -622,6 +616,12 @@ defmodule Margaret.Stories do
 
   @doc """
   Deletes a story.
+
+  ## Examples
+
+      iex> delete_story(%Story{})
+      {:ok, %Story{}}
+
   """
   @spec delete_story(Story.t()) :: {:ok, Story.t()} | {:error, Ecto.Changeset.t()}
   def delete_story(%Story{} = story), do: Repo.delete(story)
