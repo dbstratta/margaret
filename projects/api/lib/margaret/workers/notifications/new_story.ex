@@ -13,7 +13,7 @@ defmodule Margaret.Workers.Notifications.NewStory do
     with %Story{published_at: published_at} = story <- Stories.get_story(story_id),
          actual_timestamp = from_naive_to_unix!(published_at),
          true <- actual_timestamp === timestamp,
-         _notifiable_users = Stories.get_notifiable_users_of_new_story(story) do
+         _notifiable_users = Stories.notifiable_users_of_new_story(story) do
       {:ok, 3}
     else
       _ -> {:error, ""}
