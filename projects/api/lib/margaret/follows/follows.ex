@@ -11,6 +11,7 @@ defmodule Margaret.Follows do
     Accounts,
     Follows,
     Publications,
+    Notifications,
     Workers
   }
 
@@ -43,6 +44,12 @@ defmodule Margaret.Follows do
 
   @spec get_follow(Keyword.t()) :: Follow.t() | nil
   def get_follow(clauses) when length(clauses) == 2, do: Repo.get_by(Follow, clauses)
+
+  def followable(%Follow{user_id: user_id} = follow) when not is_nil(user_id) do
+    follow
+    |> Follow.preload_user()
+    |> Map.fetch!(:user)
+  end
 
   @doc """
   Gets all the followers of a followee.
@@ -154,22 +161,50 @@ defmodule Margaret.Follows do
   @doc """
   Inserts a follow.
   """
-  def insert_follow(%{follower_id: follower_id} = attrs) do
+  def insert_follow(attrs) do
     follow_changeset = Follow.changeset(attrs)
-
-    notification_attrs =
-      attrs
-      |> case do
-        %{user_id: user_id} -> %{user_id: user_id}
-        %{publication_id: publication_id} -> %{publication_id: publication_id}
-      end
-      |> Map.put(:actor_id, follower_id)
-      |> Map.put(:action, :followed)
 
     Multi.new()
     |> Multi.insert(:follow, follow_changeset)
-    |> Workers.Notifications.enqueue_notification_insertion(notification_attrs)
+    |> notify_followee_of_follow()
     |> Repo.transaction()
+  end
+
+  # If the followee is an user, it notifies that user.
+  # If it's a publication, it notifies the owner of
+  # that publication.
+  @spec notify_followee_of_follow(Multi.t()) :: Multi.t()
+  defp notify_followee_of_follow(multi) do
+    insert_notification = fn %{follow: follow} ->
+      followable = followable(follow)
+
+      followee =
+        case followable do
+          %User{} = user -> user
+          %Publication{} = publication -> Publications.owner(publication)
+        end
+
+      notified_users = [followee]
+
+      notification_attrs =
+        followable
+        |> case do
+          %User{id: user_id} -> %{user_id: user_id}
+          %Publication{id: publication_id} -> %{publication_id: publication_id}
+        end
+        |> Map.merge(%{
+          actor_id: follow.follower_id,
+          action: "followed",
+          notified_users: notified_users
+        })
+
+      case Notifications.insert_notification(notification_attrs) do
+        {:ok, %{notification: notification}} -> {:ok, notification}
+        {:error, _, reason, _} -> {:error, reason}
+      end
+    end
+
+    Multi.run(multi, :notification, insert_notification)
   end
 
   @doc """

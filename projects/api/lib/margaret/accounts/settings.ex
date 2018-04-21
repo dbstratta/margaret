@@ -60,6 +60,9 @@ defmodule Margaret.Accounts.Settings.Notifications do
   @primary_key false
   embedded_schema do
     field(:new_stories, :boolean, default: true)
+
+    field(:starred_story, :boolean, default: true)
+    field(:starred_comment, :boolean, default: false)
   end
 
   @doc """
@@ -69,6 +72,8 @@ defmodule Margaret.Accounts.Settings.Notifications do
   def changeset(notifications, attrs) do
     permitted_attrs = ~w(
       new_stories
+      starred_story
+      starred_comment
     )a
 
     notifications

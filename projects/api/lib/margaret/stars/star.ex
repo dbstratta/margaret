@@ -78,6 +78,18 @@ defmodule Margaret.Stars.Star do
   @doc """
   Preloads the user of a star.
   """
-  @spec preload_user(t) :: t
+  @spec preload_user(t()) :: t()
   def preload_user(%Star{} = star), do: Repo.preload(star, :user)
+
+  @doc """
+  Preloads the story of a star.
+  """
+  @spec preload_story(t()) :: t()
+  def preload_story(%Star{} = star), do: Repo.preload(star, :story)
+
+  @doc """
+  Preloads the comment of a star.
+  """
+  @spec preload_story(t()) :: t()
+  def preload_comment(%Star{} = star), do: Repo.preload(star, :comment)
 end

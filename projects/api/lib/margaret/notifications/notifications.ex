@@ -114,103 +114,15 @@ defmodule Margaret.Notifications do
   @spec insert_notification(any) :: {:ok, any} | {:error, any, any, any}
   def insert_notification(attrs) do
     Multi.new()
-    |> notify_users(attrs)
     |> insert_notification(attrs)
     |> Repo.transaction()
   end
 
-  defp notify_users(multi, %{story_id: story_id, action: :starred}) do
-    notified_users_fn = fn _ ->
-      query =
-        from(
-          u in User,
-          join: s in assoc(u, :stories),
-          where: s.id == ^story_id
-        )
-
-      case Repo.one(query) do
-        %User{} = user -> {:ok, [user]}
-        nil -> {:error, nil}
-      end
-    end
-
-    do_notify_users(multi, notified_users_fn)
-  end
-
-  defp notify_users(multi, %{comment_id: comment_id, action: :starred}) do
-    notified_users_fn = fn _ ->
-      query =
-        from(
-          u in User,
-          join: c in assoc(u, :comments),
-          where: c.id == ^comment_id
-        )
-
-      case Repo.one(query) do
-        %User{} = user -> {:ok, [user]}
-        nil -> {:error, nil}
-      end
-    end
-
-    do_notify_users(multi, notified_users_fn)
-  end
-
-  defp notify_users(multi, %{user_id: user_id, action: :followed}) do
-    notified_users_fn = fn _ ->
-      case Accounts.get_user(user_id) do
-        %User{} = user -> {:ok, [user]}
-        nil -> {:error, nil}
-      end
-    end
-
-    do_notify_users(multi, notified_users_fn)
-  end
-
-  defp notify_users(multi, %{actor_id: author_id, story_id: story_id, action: :added}) do
-    notification_object_fn = fn _ ->
-      case Stories.get_story(story_id) do
-        %Story{} = story -> {:ok, story}
-        nil -> {:error, nil}
-      end
-    end
-
-    notified_users_fn = fn %{notification_object: %Story{publication_id: publication_id}} ->
-      query =
-        from(
-          u in User,
-          join: f in assoc(u, :followers),
-          where: f.user_id == ^author_id
-        )
-
-      query =
-        if not is_nil(publication_id) do
-          or_where(query, [user, follow], follow.publication == ^publication_id)
-        else
-          query
-        end
-
-      users = Repo.all(query)
-
-      {:ok, users}
-    end
-
-    # Get the story inside the transaction before notifying users.
-    multi
-    |> Multi.run(:notification_object, notification_object_fn)
-    |> do_notify_users(notified_users_fn)
-  end
-
-  defp do_notify_users(multi, cb), do: Multi.run(multi, :notified_users, cb)
-
+  @spec insert_notification(Multi.t(), map()) :: Multi.t()
   defp insert_notification(multi, attrs) do
-    insert_notification_fn = fn %{notified_users: notified_users} ->
-      attrs
-      |> Map.put(:notified_users, notified_users)
-      |> Notification.changeset()
-      |> Repo.insert()
-    end
+    notification_changeset = Notification.changeset(attrs)
 
-    Multi.run(multi, :notification, insert_notification_fn)
+    Multi.insert(multi, :notification, notification_changeset)
   end
 
   @doc """

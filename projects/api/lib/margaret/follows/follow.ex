@@ -82,7 +82,7 @@ defmodule Margaret.Follows.Follow do
   def by_followee(query, %User{} = user), do: by_user(query, user)
   def by_followee(query, %Publication{} = publication), do: by_publication(query, publication)
 
-  def followees(query \\ Follow, %User{} = user, opts \\ []) do
+  def followees(query \\ Follow, %User{} = user, _opts \\ []) do
     query
     |> Follow.by_follower(user)
     |> join(:left, [f], u in assoc(f, :user))
@@ -96,4 +96,16 @@ defmodule Margaret.Follows.Follow do
   """
   @spec preload_follower(t()) :: t()
   def preload_follower(%Follow{} = follow), do: Repo.preload(follow, :follower)
+
+  @doc """
+  Preloads the user of a follow.
+  """
+  @spec preload_user(t()) :: t()
+  def preload_user(%Follow{} = follow), do: Repo.preload(follow, :user)
+
+  @doc """
+  Preloads the publication of a follow.
+  """
+  @spec preload_publication(t()) :: t()
+  def preload_publication(%Follow{} = follow), do: Repo.preload(follow, :publication)
 end

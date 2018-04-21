@@ -12,6 +12,7 @@ defmodule Margaret.Stars do
     Stories,
     Comments,
     Stars,
+    Notifications,
     Workers
   }
 
@@ -36,6 +37,31 @@ defmodule Margaret.Stars do
   """
   @spec get_star(Keyword.t()) :: Star.t() | nil
   def get_star(clauses) when length(clauses) == 2, do: Repo.get_by(Star, clauses)
+
+  @doc """
+  Returns the starrable of the star.
+
+  ## Examples
+
+      iex> starrable(%Star{})
+      %Story{}
+
+      iex> starrable(%Star{})
+      %Comment{}
+
+  """
+  @spec starrable(Star.t()) :: Story.t() | Comment.t()
+  def starrable(%Star{story_id: story_id} = star) when not is_nil(story_id) do
+    star
+    |> Star.preload_story()
+    |> Map.fetch!(:story)
+  end
+
+  def starrable(%Star{comment_id: comment_id} = star) when not is_nil(comment_id) do
+    star
+    |> Star.preload_comment()
+    |> Map.fetch!(:comment)
+  end
 
   @doc """
   Returns `true` if the user has starred the starrable.
@@ -69,22 +95,48 @@ defmodule Margaret.Stars do
   @doc """
   Inserts a star.
   """
-  def insert_star(%{user_id: user_id} = attrs) do
+  @spec insert_star(map()) :: any()
+  def insert_star(attrs) do
     star_changeset = Star.changeset(attrs)
-
-    notification_attrs =
-      attrs
-      |> case do
-        %{story_id: story_id} -> %{story_id: story_id}
-        %{comment_id: comment_id} -> %{comment_id: comment_id}
-      end
-      |> Map.put(:actor_id, user_id)
-      |> Map.put(:action, :starred)
 
     Multi.new()
     |> Multi.insert(:star, star_changeset)
-    |> Workers.Notifications.enqueue_notification_insertion(notification_attrs)
+    |> notify_author_of_starrable()
     |> Repo.transaction()
+  end
+
+  @spec notify_author_of_starrable(Multi.t()) :: Multi.t()
+  defp notify_author_of_starrable(multi) do
+    insert_notification = fn %{star: star} ->
+      starrable = starrable(star)
+
+      author =
+        case starrable do
+          %Story{} = story -> Stories.author(story)
+          %Comment{} = comment -> Comments.author(comment)
+        end
+
+      notified_users = [author]
+
+      notification_attrs =
+        starrable
+        |> case do
+          %Story{id: story_id} -> %{story_id: story_id}
+          %Comment{id: comment_id} -> %{comment_id: comment_id}
+        end
+        |> Map.merge(%{
+          actor_id: author.id,
+          action: "starred",
+          notified_users: notified_users
+        })
+
+      case Notifications.insert_notification(notification_attrs) do
+        {:ok, %{notification: notification}} -> {:ok, notification}
+        {:error, _, reason, _} -> {:error, reason}
+      end
+    end
+
+    Multi.run(multi, :notification, insert_notification)
   end
 
   @doc """

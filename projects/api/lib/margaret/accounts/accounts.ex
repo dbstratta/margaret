@@ -198,6 +198,21 @@ defmodule Margaret.Accounts do
   def member?(%User{}), do: false
 
   @doc """
+  Returns `true` if the user has enabled notifications for
+  when one of their stories is starred.
+
+  ## Examples
+
+      iex> starred_story_notifications_enabled(%User{})
+      true
+
+  """
+  @spec starred_story_notifications_enabled?(User.t()) :: boolean()
+  def starred_story_notifications_enabled?(%User{settings: settings}) do
+    settings.notifications.starred_story
+  end
+
+  @doc """
   Inserts a user.
   TODO: Refactor to use Ecto.Multi and send email when creating user.
 

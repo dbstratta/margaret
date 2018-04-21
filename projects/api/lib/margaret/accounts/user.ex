@@ -195,7 +195,7 @@ defmodule Margaret.Accounts.User do
   @spec employee(Ecto.Queryable.t()) :: Ecto.Query.t()
   def employee(query \\ User), do: where(query, [..., u], u.is_employee)
 
-  def followers(query \\ User, %User{id: user_id}, opts \\ []) do
+  def followers(query \\ User, %User{id: user_id}, _opts \\ []) do
     from(
       u in query,
       join: f in Follow,
@@ -223,8 +223,8 @@ defmodule Margaret.Accounts.User do
       #Ecto.Query<...>
 
   """
-  @spec new_story_notifications_enabled(any()) :: Macro.t()
-  defmacro new_story_notifications_enabled(settings) do
+  @spec new_story_notifications_enabled?(any()) :: Macro.t()
+  defmacro new_story_notifications_enabled?(settings) do
     quote do
       fragment("(?->'notifications'->>'new_stories')::boolean = true", unquote(settings))
     end
