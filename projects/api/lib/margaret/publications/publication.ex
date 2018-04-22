@@ -4,6 +4,7 @@ defmodule Margaret.Publications.Publication do
   """
 
   use Ecto.Schema
+  use Arc.Ecto.Schema
   import Ecto.Changeset
 
   alias __MODULE__
@@ -23,7 +24,7 @@ defmodule Margaret.Publications.Publication do
     field(:name, :string)
     field(:display_name, :string)
 
-    field(:logo, :string)
+    field(:logo, Publication.Logo.Type)
     field(:description, :string)
 
     field(:email, :string)
@@ -64,6 +65,7 @@ defmodule Margaret.Publications.Publication do
 
     %Publication{}
     |> cast(attrs, permitted_attrs)
+    |> cast_attachments(attrs, [:logo])
     |> validate_required(required_attrs)
     |> maybe_put_name()
     |> validate_length(:name, min: 2, max: 64)
@@ -85,6 +87,7 @@ defmodule Margaret.Publications.Publication do
 
     publication
     |> cast(attrs, update_permitted_attrs)
+    |> cast_attachments(attrs, [:logo])
     |> maybe_put_name()
     |> validate_length(:name, min: 2, max: 64)
     |> unique_constraint(:name)

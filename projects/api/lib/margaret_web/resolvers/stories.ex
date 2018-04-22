@@ -250,7 +250,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   end
 
   defp do_resolve_update_story(true, story, attrs) do
-    attrs = maybe_update_published_at(attrs, story)
+    attrs = maybe_update_published_at(attrs)
 
     case Stories.update_story(story, attrs) do
       {:ok, %{story: story}} -> {:ok, %{story: story}}
@@ -260,25 +260,16 @@ defmodule MargaretWeb.Resolvers.Stories do
 
   defp do_resolve_update_story(false, _, _), do: Helpers.GraphQLErrors.unauthorized()
 
-  @spec maybe_update_published_at(map(), Story.t()) :: map()
-  defp maybe_update_published_at(attrs, story \\ nil)
-
-  defp maybe_update_published_at(%{publish_now: true} = attrs, nil) do
-    update_published_at(attrs)
-  end
-
-  defp maybe_update_published_at(%{publish_now: true} = attrs, %Story{published_at: nil}) do
-    update_published_at(attrs)
-  end
-
-  defp maybe_update_published_at(attrs, _story), do: attrs
-
-  @spec update_published_at(map()) :: map()
-  defp update_published_at(attrs) do
+  # If the key `publish_now` is present in the attributes,
+  # delete it and put `published_at` with the current time.
+  @spec maybe_update_published_at(map()) :: map()
+  defp maybe_update_published_at(%{publish_now: true} = attrs) do
     attrs
     |> Map.delete(:publish_now)
     |> Map.put(:published_at, NaiveDateTime.utc_now())
   end
+
+  defp maybe_update_published_at(attrs), do: attrs
 
   @doc """
   Resolves a story deletion.

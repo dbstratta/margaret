@@ -4,6 +4,7 @@ defmodule Margaret.Collections.Collection do
   """
 
   use Ecto.Schema
+  use Arc.Ecto.Schema
   import Ecto.{Changeset, Query}
 
   alias __MODULE__
@@ -23,7 +24,7 @@ defmodule Margaret.Collections.Collection do
   schema "collections" do
     field(:title, :string)
 
-    field(:image, :string)
+    field(:cover, Collection.Cover.Type)
     field(:subtitle, :string)
     field(:description, :string)
 
@@ -64,6 +65,7 @@ defmodule Margaret.Collections.Collection do
 
     %Collection{}
     |> cast(attrs, permitted_attrs)
+    |> cast_attachments(attrs, [:cover])
     |> validate_required(required_attrs)
     |> assoc_constraint(:author)
     |> assoc_constraint(:publication)
@@ -85,6 +87,7 @@ defmodule Margaret.Collections.Collection do
 
     collection
     |> cast(attrs, permitted_attrs)
+    |> cast_attachments(attrs, [:cover])
     |> assoc_constraint(:publication)
     |> Helpers.maybe_put_tags_assoc(attrs)
   end

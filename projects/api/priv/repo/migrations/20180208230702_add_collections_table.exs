@@ -8,7 +8,7 @@ defmodule Margaret.Repo.Migrations.AddCollectionsTable do
     create table(:collections) do
       add(:title, :string, null: false)
 
-      add(:image, :string)
+      add(:cover, :string)
       add(:subtitle, :string, null: false)
       add(:description, :string, size: 512)
 

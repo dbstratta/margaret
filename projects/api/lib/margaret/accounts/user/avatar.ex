@@ -1,4 +1,4 @@
-defmodule Margaret.Accounts.Avatar do
+defmodule Margaret.Accounts.User.Avatar do
   @moduledoc """
 
   """

@@ -113,8 +113,30 @@ defmodule Margaret.Stories.Story do
 
     story
     |> cast(attrs, permitted_attrs)
+    |> validate_published_at()
     |> assoc_constraint(:publication)
     |> Helpers.maybe_put_tags_assoc(attrs)
+  end
+
+  # After a story gets published, it cannot change its date of publication.
+  # We consider a story published when the `published_at` attribute
+  # is lesser than the current time.
+  @spec validate_published_at(Ecto.Changeset.t()) :: Ecto.Changeset.t()
+  defp validate_published_at(%Ecto.Changeset{data: %Story{published_at: nil}} = changeset) do
+    changeset
+  end
+
+  defp validate_published_at(%Ecto.Changeset{data: %Story{} = story} = changeset) do
+    with :lt <- NaiveDateTime.compare(story.published_at, NaiveDateTime.utc_now()),
+         {:ok, _} <- fetch_change(changeset, :published_at) do
+      add_error(
+        changeset,
+        :published_at,
+        "Cannot change publication date after the story has been published"
+      )
+    else
+      _ -> changeset
+    end
   end
 
   # Only put `unique_hash` in the changeset if the story is being created.
