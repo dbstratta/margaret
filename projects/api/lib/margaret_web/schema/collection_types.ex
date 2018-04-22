@@ -38,6 +38,9 @@ defmodule MargaretWeb.Schema.CollectionTypes do
       resolve(&Resolvers.Collections.resolve_author/3)
     end
 
+    @desc "The cover URL of the collection."
+    field(:cover, :string)
+
     @desc "The slug of the collection."
     field(:slug, non_null(:string))
 
@@ -91,6 +94,7 @@ defmodule MargaretWeb.Schema.CollectionTypes do
         field(:title, non_null(:string))
         field(:subtitle, non_null(:string))
         field(:description, :string)
+        field(:cover, :upload)
         field(:slug, :string)
 
         field(:publication_id, :id)
@@ -111,6 +115,7 @@ defmodule MargaretWeb.Schema.CollectionTypes do
         field(:collection_id, non_null(:id))
         field(:subtitle, :string)
         field(:description, :string)
+        field(:cover, :upload)
         field(:slug, :string)
 
         field(:publication_id, :id)

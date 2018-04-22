@@ -31,6 +31,7 @@ defmodule MargaretWeb.Schema do
   alias Middleware.{RequireAuthenticated, RequireActive, HandleChangesetErrors}
 
   import_types(Absinthe.Type.Custom)
+  import_types(Absinthe.Plug.Types)
 
   import_types(JSONTypes)
   import_types(NodeTypes)

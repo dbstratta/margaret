@@ -77,6 +77,11 @@ defmodule MargaretWeb.Schema.AccountTypes do
     field(:bio, :string)
 
     @desc """
+    The avatar URL of the user.
+    """
+    field(:avatar, :string)
+
+    @desc """
     The stories of the user.
     """
     connection field(:stories, node_type: :story) do
@@ -220,6 +225,7 @@ defmodule MargaretWeb.Schema.AccountTypes do
       input do
         field(:username, :string)
         field(:email, :string)
+        field(:avatar, :upload)
       end
 
       output do

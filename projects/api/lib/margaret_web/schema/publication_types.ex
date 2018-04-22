@@ -73,6 +73,9 @@ defmodule MargaretWeb.Schema.PublicationTypes do
     @desc "The display name of the publication."
     field(:display_name, non_null(:string))
 
+    @desc "The logo URL of the publication."
+    field(:logo, :string)
+
     field :owner, non_null(:user) do
       resolve(&Resolvers.Publications.resolve_owner/3)
     end
@@ -87,13 +90,12 @@ defmodule MargaretWeb.Schema.PublicationTypes do
       resolve(&Resolvers.Publications.resolve_stories/3)
     end
 
-    @desc """
-    The follower connection of the publication.
-    """
+    @desc "The follower connection of the publication."
     connection field(:followers, node_type: :user, connection: :follower) do
       resolve(&Resolvers.Publications.resolve_followers/3)
     end
 
+    @desc "The tags of the publication."
     field :tags, non_null(list_of(:tag)) do
       resolve(&Resolvers.Publications.resolve_tags/3)
     end
@@ -148,6 +150,7 @@ defmodule MargaretWeb.Schema.PublicationTypes do
       input do
         field(:name, :string)
         field(:display_name, non_null(:string))
+        field(:logo, :upload)
         field(:tags, list_of(:string))
       end
 
@@ -200,6 +203,7 @@ defmodule MargaretWeb.Schema.PublicationTypes do
         field(:publication_id, non_null(:id))
         field(:name, :string)
         field(:display_name, :string)
+        field(:logo, :upload)
         field(:tags, list_of(:string))
       end
 
