@@ -4406,9 +4406,9 @@ fill-range@^4.0.0:
     repeat-string "^1.6.1"
     to-regex-range "^2.1.0"
 
-final-form@4.5.2:
-  version "4.5.2"
-  resolved "https://registry.yarnpkg.com/final-form/-/final-form-4.5.2.tgz#f8a9518784bdc2f72e71548a42b04c640963ca49"
+final-form@4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/final-form/-/final-form-4.6.1.tgz#e3f3058524c2eb8b950be452087ffe124e39554d"
 
 finalhandler@1.1.0:
   version "1.1.0"
@@ -8468,9 +8468,9 @@ react-app-rewire-styled-components@3.0.2:
     babel-plugin-styled-components "^1.1.4"
     react-app-rewired "^1.2.0"
 
-react-app-rewired@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/react-app-rewired/-/react-app-rewired-1.5.0.tgz#8889d2f9ae8d8af16b340ca5424ffd5a07d23af2"
+react-app-rewired@1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/react-app-rewired/-/react-app-rewired-1.5.1.tgz#e5635636c82c3eb8fabcde7d6af80083abd598bb"
   dependencies:
     cross-spawn "^5.1.0"
     dotenv "^4.0.0"
@@ -8557,9 +8557,9 @@ react-error-overlay@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-4.0.0.tgz#d198408a85b4070937a98667f500c832f86bd5d4"
 
-react-final-form@3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/react-final-form/-/react-final-form-3.3.1.tgz#dbe40eec853a9c451e5a8deb3b02d948a2fb7e3c"
+react-final-form@3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/react-final-form/-/react-final-form-3.4.0.tgz#8ed2268d00bce5a1d328e75c1dee4ba18c023b24"
 
 react-fns@1.4.0:
   version "1.4.0"
