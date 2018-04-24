@@ -165,6 +165,70 @@ defmodule Margaret.FollowsTest do
     end
   end
 
+  describe "followable/1" do
+    test "returns the followable of a follow when the followable is a user" do
+      user = Factory.insert(:user)
+      follow = Factory.insert(:follow, user: user)
+
+      assert Follows.followable(follow) === user
+    end
+
+    test "returns the followable of a follow when the followable is a publication" do
+      publication = Factory.insert(:publication)
+      Factory.insert(:publication_membership, publication: publication, role: :owner)
+      follow = Factory.insert(:follow, publication: publication)
+
+      assert Follows.followable(follow) === publication
+    end
+  end
+
+  describe "has_followed?/1" do
+    test "returns true when the user has followed a user" do
+      [follower, user] = Factory.insert_pair(:user)
+      Factory.insert(:follow, follower: follower, user: user)
+
+      assert Follows.has_followed?(follower: follower, user: user)
+    end
+
+    test "returns false when the user hasn't followed a user" do
+      [follower, user] = Factory.insert_pair(:user)
+
+      refute Follows.has_followed?(follower: follower, user: user)
+    end
+
+    test "returns true when the user has followed a publication" do
+      follower = Factory.insert(:user)
+      publication = Factory.insert(:publication)
+      Factory.insert(:publication_membership, publication: publication, role: :owner)
+
+      Factory.insert(:follow, follower: follower, publication: publication)
+
+      assert Follows.has_followed?(follower: follower, publication: publication)
+    end
+
+    test "returns false when the user hasn't followed a publication" do
+      follower = Factory.insert(:user)
+      publication = Factory.insert(:publication)
+      Factory.insert(:publication_membership, publication: publication, role: :owner)
+
+      refute Follows.has_followed?(follower: follower, publication: publication)
+    end
+  end
+
+  describe "can_follow?/1" do
+    test "returns true when the follower isn't the same as the followee" do
+      [follower, user] = Factory.insert_pair(:user)
+
+      assert Follows.can_follow?(follower: follower, user: user)
+    end
+
+    test "returns false when the follower is the same as the followee" do
+      follower = Factory.insert(:user)
+
+      refute Follows.can_follow?(follower: follower, user: follower)
+    end
+  end
+
   describe "delete_follow/1" do
     test "deletes the follow when the follow exists" do
       [follower, user] = Factory.insert_pair(:user)

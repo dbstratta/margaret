@@ -11,8 +11,7 @@ defmodule Margaret.Follows do
     Accounts,
     Follows,
     Publications,
-    Notifications,
-    Workers
+    Notifications
   }
 
   alias Accounts.User
