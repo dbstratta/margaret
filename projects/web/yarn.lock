@@ -8468,9 +8468,9 @@ react-app-rewire-styled-components@3.0.2:
     babel-plugin-styled-components "^1.1.4"
     react-app-rewired "^1.2.0"
 
-react-app-rewired@1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/react-app-rewired/-/react-app-rewired-1.5.1.tgz#e5635636c82c3eb8fabcde7d6af80083abd598bb"
+react-app-rewired@1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/react-app-rewired/-/react-app-rewired-1.5.2.tgz#0f5cdbc92f47f166bb0bcadf8a5d00999b90f68f"
   dependencies:
     cross-spawn "^5.1.0"
     dotenv "^4.0.0"
