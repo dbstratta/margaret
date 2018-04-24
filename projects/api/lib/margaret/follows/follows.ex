@@ -51,6 +51,13 @@ defmodule Margaret.Follows do
     |> Map.fetch!(:user)
   end
 
+  def followable(%Follow{publication_id: publication_id} = follow)
+      when not is_nil(publication_id) do
+    follow
+    |> Follow.preload_publication()
+    |> Map.fetch!(:publication)
+  end
+
   @doc """
   Gets all the followers of a followee.
   """
@@ -72,9 +79,9 @@ defmodule Margaret.Follows do
   """
   @spec followee_count(User.t()) :: non_neg_integer()
   def followee_count(%User{} = user) do
-    query = Follow.by_follower(user)
-
-    Repo.aggregate(query, :count, :id)
+    user
+    |> Follow.by_follower()
+    |> Repo.count()
   end
 
   @doc """
@@ -82,10 +89,10 @@ defmodule Margaret.Follows do
 
   ## Examples
 
-    iex> follower_count([user: %User{}])
+    iex> follower_count(user: %User{})
     42
 
-    iex> follower_count([publication: %Publication{}])
+    iex> follower_count(publication: %Publication{})
     815
 
   """

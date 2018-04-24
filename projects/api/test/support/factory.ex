@@ -33,7 +33,7 @@ defmodule Margaret.Factory do
 
   def user_settings_factory do
     %Accounts.Settings{
-      notifications: build(:notification_settings)
+      notifications: params_for(:notification_settings)
     }
   end
 
@@ -80,7 +80,7 @@ defmodule Margaret.Factory do
       name: sequence(:name, &"publication-#{&1}"),
       display_name: sequence(:display_name, &"Publication #{&1}"),
       description: "Test publication.",
-      website: "https://margaret.test"
+      website: "https://example.com"
     }
   end
 

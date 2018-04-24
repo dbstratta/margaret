@@ -390,12 +390,6 @@ defmodule Margaret.Accounts do
   def delete_user(%User{} = user), do: Repo.delete(user)
 
   @doc """
-  Deletes a user.
-  """
-  @spec delete_user!(User.t()) :: User.t() | no_return()
-  def delete_user!(%User{} = user), do: Repo.delete!(user)
-
-  @doc """
   Marks a user for deletion.
 
   Enqueues a task that deletes the account and all its content

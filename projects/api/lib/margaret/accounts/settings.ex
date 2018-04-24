@@ -12,7 +12,7 @@ defmodule Margaret.Accounts.Settings do
 
   @primary_key false
   embedded_schema do
-    embeds_one(:notifications, Settings.Notifications)
+    embeds_one(:notifications, Settings.Notifications, on_replace: :update)
   end
 
   @doc """
@@ -20,8 +20,7 @@ defmodule Margaret.Accounts.Settings do
   """
   @spec changeset(t(), map()) :: Ecto.Changeset.t()
   def changeset(settings, attrs) do
-    permitted_attrs = ~w(
-    )a
+    permitted_attrs = ~w()a
 
     required_attrs = ~w()a
 

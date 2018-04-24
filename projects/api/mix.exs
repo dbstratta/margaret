@@ -1,4 +1,4 @@
-defmodule Margaret.Mixfile do
+defmodule Margaret.MixProject do
   use Mix.Project
 
   def project do

@@ -89,7 +89,7 @@ defmodule Margaret.Publications.PublicationMembership do
   Filters the publication memberships by owner.
   """
   @spec owner(Ecto.Queryable.t()) :: Ecto.Query.t()
-  def owner(query \\ PublicationMembership), do: where(query, [..., pm], pm.role == ^:role)
+  def owner(query \\ PublicationMembership), do: where(query, [..., pm], pm.role == ^:owner)
 
   @doc """
   Preloads the member of a publication_membership.
