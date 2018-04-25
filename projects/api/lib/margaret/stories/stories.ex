@@ -22,6 +22,7 @@ defmodule Margaret.Stories do
 
   alias Accounts.User
   alias Stories.Story
+  alias Publications.Publication
   alias Collections.Collection
   alias Follows.Follow
 
@@ -150,8 +151,6 @@ defmodule Margaret.Stories do
   """
   @spec summary(Story.t()) :: String.t()
   def summary(%Story{content: %{"blocks" => blocks}}) do
-    IO.inspect(blocks, label: "BLOCKS")
-
     case blocks do
       [_, %{"text" => summary} | _] -> summary
       _ -> ""
@@ -360,11 +359,14 @@ defmodule Margaret.Stories do
   def has_been_published?(%Story{published_at: nil}), do: false
 
   def has_been_published?(%Story{published_at: published_at}),
-    do: published_at <= NaiveDateTime.utc_now()
+    do: NaiveDateTime.compare(published_at, NaiveDateTime.utc_now()) === :lt
 
   @doc """
   Returns `true` if the story is public,
   `false` otherwise.
+
+  Public means that the story is visible by anyone
+  and it has been published.
 
   ## Examples
 
@@ -392,9 +394,11 @@ defmodule Margaret.Stories do
   @spec can_see_story?(Story.t(), User.t()) :: boolean()
   def can_see_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
 
-  def can_see_story?(%Story{publication_id: publication_id}, %User{id: user_id})
+  def can_see_story?(%Story{publication_id: publication_id}, %User{} = user)
       when not is_nil(publication_id) do
-    Publications.can_edit_stories?(publication_id, user_id)
+    publication_id
+    |> Publications.get_publication()
+    |> Publications.can_edit_stories?(user)
   end
 
   def can_see_story?(%Story{audience: :members} = story, %User{} = user) do
@@ -409,6 +413,12 @@ defmodule Margaret.Stories do
   @doc """
   Returns `true` if the user can update the story,
   `false` otherwise.
+
+  ## Examples
+
+      iex> can_update_story?(%Story{}, %User{})
+      true
+
   """
   @spec can_update_story?(Story.t(), User.t()) :: boolean()
   def can_update_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
@@ -458,7 +468,40 @@ defmodule Margaret.Stories do
 
   @spec insert_story(Multi.t(), map()) :: Multi.t()
   defp insert_story(multi, attrs) do
+    # Check that if the author wants to add the story under
+    # a publication, that they have permission to do so.
+    maybe_check_publication_permission = fn changeset ->
+      changeset
+      |> Ecto.Changeset.get_change(:publication_id)
+      |> case do
+        nil ->
+          changeset
+
+        publication_id ->
+          with %Publication{} = publication <- Publications.get_publication(publication_id),
+               author_id = Ecto.Changeset.get_change(changeset, :author_id),
+               %User{} = author <- Accounts.get_user(author_id),
+               true <- Publications.can_write_stories?(publication, author) do
+            changeset
+          else
+            # If it doesn't find something, we just let Ecto
+            # add the errors to the changeset.
+            nil ->
+              changeset
+
+            # If the user doesn't have permission to write stories
+            # under the publication.
+            false ->
+              Ecto.Changeset.add_error(changeset, :publiation, "Unauthorized")
+          end
+      end
+    end
+
     insert_story_fn = fn changes ->
+      # We have the list of tags from a previous step in
+      # the transaction, now we have to put that list in the attrs map.
+      # This is only if the author added tags to the story
+      # in the first place.
       maybe_put_tags = fn attrs ->
         case changes do
           %{tags: tags} -> Map.put(attrs, :tags, tags)
@@ -469,6 +512,7 @@ defmodule Margaret.Stories do
       attrs
       |> maybe_put_tags.()
       |> Story.changeset()
+      |> maybe_check_publication_permission.()
       |> Repo.insert()
     end
 
@@ -547,7 +591,10 @@ defmodule Margaret.Stories do
   @spec maybe_notify_users_of_new_story(Multi.t(), Story.t(), map()) :: Multi.t()
   defp maybe_notify_users_of_new_story(multi, story \\ nil, attrs)
 
-  defp maybe_notify_users_of_new_story(multi, nil, %{published_at: published_at}) do
+  defp maybe_notify_users_of_new_story(multi, nil, %{published_at: nil}), do: multi
+
+  defp maybe_notify_users_of_new_story(multi, nil, %{published_at: published_at})
+       when not is_nil(published_at) do
     # If it is a new story and it is inteded to be published now.
     case NaiveDateTime.compare(published_at, NaiveDateTime.utc_now()) do
       :lt ->

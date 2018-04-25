@@ -34,6 +34,8 @@ defmodule Margaret.Notifications do
   @spec get_notification(String.t() | non_neg_integer) :: Notification.t() | nil
   def get_notification(id), do: Repo.get(Notification, id)
 
+  def get_notification_by(clauses), do: Repo.get_by(Notification, clauses)
+
   @doc """
   Gets the actor of a notification.
 

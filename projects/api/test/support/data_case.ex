@@ -28,6 +28,7 @@ defmodule Margaret.DataCase do
         Stories,
         Comments,
         Publications,
+        Collections,
         Notifications,
         Follows,
         Stars,
@@ -40,6 +41,7 @@ defmodule Margaret.DataCase do
       alias Stories.Story
       alias Comments.Comment
       alias Publications.{Publication, PublicationInvitation, PublicationMembership}
+      alias Collections.{Collection, CollectionStory}
       alias Notifications.{Notification, UserNotification}
       alias Follows.Follow
       alias Stars.Star

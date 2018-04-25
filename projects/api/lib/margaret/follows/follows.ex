@@ -210,7 +210,7 @@ defmodule Margaret.Follows do
       end
     end
 
-    Multi.run(multi, :notification, insert_notification)
+    Multi.run(multi, :notification_of_follow, insert_notification)
   end
 
   @doc """

@@ -222,8 +222,8 @@ defmodule Margaret.Collections do
   @spec story_count(Collection.t()) :: non_neg_integer()
   def story_count(%Collection{} = collection) do
     collection
-    |> CollectionStory.by_collection(collection)
-    |> Repo.aggregate(:count, :id)
+    |> CollectionStory.by_collection()
+    |> Repo.count()
   end
 
   @doc """

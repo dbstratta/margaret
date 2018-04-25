@@ -88,6 +88,63 @@ defmodule Margaret.FollowsTest do
       attrs = %{follower_id: user_id, user_id: user_id}
       assert {:error, _, _, _} = Follows.insert_follow(attrs)
     end
+
+    test "notifies the followee when the followee is a user" do
+      [%User{id: follower_id}, %User{id: user_id}] = Factory.insert_pair(:user)
+
+      attrs = %{follower_id: follower_id, user_id: user_id}
+      assert {:ok, _} = Follows.insert_follow(attrs)
+
+      assert %Notification{
+               id: notification_id
+             } =
+               Notifications.get_notification_by(
+                 action: :followed,
+                 actor_id: follower_id,
+                 user_id: user_id
+               )
+
+      assert %UserNotification{} =
+               Notifications.get_user_notification(
+                 user_id: user_id,
+                 notification_id: notification_id
+               )
+    end
+
+    test "notifies the owner of the publication when the followee is a publication" do
+      [%User{id: follower_id}, publication_owner] = Factory.insert_pair(:user)
+      %Publication{id: publication_id} = publication = Factory.insert(:publication)
+
+      Factory.insert(
+        :publication_membership,
+        publication: publication,
+        member: publication_owner,
+        role: :owner
+      )
+
+      attrs = %{follower_id: follower_id, publication_id: publication_id}
+      assert {:ok, _} = Follows.insert_follow(attrs)
+
+      assert %Notification{} =
+               notification =
+               Notifications.get_notification_by(
+                 action: :followed,
+                 actor_id: follower_id,
+                 publication_id: publication_id
+               )
+
+      user_notification =
+        Notifications.get_user_notification(
+          user_id: publication_owner.id,
+          notification_id: notification.id
+        )
+
+      assert notification.action === :followed
+      assert notification.actor_id === follower_id
+      assert notification.publication_id === publication_id
+      assert user_notification.notification_id === notification.id
+      assert user_notification.user_id === publication_owner.id
+    end
   end
 
   describe "get_follow/1" do

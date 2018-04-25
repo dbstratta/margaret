@@ -10,6 +10,7 @@ defmodule Margaret.Factory do
     Stories,
     Comments,
     Publications,
+    Collections,
     Notifications,
     Stars,
     Bookmarks,
@@ -21,6 +22,7 @@ defmodule Margaret.Factory do
   alias Stories.Story
   alias Comments.Comment
   alias Publications.{Publication, PublicationInvitation, PublicationMembership}
+  alias Collections.{Collection, CollectionStory}
   alias Notifications.{Notification, UserNotification}
   alias Stars.Star
   alias Bookmarks.Bookmark
@@ -61,7 +63,7 @@ defmodule Margaret.Factory do
     %Story{
       content: %{"blocks" => [%{"text" => "test"}]},
       author: build(:user),
-      unique_hash: sequence(:unique_hash, &"unique_hash-#{&1}"),
+      unique_hash: sequence(:unique_hash, &"abc#{&1}"),
       audience: :all,
       license: :all_rights_reserved
     }
@@ -99,6 +101,23 @@ defmodule Margaret.Factory do
       role: :writer,
       member: build(:user),
       publication: build(:publication)
+    }
+  end
+
+  def collection_factory do
+    %Collection{
+      title: sequence(:title, &"Collection #{&1}"),
+      subtitle: "Collection subtitle",
+      slug: sequence(:slug, &"collection-slug-#{&1}"),
+      author: build(:user)
+    }
+  end
+
+  def collection_story_factory do
+    %CollectionStory{
+      collection: build(:collection),
+      story: build(:story),
+      part: 1
     }
   end
 

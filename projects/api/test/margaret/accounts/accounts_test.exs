@@ -258,7 +258,7 @@ defmodule Margaret.AccountsTest do
       end
     end
 
-    test "" do
+    test "doesn't return deactivated users by default" do
       %User{} = user = Factory.insert(:user, deactivated_at: NaiveDateTime.utc_now())
       %SocialLogin{provider: provider, uid: uid} = Factory.insert(:social_login, user: user)
 
