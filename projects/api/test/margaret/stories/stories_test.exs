@@ -297,6 +297,7 @@ defmodule Margaret.StoriesTest do
     test """
     returns true when the story is in a publication and
     the user is an editor, admin, or owner of that publication
+    but the user isn't the author of the story
     """ do
       publication_editor = Factory.insert(:user)
       publication_admin = Factory.insert(:user)
@@ -371,6 +372,11 @@ defmodule Margaret.StoriesTest do
     test "inserts the tags if they don't exist already" do
       %User{id: author_id} = Factory.insert(:user)
       tag_titles = ["test", "elixir", "phoenix", "margaret"]
+
+      # Make sure that the tags didn't exist before.
+      Enum.each(tag_titles, fn tag_title ->
+        assert is_nil(Tags.get_tag_by_title(tag_title))
+      end)
 
       attrs =
         @valid_attrs
@@ -556,6 +562,143 @@ defmodule Margaret.StoriesTest do
         |> Map.put(:publication_id, publication.id)
 
       assert {:error, _, _, _} = Stories.insert_story(attrs)
+    end
+  end
+
+  describe "update_story/2" do
+    test "updates the story when the attributes are valid" do
+      story = Factory.insert(:story, audience: :unlisted)
+
+      attrs = %{audience: :all}
+
+      assert {:ok, %{story: %Story{}}} = Stories.update_story(story, attrs)
+      updated_story = Stories.get_story(story.id)
+
+      assert updated_story.audience === attrs.audience
+    end
+
+    test "doesn't update the story when the attributes are invalid" do
+      story = Factory.insert(:story, audience: :unlisted)
+
+      attrs = %{audience: :invalid_attr}
+
+      assert {:error, _, _, _} = Stories.update_story(story, attrs)
+    end
+
+    test "inserts the tags if they don't exist already" do
+      story = Factory.insert(:story, tags: [])
+      tag_titles = ["test", "elixir", "phoenix", "margaret"]
+
+      # Make sure that the tags didn't exist before.
+      Enum.each(tag_titles, fn tag_title ->
+        assert is_nil(Tags.get_tag_by_title(tag_title))
+      end)
+
+      attrs = %{tags: tag_titles}
+
+      assert {:ok, %{story: %Story{}}} = Stories.update_story(story, attrs)
+
+      Enum.each(tag_titles, fn tag_title ->
+        assert %Tag{title: ^tag_title} = Tags.get_tag_by_title(tag_title)
+      end)
+    end
+
+    test "updates the publication_id to nil when the story hasn't been published" do
+      author = Factory.insert(:user)
+      publication = Factory.insert(:publication)
+
+      Factory.insert(
+        :publication_membership,
+        publication: publication,
+        member: author,
+        role: :owner
+      )
+
+      story = Factory.insert(:story, author: author, published_at: nil, publication: publication)
+      attrs = %{publication_id: nil}
+
+      assert {:ok, %{story: %Story{}}} = Stories.update_story(story, attrs)
+      updated_story = Stories.get_story(story.id)
+
+      refute Stories.under_publication?(updated_story)
+    end
+
+    test "updates the publication_id when the story hasn't been published" do
+      author = Factory.insert(:user)
+      publication = Factory.insert(:publication)
+
+      Factory.insert(
+        :publication_membership,
+        publication: publication,
+        member: author,
+        role: :owner
+      )
+
+      story = Factory.insert(:story, author: author, published_at: nil)
+      attrs = %{publication_id: publication.id}
+
+      assert {:ok, %{story: %Story{}}} = Stories.update_story(story, attrs)
+      updated_story = Stories.get_story(story.id)
+
+      assert Stories.publication(updated_story).id === publication.id
+    end
+
+    test "doesn't update the publication_id to nil when the story has been published" do
+      author = Factory.insert(:user)
+      publication = Factory.insert(:publication)
+
+      Factory.insert(
+        :publication_membership,
+        publication: publication,
+        member: author,
+        role: :owner
+      )
+
+      story =
+        Factory.insert(:story, published_at: NaiveDateTime.utc_now(), publication: publication)
+
+      attrs = %{publication_id: nil}
+
+      assert {:error, _, _, _} = Stories.update_story(story, attrs)
+      updated_story = Stories.get_story(story.id)
+
+      assert Stories.publication(updated_story).id === publication.id
+    end
+
+    test "doesn't update the publication_id when the story has been published" do
+      author = Factory.insert(:user)
+      publication = Factory.insert(:publication)
+
+      Factory.insert(
+        :publication_membership,
+        publication: publication,
+        member: author,
+        role: :owner
+      )
+
+      story =
+        Factory.insert(
+          :story,
+          author: author,
+          published_at: NaiveDateTime.utc_now(),
+          publication: nil
+        )
+
+      attrs = %{publication_id: publication.id}
+
+      assert {:error, _, _, _} = Stories.update_story(story, attrs)
+      updated_story = Stories.get_story(story.id)
+
+      refute Stories.under_publication?(updated_story)
+    end
+  end
+
+  describe "delete_story/1" do
+    test "deletes the story when the story exists" do
+      story = Factory.insert(:story)
+
+      assert {:ok, _} = Stories.delete_story(story)
+      assert is_nil(Stories.get_story(story.id))
     end
   end
 end

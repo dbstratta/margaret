@@ -223,8 +223,8 @@ defmodule Margaret.Accounts.User do
       #Ecto.Query<...>
 
   """
-  @spec new_story_notifications_enabled?(any()) :: Macro.t()
-  defmacro new_story_notifications_enabled?(settings) do
+  @spec new_story_notifications_enabled(any()) :: Macro.t()
+  defmacro new_story_notifications_enabled(settings) do
     quote do
       fragment("(?->'notifications'->>'new_stories')::boolean = true", unquote(settings))
     end

@@ -114,6 +114,7 @@ defmodule Margaret.Stories.Story do
     story
     |> cast(attrs, permitted_attrs)
     |> validate_published_at()
+    |> validate_change(:content, &Helpers.validate_draftjs_data/2)
     |> assoc_constraint(:publication)
     |> Helpers.maybe_put_tags_assoc(attrs)
   end
@@ -218,6 +219,12 @@ defmodule Margaret.Stories.Story do
 
   @doc """
   Preloads the tags of a story.
+
+  ## Examples
+
+      iex> preload_tags(%Story{})
+      %Story{}
+
   """
   @spec preload_tags(t()) :: t()
   def preload_tags(%Story{} = story), do: Repo.preload(story, :tags)

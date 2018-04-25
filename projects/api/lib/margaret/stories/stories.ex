@@ -205,7 +205,7 @@ defmodule Margaret.Stories do
   def publication(%Story{} = story) do
     story
     |> Story.preload_publication()
-    |> Map.get(:publication)
+    |> Map.fetch!(:publication)
   end
 
   @doc """
@@ -254,7 +254,7 @@ defmodule Margaret.Stories do
         where: f.user_id == ^story.author_id,
         or_where: ^publication_followers,
         group_by: u.id,
-        having: new_story_notifications_enabled?(u.settings)
+        having: new_story_notifications_enabled(u.settings)
       )
 
     Repo.all(query)
@@ -468,35 +468,6 @@ defmodule Margaret.Stories do
 
   @spec insert_story(Multi.t(), map()) :: Multi.t()
   defp insert_story(multi, attrs) do
-    # Check that if the author wants to add the story under
-    # a publication, that they have permission to do so.
-    maybe_check_publication_permission = fn changeset ->
-      changeset
-      |> Ecto.Changeset.get_change(:publication_id)
-      |> case do
-        nil ->
-          changeset
-
-        publication_id ->
-          with %Publication{} = publication <- Publications.get_publication(publication_id),
-               author_id = Ecto.Changeset.get_change(changeset, :author_id),
-               %User{} = author <- Accounts.get_user(author_id),
-               true <- Publications.can_write_stories?(publication, author) do
-            changeset
-          else
-            # If it doesn't find something, we just let Ecto
-            # add the errors to the changeset.
-            nil ->
-              changeset
-
-            # If the user doesn't have permission to write stories
-            # under the publication.
-            false ->
-              Ecto.Changeset.add_error(changeset, :publiation, "Unauthorized")
-          end
-      end
-    end
-
     insert_story_fn = fn changes ->
       # We have the list of tags from a previous step in
       # the transaction, now we have to put that list in the attrs map.
@@ -512,7 +483,7 @@ defmodule Margaret.Stories do
       attrs
       |> maybe_put_tags.()
       |> Story.changeset()
-      |> maybe_check_publication_permission.()
+      |> maybe_check_publication_permission()
       |> Repo.insert()
     end
 
@@ -555,10 +526,36 @@ defmodule Margaret.Stories do
 
   @spec update_story(Multi.t(), Story.t(), map()) :: Multi.t()
   defp update_story(multi, %Story{} = story, attrs) do
+    # It's not possible to change the publication of a story
+    # after the latter has been published.
+    maybe_validate_publication_change = fn changeset ->
+      if has_been_published?(story) do
+        case Ecto.Changeset.fetch_change(changeset, :publication_id) do
+          # If there is an intent to change the publication.
+          {:ok, _} ->
+            Ecto.Changeset.add_error(
+              changeset,
+              :publication_id,
+              "Cannot change publication after the story has been published"
+            )
+
+          :error ->
+            changeset
+        end
+      else
+        changeset
+      end
+    end
+
     update_story_fn = fn changes ->
+      # We have the list of tags from a previous step in
+      # the transaction, now we have to put that list in the attrs map
+      # and preload the tags in the story struct.
+      # This is only if the author wanted to change the tags
+      # of the story in the first place.
       maybe_put_tags = fn {story, attrs} ->
         case changes do
-          %{tags: tags} -> {Repo.preload(story, :tags), Map.put(attrs, :tags, tags)}
+          %{tags: tags} -> {Story.preload_tags(story), Map.put(attrs, :tags, tags)}
           _ -> {story, attrs}
         end
       end
@@ -567,10 +564,41 @@ defmodule Margaret.Stories do
 
       story
       |> Story.update_changeset(attrs)
+      |> maybe_validate_publication_change.()
+      |> maybe_check_publication_permission()
       |> Repo.update()
     end
 
     Multi.run(multi, :story, update_story_fn)
+  end
+
+  # Check that if the author wants to add the story under
+  # a publication, that they have permission to do so.
+  defp maybe_check_publication_permission(changeset) do
+    changeset
+    |> Ecto.Changeset.get_change(:publication_id)
+    |> case do
+      nil ->
+        changeset
+
+      publication_id ->
+        with %Publication{} = publication <- Publications.get_publication(publication_id),
+             author_id = Ecto.Changeset.get_field(changeset, :author_id),
+             %User{} = author <- Accounts.get_user(author_id),
+             true <- Publications.can_write_stories?(publication, author) do
+          changeset
+        else
+          # If it doesn't find something, we just let Ecto
+          # add the errors to the changeset.
+          nil ->
+            changeset
+
+          # If the user doesn't have permission to write stories
+          # under the publication.
+          false ->
+            Ecto.Changeset.add_error(changeset, :publication_id, "Unauthorized")
+        end
+    end
   end
 
   @spec maybe_insert_tags(Multi.t(), map()) :: Multi.t()
@@ -630,9 +658,9 @@ defmodule Margaret.Stories do
 
       # If it wasn't published before and it is intended to publish now or
       # to schedule its publication.
-      # TODO:
       not has_been_published?(story) and Map.has_key?(attrs, :published_at) ->
         case NaiveDateTime.compare(attrs.published_at, NaiveDateTime.utc_now()) do
+          # TODO:
           comparison when comparison in [:lt, :eq] ->
             notify_users_fn = fn _ ->
               nil
@@ -649,16 +677,6 @@ defmodule Margaret.Stories do
       true ->
         multi
     end
-  end
-
-  @doc """
-  Removes a story from its publication.
-  """
-  @spec remove_from_publication(Story.t()) :: {:ok, map()} | {:error, atom(), any(), map()}
-  def remove_from_publication(%Story{} = story) do
-    attrs = %{publication_id: nil}
-
-    update_story(story, attrs)
   end
 
   @doc """

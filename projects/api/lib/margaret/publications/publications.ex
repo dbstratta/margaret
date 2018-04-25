@@ -114,13 +114,13 @@ defmodule Margaret.Publications do
     query = Story.under_publication(publication)
 
     query =
-      if Keyword.get(opts, :published_only, false) do
+      if Keyword.get(opts, :published_only, true) do
         Story.published(query)
       else
         query
       end
 
-    Repo.aggregate(query, :count, :id)
+    Repo.count(query)
   end
 
   @doc """
