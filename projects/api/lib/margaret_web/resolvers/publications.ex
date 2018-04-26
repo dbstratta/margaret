@@ -6,6 +6,7 @@ defmodule MargaretWeb.Resolvers.Publications do
   import Ecto.Query
   alias Absinthe.Relay
 
+  import MargaretWeb.Helpers, only: [ok: 1]
   alias MargaretWeb.Helpers
   alias Margaret.{Repo, Accounts, Stories, Publications, Follows}
   alias Accounts.User
@@ -17,18 +18,18 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves a publication.
   """
   def resolve_publication(%{name: name}, _) do
-    publication = Publications.get_publication_by_name(name)
-
-    {:ok, publication}
+    name
+    |> Publications.get_publication_by_name()
+    |> ok()
   end
 
   @doc """
   Resolves the owner of the publication.
   """
   def resolve_owner(publication, _, _) do
-    owner = Publications.owner(publication)
-
-    {:ok, owner}
+    publication
+    |> Publications.owner()
+    |> ok()
   end
 
   @doc """

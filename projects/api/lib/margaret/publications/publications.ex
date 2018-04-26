@@ -148,7 +148,7 @@ defmodule Margaret.Publications do
     member_role(publication, user) in permitted_roles
   end
 
-  def check_role(publication, user, role), do: member_role(publication, user) === role
+  def check_role(publication, user, role), do: check_role(publication, user, [role])
 
   @doc """
   Returns true if the user is a member
@@ -484,23 +484,6 @@ defmodule Margaret.Publications do
   end
 
   @doc """
-  Inserts a publication.
-  """
-  @spec insert_publication!(map()) :: Publication.t() | no_return()
-  def insert_publication!(attrs) do
-    case insert_publication(attrs) do
-      {:ok, %{publication: publication}} ->
-        publication
-
-      {:error, _, reason, _} ->
-        raise """
-        cannot insert publication.
-        Reason: #{inspect(reason)}
-        """
-    end
-  end
-
-  @doc """
   Inserts a publication membership.
   """
   @spec insert_membership(map()) ::
@@ -545,6 +528,15 @@ defmodule Margaret.Publications do
 
   @doc """
   Gets a publication invitation.
+
+  ## Examples
+
+      iex> get_invitation(123)
+      %PublicationInvitation{}
+
+      iex> get_invitation(456)
+      nil
+
   """
   def get_invitation(id), do: Repo.get(PublicationInvitation, id)
 

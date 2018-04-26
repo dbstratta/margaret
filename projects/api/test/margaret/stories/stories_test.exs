@@ -352,7 +352,10 @@ defmodule Margaret.StoriesTest do
     test "inserts a story when the attributes are valid" do
       %User{id: author_id} = Factory.insert(:user)
 
-      attrs = Map.put(@valid_attrs, :author_id, author_id)
+      attrs =
+        @valid_attrs
+        |> Map.put(:author_id, author_id)
+
       assert {:ok, %{story: %Story{id: story_id}}} = Stories.insert_story(attrs)
 
       assert %Story{id: ^story_id} = Stories.get_story!(story_id)

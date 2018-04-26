@@ -229,4 +229,21 @@ defmodule Margaret.Accounts.User do
       fragment("(?->'notifications'->>'new_stories')::boolean = true", unquote(settings))
     end
   end
+
+  @doc """
+  Ecto query helper to filter user settings that have enabled
+  notifications for new followers.
+
+  ## Examples
+
+      iex> from u in User, where: new_story_notifications_enabled(u.settings)
+      #Ecto.Query<...>
+
+  """
+  @spec new_follower_notifications_enabled(any()) :: Macro.t()
+  defmacro new_follower_notifications_enabled(settings) do
+    quote do
+      fragment("(?->'notifications'->>'new_followers')::boolean = true", unquote(settings))
+    end
+  end
 end

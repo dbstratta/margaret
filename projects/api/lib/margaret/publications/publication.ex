@@ -5,13 +5,14 @@ defmodule Margaret.Publications.Publication do
 
   use Ecto.Schema
   use Arc.Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
   alias __MODULE__
 
   alias Margaret.{
     Repo,
     Accounts.User,
+    Stories.Story,
     Publications.PublicationMembership,
     Follows.Follow,
     Tags.Tag,
@@ -20,21 +21,28 @@ defmodule Margaret.Publications.Publication do
 
   @type t :: %Publication{}
 
+  @name_regex ~r/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){1,64}$/
+
   schema "publications" do
+    # The name is the slug of the publication.
     field(:name, :string)
     field(:display_name, :string)
 
     field(:logo, Publication.Logo.Type)
     field(:description, :string)
 
+    # Contact and social information.
     field(:email, :string)
     field(:website, :string)
     field(:twitter_username, :string)
     field(:facebook_pagename, :string)
 
+    has_many(:stories, Story)
+
     has_many(:publication_memberships, PublicationMembership)
     many_to_many(:members, User, join_through: PublicationMembership)
 
+    # A publication can have followers.
     many_to_many(
       :followers,
       User,
@@ -49,6 +57,12 @@ defmodule Margaret.Publications.Publication do
 
   @doc """
   Builds a changeset for inserting a publication.
+
+  ## Examples
+
+      iex> changeset(attrs)
+      %Ecto.Changeset{}
+
   """
   @spec changeset(map()) :: Ecto.Changeset.t()
   def changeset(attrs) do
@@ -68,13 +82,19 @@ defmodule Margaret.Publications.Publication do
     |> cast_attachments(attrs, [:logo])
     |> validate_required(required_attrs)
     |> maybe_put_name()
-    |> validate_length(:name, min: 2, max: 64)
+    |> validate_format(:name, @name_regex)
     |> unique_constraint(:name)
     |> Helpers.maybe_put_tags_assoc(attrs)
   end
 
   @doc """
   Builds a changeset for updating a publication.
+
+  ## Examples
+
+      iex> update_changeset(%Publication, attrs)
+      %Ecto.Changeset{}
+
   """
   @spec update_changeset(t(), map()) :: Ecto.Changeset.t()
   def update_changeset(%Publication{} = publication, attrs) do
@@ -89,24 +109,50 @@ defmodule Margaret.Publications.Publication do
     |> cast(attrs, update_permitted_attrs)
     |> cast_attachments(attrs, [:logo])
     |> maybe_put_name()
-    |> validate_length(:name, min: 2, max: 64)
+    |> validate_format(:name, @name_regex)
     |> unique_constraint(:name)
     |> Helpers.maybe_put_tags_assoc(attrs)
   end
 
-  # TODO: Refactor this function using `get_field/3`.
-  defp maybe_put_name(%Ecto.Changeset{changes: %{name: name}} = changeset)
-       when not is_nil(name) do
-    put_change(changeset, :name, name)
+  # If the name hasn't been specified,
+  # we use the slugified display_name as the name.
+  defp maybe_put_name(changeset) do
+    case fetch_field(changeset, :name) do
+      {_, _name} ->
+        changeset
+
+      :error ->
+        name =
+          changeset
+          |> get_field(:display_name)
+          |> Slugger.slugify_downcase()
+
+        put_change(changeset, :name, name)
+    end
   end
 
-  defp maybe_put_name(
-         %Ecto.Changeset{data: %{name: nil}, changes: %{display_name: display_name}} = changeset
-       ) do
-    put_change(changeset, :name, Slugger.slugify_downcase(display_name))
-  end
+  @doc """
+  Returns the query for the members of the publication.
 
-  defp maybe_put_name(changeset), do: changeset
+  ## Examples
+
+      iex> members(%Publication{})
+      #Ecto.Query<...>
+
+      iex> members(%Publication{}) |> Repo.all()
+      [{%User{}, %{role: :owner, member_since: ~N[2018-04-26 06:16:22.713848]}}]
+
+  """
+  @spec members(t(), Keyword.t()) :: Ecto.Query.t()
+  def members(%Publication{id: publication_id}, _opts \\ []) do
+    from(
+      u in User,
+      join: pm in assoc(u, :publication_memberships),
+      where: is_nil(u.deactivated_at),
+      where: pm.publication_id == ^publication_id,
+      select: {u, %{role: pm.role, member_since: pm.inserted_at}}
+    )
+  end
 
   @doc """
   Preloads the tags of a publication.
