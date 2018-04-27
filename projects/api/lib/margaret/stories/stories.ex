@@ -21,7 +21,7 @@ defmodule Margaret.Stories do
   }
 
   alias Accounts.User
-  alias Stories.Story
+  alias Stories.{Story, StoryView}
   alias Publications.Publication
   alias Collections.Collection
   alias Follows.Follow
@@ -677,6 +677,31 @@ defmodule Margaret.Stories do
       true ->
         multi
     end
+  end
+
+  def view_story(clauses) do
+    story_id =
+      clauses
+      |> Keyword.fetch!(:story)
+      |> Map.fetch!(:id)
+
+    viewer_id =
+      clauses
+      |> Keyword.get(:viewer)
+      |> case do
+        %User{id: user_id} -> user_id
+        nil -> nil
+      end
+
+    attrs = %{story_id: story_id, viewer_id: viewer_id}
+
+    insert_story_view(attrs)
+  end
+
+  defp insert_story_view(attrs) do
+    attrs
+    |> StoryView.changeset()
+    |> Repo.insert()
   end
 
   @doc """

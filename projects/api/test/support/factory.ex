@@ -1,6 +1,12 @@
 defmodule Margaret.Factory do
   @moduledoc """
   Factory functions to use in tests.
+
+  ## Examples
+
+      iex> Factory.insert(:user)
+      %User{}
+
   """
 
   use ExMachina.Ecto, repo: Margaret.Repo
@@ -19,7 +25,7 @@ defmodule Margaret.Factory do
   }
 
   alias Accounts.{User, SocialLogin}
-  alias Stories.Story
+  alias Stories.{Story, StoryView}
   alias Comments.Comment
   alias Publications.{Publication, PublicationInvitation, PublicationMembership}
   alias Collections.{Collection, CollectionStory}
@@ -39,9 +45,6 @@ defmodule Margaret.Factory do
     }
   end
 
-  @doc """
-  User factory.
-  """
   @spec user_factory :: User.t()
   def user_factory do
     %User{
@@ -51,6 +54,7 @@ defmodule Margaret.Factory do
     }
   end
 
+  @spec social_login_factory :: SocialLogin.t()
   def social_login_factory do
     %SocialLogin{
       uid: sequence(:uid, &"uid#{&1}"),
@@ -59,6 +63,7 @@ defmodule Margaret.Factory do
     }
   end
 
+  @spec story_factory :: Story.t()
   def story_factory do
     %Story{
       content: %{"blocks" => [%{"text" => "test"}]},
@@ -69,6 +74,14 @@ defmodule Margaret.Factory do
     }
   end
 
+  @spec story_view_factory :: StoryView.t()
+  def story_view_factory do
+    %StoryView{
+      story: build(:story)
+    }
+  end
+
+  @spec comment_factory :: Comment.t()
   def comment_factory do
     %Comment{
       content: %{"blocks" => [%{"text" => "test"}]},
@@ -77,6 +90,7 @@ defmodule Margaret.Factory do
     }
   end
 
+  @spec publication_factory :: Publication.t()
   def publication_factory do
     %Publication{
       name: sequence(:name, &"publication-#{&1}"),
