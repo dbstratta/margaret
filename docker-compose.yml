@@ -42,7 +42,7 @@ services:
       - postgres_data:/var/lib/postgresql/data/
 
   redis:
-    image: redis:4.0.9@sha256:6b9f935e89af002225c0dcdadf1fd74245b4cc1e3e91222f7e4769c236cf80d4
+    image: redis:4.0.9@sha256:2a10443dced488731f0a3ed12e442c230d39b526f95ecb8e280cd1596705e822
     volumes:
       - redis_data:/data
 
