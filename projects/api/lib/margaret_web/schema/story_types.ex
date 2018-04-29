@@ -211,6 +211,20 @@ defmodule MargaretWeb.Schema.StoryTypes do
       resolve(&Resolvers.Stories.resolve_update_story/2)
     end
 
+    @desc "Views a story."
+    payload field(:view_story) do
+      input do
+        field(:story_id, non_null(:id))
+      end
+
+      output do
+        field(:story, non_null(:story))
+      end
+
+      middleware(Absinthe.Relay.Node.ParseIDs, story_id: :story)
+      resolve(&Resolvers.Stories.resolve_view_story/2)
+    end
+
     @desc "Deletes a story."
     payload field(:delete_story) do
       input do

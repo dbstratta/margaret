@@ -91,9 +91,9 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves the tags of the publication.
   """
   def resolve_tags(%Publication{} = publication, _, _) do
-    tags = Publications.tags(publication)
-
-    {:ok, tags}
+    publication
+    |> Publications.tags()
+    |> ok()
   end
 
   @doc """
@@ -119,18 +119,18 @@ defmodule MargaretWeb.Resolvers.Publications do
   Resolves whether the user is a member of the publication.
   """
   def resolve_viewer_is_a_member(publication, _, %{context: %{viewer: viewer}}) do
-    is_member = Publications.member?(publication, viewer)
-
-    {:ok, is_member}
+    publication
+    |> Publications.member?(viewer)
+    |> ok()
   end
 
   @doc """
   Resolves whether the user can administer the publication.
   """
   def resolve_viewer_can_administer(publication, _, %{context: %{viewer: viewer}}) do
-    can_administer = Publications.admin?(publication, viewer)
-
-    {:ok, can_administer}
+    publication
+    |> Publications.admin?(viewer)
+    |> ok()
   end
 
   @doc """
@@ -143,9 +143,9 @@ defmodule MargaretWeb.Resolvers.Publications do
   TODO: Refactor this.
   """
   def resolve_viewer_has_followed(publication, _, %{context: %{viewer: viewer}}) do
-    has_followed = Follows.has_followed?(follower: viewer, publication: publication)
-
-    {:ok, has_followed}
+    [follower: viewer, publication: publication]
+    |> Follows.has_followed?()
+    |> ok()
   end
 
   @doc """

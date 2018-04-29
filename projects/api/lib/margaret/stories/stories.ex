@@ -679,6 +679,19 @@ defmodule Margaret.Stories do
     end
   end
 
+  @doc """
+  Inserts a story view.
+
+  ## Examples
+
+      iex> view_story(story: %Story{})
+      {:ok, %StoryView{}}
+
+      iex> view_story(story: %Story{}, viewer: %User{})
+      {:ok, %StoryView{}}
+
+  """
+  @spec view_story(Keyword.t()) :: {:ok, StoryView.t()} | {:error, Ecto.Changeset.t()}
   def view_story(clauses) do
     story_id =
       clauses

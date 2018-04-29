@@ -272,6 +272,20 @@ defmodule MargaretWeb.Resolvers.Stories do
   defp maybe_update_published_at(attrs), do: attrs
 
   @doc """
+  Resolves a story view.
+  """
+  def resolve_view_story(%{story_id: story_id}, %{context: context}) do
+    with %Story{} = story <- Stories.get_story(story_id),
+         viewer = Map.get(context, :viewer),
+         {:ok, _} <- Stories.view_story(story: story, viewer: viewer) do
+      ok(story)
+    else
+      nil -> Helpers.GraphQLErrors.story_not_found()
+      {:error, _} -> Helpers.GraphQLErrors.something_went_wrong()
+    end
+  end
+
+  @doc """
   Resolves a story deletion.
   """
   def resolve_delete_story(%{story_id: story_id}, %{context: %{viewer: viewer}}) do

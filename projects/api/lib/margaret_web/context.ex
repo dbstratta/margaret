@@ -1,27 +1,29 @@
 defmodule MargaretWeb.Context do
   @moduledoc """
-  Build the GraphQL context.
+  Plug that builds the GraphQL context before every request.
+
+  The context is a map we can access from the GraphQL resolvers,
+  and it's useful to store in it data about the request, for example
+  the user that made it.
   """
 
   @behaviour Plug
 
   alias Margaret.Accounts.User
 
-  @impl true
+  @impl Plug
   def init(opts), do: opts
 
-  @impl true
+  @impl Plug
   def call(conn, _) do
-    conn
-    |> Guardian.Plug.current_resource()
-    |> build_context(conn)
-  end
+    context =
+      conn
+      |> Guardian.Plug.current_resource()
+      |> case do
+        %User{} = viewer -> %{viewer: viewer}
+        nil -> %{}
+      end
 
-  defp build_context(%User{} = viewer, conn) do
-    Absinthe.Plug.put_options(conn, context: %{viewer: viewer})
-  end
-
-  defp build_context(nil, conn) do
-    Absinthe.Plug.put_options(conn, context: %{})
+    Absinthe.Plug.put_options(conn, context: context)
   end
 end
