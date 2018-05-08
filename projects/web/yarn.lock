@@ -1311,9 +1311,9 @@ babel-plugin-dynamic-import-node@1.1.0:
     babel-template "^6.26.0"
     babel-types "^6.26.0"
 
-babel-plugin-graphql-tag@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-graphql-tag/-/babel-plugin-graphql-tag-1.5.0.tgz#ea0f9f68b39e60244d61a433103e4b266789e654"
+babel-plugin-graphql-tag@1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-graphql-tag/-/babel-plugin-graphql-tag-1.6.0.tgz#bfdc83e9a8d0eeea6d93508d6b5261368aa6064f"
   dependencies:
     babel-literal-to-ast "^0.1.2"
     babel-types "^6.24.1"
