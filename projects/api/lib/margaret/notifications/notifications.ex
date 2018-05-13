@@ -3,14 +3,14 @@ defmodule Margaret.Notifications do
   The Notifications context.
   """
 
-  import Ecto.Query
   alias Ecto.Multi
 
   alias Margaret.{
     Repo,
     Notifications,
     Accounts,
-    Stories
+    Stories,
+    Helpers
   }
 
   alias Notifications.{Notification, UserNotification}
@@ -94,6 +94,18 @@ defmodule Margaret.Notifications do
     |> Map.get(:user)
   end
 
+  def notifications(args) do
+    args
+    |> Notifications.Queries.notifications()
+    |> Helpers.Connection.from_query(args)
+  end
+
+  def notification_count(args \\ %{}) do
+    args
+    |> Notifications.Queries.notifications()
+    |> Repo.count()
+  end
+
   @doc """
   Returns a user notification.
 
@@ -145,18 +157,5 @@ defmodule Margaret.Notifications do
     user_notification
     |> UserNotification.update_changeset(attrs)
     |> Repo.update()
-  end
-
-  @doc """
-  Gets the notificatino count of a user.
-  """
-  @spec notification_count(User.t()) :: non_neg_integer
-  def notification_count(%User{} = user) do
-    query =
-      Notification
-      |> join(:inner, [n], un in assoc(n, :user_notifications))
-      |> UserNotification.by_user(user)
-
-    Repo.count(query)
   end
 end

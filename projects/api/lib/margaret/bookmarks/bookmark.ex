@@ -55,13 +55,6 @@ defmodule Margaret.Bookmarks.Bookmark do
   end
 
   @doc """
-  Filters the bookmarks by user.
-  """
-  @spec by_user(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
-  def by_user(query \\ Bookmark, %User{id: user_id}),
-    do: where(query, [..., b], b.user_id == ^user_id)
-
-  @doc """
   Preloads the user of a bookmark.
   """
   @spec preload_user(t()) :: t()

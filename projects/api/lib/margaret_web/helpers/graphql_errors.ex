@@ -3,13 +3,9 @@ defmodule MargaretWeb.Helpers.GraphQLErrors do
   Helper functions for generating GraphQL errors.
   """
 
-  @type t :: Absinthe.Type.Field.error_result()
+  import Margaret.Helpers, only: [error: 1]
 
-  @doc """
-  Returns an error tuple to use in GraphQL resolvers.
-  """
-  @spec error(any()) :: t()
-  def error(reason), do: {:error, reason}
+  @type t :: Absinthe.Type.Field.error_result()
 
   @doc """
   Returns the `Unauthorized` error.
@@ -40,6 +36,9 @@ defmodule MargaretWeb.Helpers.GraphQLErrors do
 
   @spec story_not_found :: t()
   def story_not_found, do: not_found("Story")
+
+  @spec comment_not_found :: t()
+  def comment_not_found, do: not_found("Comment")
 
   @spec publication_not_found :: t()
   def publication_not_found, do: not_found("Publication")

@@ -1,7 +1,40 @@
 defmodule Margaret.Helpers do
   @moduledoc false
 
-  import Ecto.{Query, Changeset}
+  import Ecto.Changeset
+
+  @type ok_tuple :: {:ok, any()}
+  @type error_tuple :: {:error, any()}
+
+  @doc """
+  Returns an ok tuple.
+
+  ## Examples
+
+      iex> ok(3)
+      {:ok, 3}
+
+      iex> ok(nil)
+      {:ok, nil}
+
+  """
+  @spec ok(any()) :: ok_tuple()
+  def ok(thing), do: {:ok, thing}
+
+  @doc """
+  Returns an ok tuple.
+
+  ## Examples
+
+      iex> error(changeset)
+      {:error, changeset}
+
+      iex> error(nil)
+      {:error, nil}
+
+  """
+  @spec error(any) :: error_tuple()
+  def error(reason), do: {:error, reason}
 
   @doc """
   """
@@ -46,6 +79,9 @@ defmodule Margaret.Helpers do
 
   @doc """
   Changeset validator that validates the data exported by DraftJS.
+
+  TODO: Refactor this function into a function that takes the
+  changeset as first argument.
 
   ## Examples
 

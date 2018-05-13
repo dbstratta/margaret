@@ -93,20 +93,6 @@ defmodule Margaret.Collections.Collection do
   end
 
   @doc """
-  Filters the collections by author.
-  """
-  @spec by_author(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
-  def by_author(query \\ Collection, %User{id: author_id}),
-    do: where(query, [..., c], c.author_id == ^author_id)
-
-  @doc """
-  Filters the collections in the query by being under a publication.
-  """
-  @spec under_publication(Ecto.Queryable.t(), Publication.t()) :: Ecto.Query.t()
-  def under_publication(query \\ Collection, %Publication{id: publication_id}),
-    do: where(query, [..., c], c.publication_id == ^publication_id)
-
-  @doc """
   Preloads the author of a collection.
   """
   @spec preload_author(t()) :: t()

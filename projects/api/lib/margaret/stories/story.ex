@@ -162,44 +162,6 @@ defmodule Margaret.Stories.Story do
   end
 
   @doc """
-  Filters the stories in the query by published.
-  """
-  @spec published(Ecto.Queryable.t()) :: Ecto.Query.t()
-  def published(query \\ Story),
-    do: where(query, [..., s], s.published_at <= ^NaiveDateTime.utc_now())
-
-  @doc """
-  Filters the stories in the query by scheduled.
-  """
-  @spec scheduled(Ecto.Queryable.t()) :: Ecto.Query.t()
-  def scheduled(query \\ Story),
-    do: where(query, [..., s], s.published_at > ^NaiveDateTime.utc_now())
-
-  @doc """
-  Filters the stories in the query by being public.
-  """
-  @spec public(Ecto.Queryable.t()) :: Ecto.Query.t()
-  def public(query \\ Story) do
-    query
-    |> published()
-    |> where([..., s], s.audience == ^:all)
-  end
-
-  @doc """
-  Filters the stories by author.
-  """
-  @spec by_author(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
-  def by_author(query \\ Story, %User{id: author_id}),
-    do: where(query, [..., s], s.author_id == ^author_id)
-
-  @doc """
-  Filters the stories in the query by being under a publication.
-  """
-  @spec under_publication(Ecto.Queryable.t(), Publication.t()) :: Ecto.Query.t()
-  def under_publication(query \\ Story, %Publication{id: publication_id}),
-    do: where(query, [..., s], s.publication_id == ^publication_id)
-
-  @doc """
   Preloads the author of a story.
   """
   @spec preload_author(t()) :: t()

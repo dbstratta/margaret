@@ -3,23 +3,16 @@ defmodule MargaretWeb.Resolvers.Collections do
   The Collection GraphQL resolvers.
   """
 
-  import Ecto.Query
-  alias Absinthe.Relay
-
   import MargaretWeb.Helpers, only: [ok: 1]
   alias MargaretWeb.Helpers
 
   alias Margaret.{
-    Repo,
     Accounts,
     Stories,
     Bookmarks,
     Publications,
     Collections
   }
-
-  alias Accounts.User
-  alias Stories.Story
 
   @doc """
   Resolves the author of the collection.
@@ -30,17 +23,19 @@ defmodule MargaretWeb.Resolvers.Collections do
     |> ok()
   end
 
-  def resolve_stories(_collection, _args, _) do
-    Helpers.GraphQLErrors.not_implemented()
+  def resolve_stories(collection, args, _) do
+    args
+    |> Map.put(:collection, collection)
+    |> Stories.stories()
   end
 
   @doc """
   Resolves the publication of the collection.
   """
   def resolve_publication(collection, _, _) do
-    publication = Collections.publication(collection)
-
-    {:ok, publication}
+    collection
+    |> Collections.publication()
+    |> ok()
   end
 
   @doc """
@@ -55,28 +50,30 @@ defmodule MargaretWeb.Resolvers.Collections do
   @doc """
   Resolves whether the viewer can bookmark the collection or not.
   """
-  def resolve_viewer_can_bookmark(_collection, _args, _resolution), do: {:ok, true}
+  def resolve_viewer_can_bookmark(_collection, _args, _resolution), do: ok(true)
 
   @doc """
   Resolves whether the viewer has bookmarked the collection or not.
   """
   def resolve_viewer_has_bookmarked(collection, _, %{context: %{viewer: viewer}}) do
-    has_bookmarked = Bookmarks.has_bookmarked?(user: viewer, collection: collection)
-
-    {:ok, has_bookmarked}
+    [user: viewer, collection: collection]
+    |> Bookmarks.has_bookmarked?()
+    |> ok()
   end
 
   @doc """
   """
   def resolve_collection(%{slug: slug}, _) do
-    collection = Collections.get_collection_by_slug(slug)
-
-    {:ok, collection}
+    slug
+    |> Collections.get_collection_by_slug()
+    |> ok()
   end
 
   def resolve_create_collection(_args, %{context: %{viewer: _viewer}}) do
+    Helpers.GraphQLErrors.not_implemented()
   end
 
   def resolve_update_collection(_args, %{context: %{viewer: _viewer}}) do
+    Helpers.GraphQLErrors.not_implemented()
   end
 end

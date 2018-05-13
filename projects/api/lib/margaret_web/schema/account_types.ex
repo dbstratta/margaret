@@ -119,19 +119,12 @@ defmodule MargaretWeb.Schema.AccountTypes do
     end
 
     @desc """
-    Find a publication the user is member of.
-    """
-    field :publication, :publication do
-      @desc "The name of the publication"
-      arg(:name, non_null(:string))
-
-      resolve(&Resolvers.Accounts.resolve_publication/3)
-    end
-
-    @desc """
     The publications the user is member of.
     """
     connection field(:publications, node_type: :publication, connection: :user_publication) do
+      @desc "The role of the user in the publication."
+      arg(:role, :publication_member_role)
+
       resolve(&Resolvers.Accounts.resolve_publications/3)
     end
 

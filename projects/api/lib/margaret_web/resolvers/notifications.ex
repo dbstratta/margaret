@@ -3,36 +3,33 @@ defmodule MargaretWeb.Resolvers.Notifications do
   The Notification GraphQL resolvers.
   """
 
+  import Margaret.Helpers, only: [ok: 1]
   alias MargaretWeb.Helpers
-
   alias Margaret.Notifications
-  alias Notifications.{Notification, UserNotification}
 
   @doc """
   """
   def resolve_object(notification, _, _) do
-    object = Notifications.object(notification)
-
-    {:ok, object}
+    notification
+    |> Notifications.object()
+    |> ok()
   end
 
   @doc """
   """
   def resolve_actor(notification, _, _) do
-    actor = Notifications.actor(notification)
-
-    {:ok, actor}
+    notification
+    |> Notifications.actor()
+    |> ok()
   end
 
   @doc """
   """
-  def resolve_read_at(%Notification{id: notification_id}, _, %{
-        context: %{viewer: %{id: viewer_id}}
-      }) do
-    %UserNotification{read_at: read_at} =
-      Notifications.get_user_notification(user_id: viewer_id, notification_id: notification_id)
-
-    {:ok, read_at}
+  def resolve_read_at(notification, _args, %{context: %{viewer: viewer}}) do
+    [user_id: viewer.id, notification_id: notification.id]
+    |> Notifications.get_user_notification()
+    |> Map.fetch!(:read_at)
+    |> ok()
   end
 
   def resolve_read_notification(_, _) do

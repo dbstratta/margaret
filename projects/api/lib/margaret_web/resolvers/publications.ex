@@ -8,11 +8,9 @@ defmodule MargaretWeb.Resolvers.Publications do
 
   import MargaretWeb.Helpers, only: [ok: 1]
   alias MargaretWeb.Helpers
-  alias Margaret.{Repo, Accounts, Stories, Publications, Follows}
+  alias Margaret.{Repo, Accounts, Publications, Follows}
   alias Accounts.User
-  alias Stories.Story
-  alias Publications.{Publication, PublicationMembership, PublicationInvitation}
-  alias Follows.Follow
+  alias Publications.{Publication, PublicationInvitation}
 
   @doc """
   Resolves a publication.
@@ -35,56 +33,22 @@ defmodule MargaretWeb.Resolvers.Publications do
   @doc """
   Resolves the members of the publication.
   """
-  def resolve_members(%Publication{id: publication_id} = publication, args, _) do
-    query =
-      from(
-        u in User,
-        join: pm in PublicationMembership,
-        on: pm.member_id == u.id,
-        where: is_nil(u.deactivated_at),
-        where: pm.publication_id == ^publication_id,
-        select: {u, %{role: pm.role, member_since: pm.inserted_at}}
-      )
-
-    total_count = Publications.member_count(publication)
-
-    query
-    |> Relay.Connection.from_query(&Repo.all/1, args)
-    |> Helpers.transform_connection(total_count: total_count)
+  def resolve_members(publication, args, _) do
+    Publications.members(publication, args)
   end
 
   @doc """
   Resolves the stories published under the publication.
   """
-  def resolve_stories(%Publication{id: publication_id} = publication, args, _) do
-    query = from(s in Story, where: s.publication_id == ^publication_id)
-
-    total_count = Publications.story_count(publication)
-
-    query
-    |> Relay.Connection.from_query(&Repo.all/1, args)
-    |> Helpers.transform_connection(total_count: total_count)
+  def resolve_stories(publication, args, _) do
+    Publications.stories(publication, args)
   end
 
   @doc """
   Resolves the followers of the publication.
   """
-  def resolve_followers(%Publication{id: publication_id}, args, _) do
-    query =
-      from(
-        u in User,
-        join: f in Follow,
-        on: f.follower_id == u.id,
-        where: is_nil(u.deactivated_at),
-        where: f.publication_id == ^publication_id,
-        select: {u, %{followed_at: f.inserted_at}}
-      )
-
-    total_count = Follows.follower_count(%{publication_id: publication_id})
-
-    query
-    |> Relay.Connection.from_query(&Repo.all/1, args)
-    |> Helpers.transform_connection(total_count: total_count)
+  def resolve_followers(publication, args, _) do
+    Publications.followers(publication, args)
   end
 
   @doc """
@@ -136,11 +100,10 @@ defmodule MargaretWeb.Resolvers.Publications do
   @doc """
   Resolves whether the user can follow the publication.
   """
-  def resolve_viewer_can_follow(_, _, %{context: %{viewer: _viewer}}), do: {:ok, true}
+  def resolve_viewer_can_follow(_, _, %{context: %{viewer: _viewer}}), do: ok(true)
 
   @doc """
-  Resolves whether the user has followd the publication.
-  TODO: Refactor this.
+  Resolves whether the user has followed the publication.
   """
   def resolve_viewer_has_followed(publication, _, %{context: %{viewer: viewer}}) do
     [follower: viewer, publication: publication]

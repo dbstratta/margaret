@@ -9,7 +9,8 @@ defmodule Margaret.Comments do
   alias Margaret.{
     Accounts,
     Stories,
-    Comments
+    Comments,
+    Helpers
   }
 
   alias Accounts.User
@@ -125,6 +126,18 @@ defmodule Margaret.Comments do
     comment
     |> story()
     |> Stories.can_see_story?(user)
+  end
+
+  def public?(%Comment{} = comment) do
+    comment
+    |> story()
+    |> Stories.public?()
+  end
+
+  def comments(args) do
+    args
+    |> Comments.Queries.comments()
+    |> Helpers.Connection.from_query(args)
   end
 
   @doc """

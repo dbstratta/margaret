@@ -151,62 +151,6 @@ defmodule Margaret.Accounts.User do
   def valid_username?(username), do: String.match?(username, @username_regex)
 
   @doc """
-  Excludes deactivated users from the query.
-
-  ## Examples
-
-      iex> active()
-      #Ecto.Query<...>
-
-      iex> active(query)
-      #Ecto.Query<...>
-
-  """
-  @spec active(Ecto.Queryable.t()) :: Ecto.Query.t()
-  def active(query \\ User), do: where(query, [..., u], is_nil(u.deactivated_at))
-
-  @doc """
-  Filters out non-admin users from the query.
-
-  ## Examples
-
-      iex> admin()
-      #Ecto.Query<...>
-
-      iex> admin(query)
-      #Ecto.Query<...>
-
-  """
-  @spec admin(Ecto.Queryable.t()) :: Ecto.Query.t()
-  def admin(query \\ User), do: where(query, [..., u], u.is_admin)
-
-  @doc """
-  Filters out non-employee users from the query.
-
-  ## Examples
-
-      iex> employee()
-      #Ecto.Query<...>
-
-      iex> employee(query)
-      #Ecto.Query<...>
-
-  """
-  @spec employee(Ecto.Queryable.t()) :: Ecto.Query.t()
-  def employee(query \\ User), do: where(query, [..., u], u.is_employee)
-
-  def followers(query \\ User, %User{id: user_id}, _opts \\ []) do
-    from(
-      u in query,
-      join: f in Follow,
-      on: f.follower_id == u.id,
-      where: is_nil(u.deactivated_at),
-      where: f.user_id == ^user_id,
-      select: {u, %{followed_at: f.inserted_at}}
-    )
-  end
-
-  @doc """
   Preloads the social logins of a user.
   """
   @spec preload_social_logins(Ecto.Queryable.t() | t()) :: Ecto.Query.t() | t()

@@ -12,10 +12,10 @@ defmodule Margaret.Publications do
     Stories,
     Publications,
     Follows,
-    Tags
+    Tags,
+    Helpers
   }
 
-  alias Stories.Story
   alias Publications.{Publication, PublicationMembership, PublicationInvitation}
   alias Accounts.User
 
@@ -91,6 +91,14 @@ defmodule Margaret.Publications do
   end
 
   @doc """
+  """
+  def members(%Publication{} = publication, args \\ %{}) do
+    args
+    |> Map.put(:publication, publication)
+    |> Accounts.users()
+  end
+
+  @doc """
   Returns the member count of the publication.
 
   ## Examples
@@ -100,35 +108,66 @@ defmodule Margaret.Publications do
 
   """
   @spec member_count(Publication.t()) :: non_neg_integer()
-  def member_count(%Publication{} = publication) do
-    query = PublicationMembership.by_publication(publication)
+  def member_count(%Publication{} = publication, args \\ %{}) do
+    args
+    |> Map.put(:publication, publication)
+    |> Accounts.user_count()
+  end
 
-    Repo.count(query)
+  @doc """
+  Returns a story connection of the publication.
+
+  ## Examples
+
+      iex> stories(%Publication{})
+      {:ok, %{}}
+
+      iex> stories(%Publication{}, args)
+      {:ok, %{}}
+
+  """
+  @spec stories(Publication.t(), map()) :: any()
+  def stories(%Publication{} = publication, args \\ %{}) do
+    args
+    |> Map.put(:publication, publication)
+    |> Stories.stories()
   end
 
   @doc """
   Returns the story count of the publication.
+
+  ## Examples
+
+      iex> story_count(%Publication{})
+      42
+
+      iex> story_count(%Publication{}, args)
+      10
+
   """
-  @spec story_count(Publication.t(), Keyword.t()) :: non_neg_integer()
-  def story_count(%Publication{} = publication, opts \\ []) do
-    query = Story.under_publication(publication)
+  @spec story_count(Publication.t(), map()) :: non_neg_integer()
+  def story_count(%Publication{} = publication, args \\ %{}) do
+    args
+    |> Map.put(:publication, publication)
+    |> Stories.story_count()
+  end
 
-    query =
-      if Keyword.get(opts, :published_only, true) do
-        Story.published(query)
-      else
-        query
-      end
-
-    Repo.count(query)
+  @spec followers(Publication.t(), map()) :: any()
+  def followers(%Publication{} = publication, args \\ %{}) do
+    args
+    |> Map.put(:publication, publication)
+    |> Follows.followers()
   end
 
   @doc """
   Gets the follower count of a publication.
   """
-  @spec follower_count(Publication.t()) :: non_neg_integer()
-  def follower_count(%Publication{} = publication),
-    do: Follows.follower_count(publication: publication)
+  @spec follower_count(Publication.t(), map()) :: non_neg_integer()
+  def follower_count(%Publication{} = publication, args \\ %{}) do
+    args
+    |> Map.put(:publication, publication)
+    |> Follows.follower_count()
+  end
 
   @doc """
   Checks that the user's role in the publication
@@ -148,7 +187,8 @@ defmodule Margaret.Publications do
     member_role(publication, user) in permitted_roles
   end
 
-  def check_role(publication, user, role), do: check_role(publication, user, [role])
+  def check_role(publication, user, permitted_role),
+    do: check_role(publication, user, [permitted_role])
 
   @doc """
   Returns true if the user is a member
@@ -397,6 +437,31 @@ defmodule Margaret.Publications do
       do: true
 
   def can_reject_invitation?(_invitation, _user), do: false
+
+  @doc """
+  """
+  @spec publications(map()) :: any()
+  def publications(args) do
+    args
+    |> Publications.Queries.publications()
+    |> Helpers.Connection.from_query(args)
+  end
+
+  @doc """
+  Returns the publication count.
+
+  ## Examples
+
+      iex> publication_count(args)
+      8
+
+  """
+  @spec publication_count(map()) :: non_neg_integer()
+  def publication_count(args \\ %{}) do
+    args
+    |> Publications.Queries.publications()
+    |> Repo.count()
+  end
 
   @doc """
   Inserts a publication.

@@ -132,29 +132,6 @@ defmodule Margaret.Publications.Publication do
   end
 
   @doc """
-  Returns the query for the members of the publication.
-
-  ## Examples
-
-      iex> members(%Publication{})
-      #Ecto.Query<...>
-
-      iex> members(%Publication{}) |> Repo.all()
-      [{%User{}, %{role: :owner, member_since: ~N[2018-04-26 06:16:22.713848]}}]
-
-  """
-  @spec members(t(), Keyword.t()) :: Ecto.Query.t()
-  def members(%Publication{id: publication_id}, _opts \\ []) do
-    from(
-      u in User,
-      join: pm in assoc(u, :publication_memberships),
-      where: is_nil(u.deactivated_at),
-      where: pm.publication_id == ^publication_id,
-      select: {u, %{role: pm.role, member_since: pm.inserted_at}}
-    )
-  end
-
-  @doc """
   Preloads the tags of a publication.
   """
   @spec preload_tags(t()) :: t()
