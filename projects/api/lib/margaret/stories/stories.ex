@@ -17,7 +17,8 @@ defmodule Margaret.Stories do
     Follows,
     Notifications,
     Tags,
-    Workers
+    Workers,
+    Helpers
   }
 
   alias Accounts.User
@@ -300,27 +301,6 @@ defmodule Margaret.Stories do
   end
 
   @doc """
-  Gets the story count.
-
-  ## Examples
-
-      iex> story_count()
-      815
-
-  """
-  @spec story_count(Keyword.t()) :: non_neg_integer()
-  def story_count(opts \\ []) do
-    query =
-      if Keyword.get(opts, :published_only, false) do
-        Story.published()
-      else
-        Story
-      end
-
-    Repo.count(query)
-  end
-
-  @doc """
   Gets the star count of a story.
   """
   @spec star_count(Story.t()) :: non_neg_integer()
@@ -443,6 +423,24 @@ defmodule Margaret.Stories do
   @spec can_delete_story?(Story.t(), User.t()) :: boolean()
   def can_delete_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
   def can_delete_story?(_, _), do: false
+
+  @doc """
+  """
+  @spec stories(map()) :: any()
+  def stories(args) do
+    args
+    |> Stories.Queries.stories()
+    |> Helpers.Connection.from_query(args)
+  end
+
+  @doc """
+  """
+  @spec story_count(map()) :: non_neg_integer()
+  def story_count(args \\ %{}) do
+    args
+    |> Stories.Queries.stories()
+    |> Repo.count()
+  end
 
   @doc """
   Inserts a story.

@@ -3,7 +3,6 @@ defmodule Margaret.Follows do
   The Follows context.
   """
 
-  import Ecto.Query
   alias Ecto.Multi
 
   alias Margaret.{
@@ -11,7 +10,8 @@ defmodule Margaret.Follows do
     Accounts,
     Follows,
     Publications,
-    Notifications
+    Notifications,
+    Helpers
   }
 
   alias Accounts.User
@@ -55,60 +55,6 @@ defmodule Margaret.Follows do
     follow
     |> Follow.preload_publication()
     |> Map.fetch!(:publication)
-  end
-
-  @doc """
-  Gets all the followers of a followee.
-  """
-  @spec followers(User.t() | Publication.t()) :: [User.t()]
-  def followers(followee) do
-    followee
-    |> Follow.by_followee()
-    |> Repo.all()
-  end
-
-  @doc """
-  Gets the followee count of a user.
-
-  ## Examples
-
-    iex> followee_count(%User{})
-    42
-
-  """
-  @spec followee_count(User.t()) :: non_neg_integer()
-  def followee_count(%User{} = user) do
-    user
-    |> Follow.by_follower()
-    |> Repo.count()
-  end
-
-  @doc """
-  Gets the follower count of a followable.
-
-  ## Examples
-
-    iex> follower_count(user: %User{})
-    42
-
-    iex> follower_count(publication: %Publication{})
-    815
-
-  """
-  @spec follower_count(Keyword.t()) :: non_neg_integer
-  def follower_count(clauses) do
-    query =
-      clauses
-      |> get_followable_from_clauses()
-      |> case do
-        %User{} = user -> Follow.by_user(user)
-        %Publication{} = publication -> Follow.by_publication(publication)
-      end
-
-    query
-    |> join(:inner, [c], u in assoc(c, :follower))
-    |> User.active()
-    |> Repo.count()
   end
 
   @doc """
@@ -162,6 +108,56 @@ defmodule Margaret.Follows do
       Keyword.has_key?(clauses, :user) -> Keyword.get(clauses, :user)
       Keyword.has_key?(clauses, :publication) -> Keyword.get(clauses, :publication)
     end
+  end
+
+  @doc """
+  Returns the connection of followers of a user.
+
+  ## Examples
+
+      iex> followers(user, args)
+      {:ok, connection}
+
+  """
+  @spec followers(map()) :: any()
+  def followers(args) do
+    args
+    |> Follows.Queries.followers()
+    |> Helpers.Connection.from_query(args)
+  end
+
+  @doc """
+  Gets the follower count of a user.
+
+  ## Examples
+
+      iex> follower_count(%User{})
+      42
+
+      iex> follower_count(%User{}, active_only: true)
+      50
+
+  """
+  @spec follower_count(map()) :: non_neg_integer()
+  def follower_count(args \\ %{}) do
+    args
+    |> Follows.Queries.followers()
+    |> Repo.count()
+  end
+
+  @doc """
+  """
+  @spec followees(map()) :: any()
+  def followees(args) do
+    args
+    |> Follows.Queries.followees()
+    |> Helpers.Connection.from_query(args)
+  end
+
+  def followee_count(args \\ %{}) do
+    args
+    |> Follows.Queries.followees()
+    |> Repo.count()
   end
 
   @doc """

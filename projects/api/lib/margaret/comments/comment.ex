@@ -72,18 +72,6 @@ defmodule Margaret.Comments.Comment do
   end
 
   @doc """
-  """
-  @spec by_story(Ecto.Queryable.t(), Story.t()) :: Ecto.Query.t()
-  def by_story(query \\ Comment, %Story{id: story_id}),
-    do: where(query, [..., c], c.story_id == ^story_id)
-
-  @doc """
-  """
-  @spec by_parent(Ecto.Queryable.t(), t()) :: Ecto.Query.t()
-  def by_parent(query \\ Comment, %Comment{id: parent_id}),
-    do: where(query, [..., c], c.parent_id == ^parent_id)
-
-  @doc """
   Preloads the author of a comment.
   """
   @spec preload_author(t()) :: t()

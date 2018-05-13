@@ -8,7 +8,7 @@ defmodule MargaretWeb.Schema.PublicationTypes do
 
   alias MargaretWeb.{Resolvers, Middleware}
 
-  @desc "The role of a user on a publication."
+  @desc "The role of a user in a publication."
   enum :publication_member_role do
     value(:owner)
     value(:admin)
@@ -82,6 +82,8 @@ defmodule MargaretWeb.Schema.PublicationTypes do
 
     @desc "The members of the publication."
     connection field(:members, node_type: :user, connection: :publication_member) do
+      arg(:role, :publication_member_role)
+
       resolve(&Resolvers.Publications.resolve_members/3)
     end
 

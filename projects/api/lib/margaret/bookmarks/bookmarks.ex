@@ -9,7 +9,8 @@ defmodule Margaret.Bookmarks do
     Stories,
     Comments,
     Collections,
-    Bookmarks
+    Bookmarks,
+    Helpers
   }
 
   alias Accounts.User
@@ -91,6 +92,24 @@ defmodule Margaret.Bookmarks do
   end
 
   @doc """
+  """
+  @spec bookmarked(map()) :: any()
+  def bookmarked(args) do
+    args
+    |> Bookmarks.Queries.bookmarked()
+    |> Helpers.Connection.from_query(args)
+  end
+
+  @doc """
+  """
+  @spec bookmarked_count(map()) :: non_neg_integer()
+  def bookmarked_count(args \\ %{}) do
+    args
+    |> Bookmarks.Queries.bookmarked()
+    |> Repo.count()
+  end
+
+  @doc """
   Inserts a bookmark.
   """
   @spec insert_bookmark(map()) :: {:ok, Bookmark.t()} | {:error, any()}
@@ -105,20 +124,4 @@ defmodule Margaret.Bookmarks do
   """
   @spec delete_bookmark(Bookmark.t()) :: Bookmark.t()
   def delete_bookmark(%Bookmark{} = bookmark), do: Repo.delete(bookmark)
-
-  @doc """
-  Gets the bookmarked count of a user.
-
-  ## Examples
-
-      iex> bookmarked_count(%User{})
-      42
-
-  """
-  @spec bookmarked_count(User.t()) :: non_neg_integer()
-  def bookmarked_count(%User{} = user) do
-    query = Bookmark.by_user(user)
-
-    Repo.aggregate(query, :count, :id)
-  end
 end

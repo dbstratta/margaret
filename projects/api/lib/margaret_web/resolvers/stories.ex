@@ -3,16 +3,20 @@ defmodule MargaretWeb.Resolvers.Stories do
   The Story GraphQL resolvers.
   """
 
-  import Ecto.Query
-  alias Absinthe.Relay
-
   import MargaretWeb.Helpers, only: [ok: 1]
   alias MargaretWeb.Helpers
-  alias Margaret.{Repo, Accounts, Stories, Stars, Bookmarks, Publications, Comments}
+
+  alias Margaret.{
+    Accounts,
+    Stories,
+    Stars,
+    Bookmarks,
+    Publications,
+    Comments
+  }
+
   alias Accounts.User
   alias Stories.Story
-  alias Stars.Star
-  alias Comments.Comment
 
   @doc """
   Resolves a story by its unique hash.
@@ -94,58 +98,25 @@ defmodule MargaretWeb.Resolvers.Stories do
 
   @doc """
   Resolves a connection of stories.
-
-  TODO: Create a macro `get_popularity` that calculates
-  freshness, stars and views.
   """
   def resolve_feed(args, _resolution) do
-    query =
-      from(
-        story in Story,
-        left_join: star in Star,
-        on: star.story_id == story.id,
-        group_by: story.id,
-        order_by: [desc: count(star.id)]
-      )
-
-    # TODO: Only count stories in that feed.
-    total_count = Stories.story_count()
-
-    query
-    |> Relay.Connection.from_query(&Repo.all/1, args)
-    |> Helpers.transform_connection(total_count: total_count)
+    args
+    |> Stories.stories()
   end
 
   @doc """
   Resolves the stargazers of the story.
   """
   def resolve_stargazers(story, args, _resolution) do
-    query =
-      User
-      |> User.active()
-      |> join(:inner, [u], s in assoc(u, :stars))
-      |> Star.by_story(story)
-      |> select([u, s], {u, %{starred_at: s.inserted_at}})
-
-    total_count = Stories.star_count(story)
-
-    query
-    |> Relay.Connection.from_query(&Repo.all/1, args)
-    |> Helpers.transform_connection(total_count: total_count)
+    args
+    |> Map.put(:story, story)
+    |> Stars.stargazers()
   end
 
   def resolve_comments(story, args, _resolution) do
-    query =
-      Comment
-      |> Comment.by_story(story)
-      |> join(:inner, [c], u in assoc(c, :author))
-      |> User.active()
-
-    total_count = Stories.comment_count(story)
-
-    query
-    |> Relay.Connection.from_query(&Repo.all/1, args)
-    |> Helpers.transform_connection(total_count: total_count)
+    args
+    |> Map.put(:story, story)
+    |> Comments.comments()
   end
 
   def resolve_is_under_publication(story, _args, _resolution) do
@@ -157,7 +128,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves whether the viewer can star the story.
   """
-  def resolve_viewer_can_star(_story, _args, _resolution), do: {:ok, true}
+  def resolve_viewer_can_star(_story, _args, _resolution), do: ok(true)
 
   @doc """
   Resolves whether the viewer has starred this story.
@@ -171,7 +142,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves whether the viewer can bookmark the story.
   """
-  def resolve_viewer_can_bookmark(_story, _args, _resolution), do: {:ok, true}
+  def resolve_viewer_can_bookmark(_story, _args, _resolution), do: ok(true)
 
   def resolve_viewer_has_bookmarked(story, _args, %{context: %{viewer: viewer}}) do
     [user: viewer, story: story]
@@ -182,7 +153,7 @@ defmodule MargaretWeb.Resolvers.Stories do
   @doc """
   Resolves whether the viewer can comment the story.
   """
-  def resolve_viewer_can_comment(_story, _args, _resolution), do: {:ok, true}
+  def resolve_viewer_can_comment(_story, _args, _resolution), do: ok(true)
 
   @doc """
   Resolves whether the viewer can update the story.

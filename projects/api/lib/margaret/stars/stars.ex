@@ -13,7 +13,7 @@ defmodule Margaret.Stars do
     Comments,
     Stars,
     Notifications,
-    Workers
+    Helpers
   }
 
   alias Accounts.User
@@ -90,6 +90,30 @@ defmodule Margaret.Stars do
       |> Keyword.put(:user_id, user_id)
 
     !!get_star(clauses)
+  end
+
+  @doc """
+  """
+  @spec starred(map()) :: any()
+  def starred(args) do
+    args
+    |> Stars.Queries.starred()
+    |> Helpers.Connection.from_query(args)
+  end
+
+  @doc """
+  """
+  @spec starred_count(map()) :: non_neg_integer()
+  def starred_count(args \\ %{}) do
+    args
+    |> Stars.Queries.starred()
+    |> Repo.count()
+  end
+
+  def stargazers(args) do
+    args
+    |> Stars.Queries.stargazers()
+    |> Helpers.Connection.from_query(args)
   end
 
   @doc """
@@ -177,23 +201,5 @@ defmodule Margaret.Stars do
       Keyword.has_key?(clauses, :story) -> Keyword.get(clauses, :story)
       Keyword.has_key?(clauses, :comment) -> Keyword.get(clauses, :comment)
     end
-  end
-
-  @doc """
-  Gets the starred count of a user.
-
-  ## Examples
-
-      iex> starred_count(%User{})
-      42
-
-      iex> starred_count(%User{})
-      0
-
-  """
-  def starred_count(%User{} = user) do
-    query = Star.by_user(user)
-
-    Repo.aggregate(query, :count, :id)
   end
 end

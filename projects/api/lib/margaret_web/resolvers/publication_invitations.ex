@@ -3,6 +3,7 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
   The Publication Invitation GraphQL resolvers.
   """
 
+  import Margaret.Helpers, only: [ok: 1]
   alias MargaretWeb.Helpers
   alias Margaret.{Accounts, Publications}
   alias Accounts.User
@@ -48,27 +49,27 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
   Resolves the publication of a publication invitation.
   """
   def resolve_publication(%PublicationInvitation{publication_id: publication_id}, _, _) do
-    publication = Publications.get_publication(publication_id)
-
-    {:ok, publication}
+    publication_id
+    |> Publications.get_publication()
+    |> ok()
   end
 
   @doc """
   Resolves the invitee of a publication invitation.
   """
   def resolve_invitee(%PublicationInvitation{invitee_id: invitee_id}, _, _) do
-    invitee = Accounts.get_user(invitee_id)
-
-    {:ok, invitee}
+    invitee_id
+    |> Accounts.get_user()
+    |> ok()
   end
 
   @doc """
   Resolves the inviter of a publication invitation.
   """
   def resolve_inviter(%PublicationInvitation{inviter_id: inviter_id}, _, _) do
-    inviter = Accounts.get_user(inviter_id)
-
-    {:ok, inviter}
+    inviter_id
+    |> Accounts.get_user()
+    |> ok()
   end
 
   @doc """
@@ -94,7 +95,7 @@ defmodule MargaretWeb.Resolvers.PublicationInvitations do
   end
 
   defp do_resolve_accept_publication_invitation(nil, _) do
-    {:error, "The invitation doesn't exist"}
+    Helpers.GraphQLErrors.invitation_not_found()
   end
 
   defp do_resolve_accept_publication_invitation(

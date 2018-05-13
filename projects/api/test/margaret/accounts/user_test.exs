@@ -72,40 +72,4 @@ defmodule Margaret.UserTest do
       refute User.valid_username?(username)
     end
   end
-
-  describe "active/1" do
-    test "doesn't match deactivated users" do
-      Factory.insert_list(3, :user, deactivated_at: NaiveDateTime.utc_now())
-
-      query = User.active()
-
-      active_user_count = Repo.count(query)
-
-      assert active_user_count === 0
-    end
-
-    test "matches active users" do
-      active_user_count = 5
-      Factory.insert_list(active_user_count, :user)
-
-      query = User.active()
-
-      actual_count = Repo.count(query)
-
-      assert actual_count === active_user_count
-    end
-
-    test "matches only active users" do
-      active_user_count = 5
-      Factory.insert_list(active_user_count, :user)
-
-      Factory.insert_list(2, :user, deactivated_at: NaiveDateTime.utc_now())
-
-      query = User.active()
-
-      actual_count = Repo.count(query)
-
-      assert actual_count === active_user_count
-    end
-  end
 end

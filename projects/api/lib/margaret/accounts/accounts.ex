@@ -10,13 +10,11 @@ defmodule Margaret.Accounts do
     Repo,
     Accounts,
     Publications,
-    Stories,
-    Follows
+    Follows,
+    Helpers
   }
 
   alias Accounts.{User, SocialLogin}
-  alias Stories.Story
-  alias Publications.PublicationMembership
 
   @typedoc """
   The tuple of `provider` and `uid` from an OAuth2 provider.
@@ -167,35 +165,28 @@ defmodule Margaret.Accounts do
     |> Repo.one!()
   end
 
-  @doc """
-  Gets the user count.
-
-  ## Examples
-
-      iex> user_count()
-      42
-
-  """
-  @spec user_count(Keyword.t()) :: non_neg_integer()
-  def user_count(opts \\ []) do
-    User
-    |> maybe_include_deactivated(opts)
-    |> Repo.aggregate(:count, :id)
-  end
-
   @spec maybe_include_deactivated(Ecto.Queryable.t(), Keyword.t()) :: Ecto.Queryable.t()
   defp maybe_include_deactivated(query, opts) do
-    opts
-    |> Keyword.get(:include_deactivated, false)
-    |> do_maybe_include_deactivated(query)
+    case Keyword.get(opts, :include_deactivated, false) do
+      true -> query
+      false -> from(u in query, where: is_nil(u.deactivated_at))
+    end
   end
-
-  @spec do_maybe_include_deactivated(boolean(), Ecto.Queryable.t()) :: Ecto.Queryable.t()
-  defp do_maybe_include_deactivated(false, query), do: User.active(query)
-  defp do_maybe_include_deactivated(true, query), do: query
 
   @spec member?(User.t()) :: boolean()
   def member?(%User{}), do: false
+
+  def followers(%User{} = user, args \\ %{}) do
+    args
+    |> Map.put(:user, user)
+    |> Follows.followers()
+  end
+
+  def publications(%User{} = user, args) do
+    args
+    |> Map.put(:member, user)
+    |> Publications.publications()
+  end
 
   @doc """
   Returns `true` if the user has enabled notifications for
@@ -484,63 +475,30 @@ defmodule Margaret.Accounts do
   end
 
   @doc """
-  Gets the story count of a user.
-  Accepts the option `published_only: true`
-  which only counts pubilshed stories.
-
-  ## Examples
-
-      iex> story_count(%User{})
-      42
-
-      iex> story_count(%User{}, published_only: true)
-      0
-
   """
-  @spec story_count(User.t(), Keyword.t()) :: non_neg_integer()
-  def story_count(%User{} = author, opts \\ []) do
-    query =
-      if Keyword.get(opts, :published_only, false) do
-        Story.published()
-      else
-        Story
-      end
-      |> Story.by_author(author)
-
-    Repo.aggregate(query, :count, :id)
+  @spec users(map()) :: any()
+  def users(args) do
+    args
+    |> Accounts.Queries.users()
+    |> Helpers.Connection.from_query(args)
   end
 
   @doc """
-  Gets the follower count of a user.
+  Returns the user count.
 
   ## Examples
 
-      iex> follower_count(%User{})
-      42
+      iex> user_count()
+      1000
 
-      iex> follower_count(%User{})
-      0
-
-  """
-  @spec follower_count(User.t()) :: non_neg_integer()
-  def follower_count(%User{} = user), do: Follows.follower_count(user: user)
-
-  @doc """
-  Gets the publication count of the user.
-
-  ## Examples
-
-      iex> publication_count(%User{})
-      42
-
-      iex> publication_count(%User{})
-      0
+      iex> user_count(%{active_only: false})
+      2000
 
   """
-  @spec publication_count(User.t()) :: non_neg_integer()
-  def publication_count(%User{} = user) do
-    query = PublicationMembership.by_member(user)
-
-    Repo.aggregate(query, :count, :id)
+  @spec user_count(map()) :: non_neg_integer()
+  def user_count(args) do
+    args
+    |> Accounts.Queries.users()
+    |> Repo.count()
   end
 end

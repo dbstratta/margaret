@@ -28,10 +28,9 @@ defmodule MargaretWeb.Middleware.RequireAuthenticated do
   alias Margaret.Accounts.User
   alias MargaretWeb.Helpers
 
-  @doc false
-  @impl true
+  @impl Absinthe.Middleware
   def call(%Absinthe.Resolution{state: :resolved} = resolution, _), do: resolution
   def call(%Absinthe.Resolution{context: %{viewer: %User{}}} = resolution, _), do: resolution
-  def call(resolution, resolve: value), do: put_result(resolution, {:error, value})
+  def call(resolution, resolve: value), do: put_result(resolution, Margaret.Helpers.ok(value))
   def call(resolution, _), do: put_result(resolution, Helpers.GraphQLErrors.unauthorized())
 end

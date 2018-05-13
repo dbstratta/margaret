@@ -47,6 +47,7 @@ defmodule Margaret.MixProject do
       {:ueberauth_github, "~> 0.7.0"},
       {:ueberauth_google, "~> 0.7.0"},
       {:ueberauth_facebook, "~> 0.7.0"},
+      {:bodyguard, "~> 2.2.2"},
       {:absinthe, "~> 1.4.10"},
       {:absinthe_plug, "~> 1.4.3", override: true},
       {:absinthe_relay, "~> 1.4.2"},

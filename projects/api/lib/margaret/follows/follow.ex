@@ -54,44 +54,6 @@ defmodule Margaret.Follows.Follow do
   end
 
   @doc """
-  Filters the follows by follower.
-  """
-  @spec by_follower(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
-  def by_follower(query \\ Follow, %User{id: follower_id}),
-    do: where(query, [..., f], f.follower_id == ^follower_id)
-
-  @doc """
-  Filters the follows by followed user.
-  """
-  @spec by_user(Ecto.Queryable.t(), User.t()) :: Ecto.Query.t()
-  def by_user(query \\ Follow, %User{id: user_id}),
-    do: where(query, [..., f], f.user_id == ^user_id)
-
-  @doc """
-  Filters the follows by followed publication.
-  """
-  @spec by_publication(Ecto.Queryable.t(), Publication.t()) :: Ecto.Query.t()
-  def by_publication(query \\ Follow, %Publication{id: publication_id}),
-    do: where(query, [..., f], f.publication_id == ^publication_id)
-
-  @doc """
-  Filters the follows by followee.
-  """
-  @spec by_followee(Ecto.Queryable.t(), User.t() | Publication.t()) :: Ecto.Queryable.t()
-  def by_followee(query \\ Follow, followee)
-  def by_followee(query, %User{} = user), do: by_user(query, user)
-  def by_followee(query, %Publication{} = publication), do: by_publication(query, publication)
-
-  def followees(query \\ Follow, %User{} = user, _opts \\ []) do
-    query
-    |> Follow.by_follower(user)
-    |> join(:left, [f], u in assoc(f, :user))
-    |> User.active()
-    |> join(:left, [f], p in assoc(f, :publication))
-    |> select([f, u, p], {[u, p], %{followed_at: f.inserted_at}})
-  end
-
-  @doc """
   Preloads the follower of a follow.
   """
   @spec preload_follower(t()) :: t()
