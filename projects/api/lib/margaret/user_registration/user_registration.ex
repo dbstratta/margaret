@@ -20,7 +20,7 @@ defmodule Margaret.UserRegistration do
           map()
         ) :: User.t()
   def get_user_by_social_credentials_or_register_user!(social_credentials, attrs) do
-    SocialLogins.get_user_by_social_login!(social_credentials)
+    SocialLogins.get_user_by_social_credentials!(social_credentials)
   rescue
     _ -> get_user_by_email_or_register_user!(social_credentials, attrs)
   end

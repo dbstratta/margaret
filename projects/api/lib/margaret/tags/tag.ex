@@ -45,12 +45,6 @@ defmodule Margaret.Tags.Tag do
     |> validate_required(required_attrs)
     |> unique_constraint(:title)
   end
-
-  @doc """
-  Filters the tags in the query by a title list.
-  """
-  @spec by_titles(Ecto.Queryable.t(), [String.t()]) :: Ecto.Query.t()
-  def by_titles(query \\ Tag, titles), do: where(query, [..., t], t.title in ^titles)
 end
 
 defimpl String.Chars, for: Margaret.Tags.Tag do

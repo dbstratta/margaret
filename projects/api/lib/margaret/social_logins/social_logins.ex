@@ -36,8 +36,9 @@ defmodule Margaret.SocialLogins do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_social_login!(social_credentials(), Keyword.t()) :: User.t() | no_return()
-  def get_user_by_social_login!({provider, uid}, opts \\ []) do
+  @spec get_user_by_social_credentials!(social_credentials(), Keyword.t()) ::
+          User.t() | no_return()
+  def get_user_by_social_credentials!({provider, uid}, opts \\ []) do
     active_users_only = Keyword.get(opts, :active_only, false)
     users_query = Accounts.Queries.users(%{active_only: active_users_only})
 

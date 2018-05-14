@@ -3,8 +3,12 @@ defmodule Margaret.Tags do
   The Tags context.
   """
 
-  alias Margaret.Repo
-  alias Margaret.Tags.Tag
+  alias Margaret.{
+    Repo,
+    Tags
+  }
+
+  alias Tags.Tag
 
   @doc """
   Gets a tag by its id.
@@ -77,22 +81,30 @@ defmodule Margaret.Tags do
   """
   @spec insert_and_get_all_tags([String.t()]) :: [%Tag{}]
   def insert_and_get_all_tags(tag_titles) when is_list(tag_titles) do
+    insert_tags(tag_titles)
+
+    tags(%{titles: tag_titles})
+  end
+
+  defp insert_tags(tag_titles) do
+    tag_entries = tag_entries_from_tag_titles(tag_titles)
+
+    Repo.insert_all(Tag, tag_entries, on_conflict: :nothing)
+  end
+
+  defp tag_entries_from_tag_titles(tag_titles) do
     now = NaiveDateTime.utc_now()
 
-    # Convert the tag title list into Tag structs to bulk insert.
-    structs =
-      tag_titles
-      |> Stream.map(&String.trim/1)
-      |> Stream.map(&%{title: &1})
-      |> Stream.map(&Map.put(&1, :inserted_at, now))
-      |> Enum.map(&Map.put(&1, :updated_at, now))
-
-    # Insert the structs.
-    Repo.insert_all(Tag, structs, on_conflict: :nothing)
-
-    # Retrieve the structs.
     tag_titles
-    |> Tag.by_titles()
+    |> Stream.map(&String.trim/1)
+    |> Stream.map(&%{title: &1})
+    |> Stream.map(&Map.put(&1, :inserted_at, now))
+    |> Enum.map(&Map.put(&1, :updated_at, now))
+  end
+
+  def tags(args \\ %{}) do
+    args
+    |> Tags.Queries.tags()
     |> Repo.all()
   end
 end
