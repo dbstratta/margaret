@@ -1,13 +1,16 @@
 defmodule MargaretWeb.AuthController do
   @moduledoc """
   The Authentication controller.
+
+  Here we handle OAuth2 callbacks and JWT operations
+  related to authentication.
   """
 
   use MargaretWeb, :controller
 
-  alias Margaret.Accounts
+  alias Margaret.{Accounts, UserRegistration}
 
-  plug(Ueberauth)
+  plug Ueberauth
 
   @doc """
   We don't need this function, but we need it to reference it in the router.
@@ -15,16 +18,6 @@ defmodule MargaretWeb.AuthController do
   and redirect to the Authorization Server.
   """
   def request(conn, _params), do: send_resp(conn, 400, "")
-
-  @spec get_email_from_provided_info(Plug.Conn.t()) :: String.t()
-  defp get_email_from_provided_info(%Plug.Conn{} = conn) do
-    conn.assigns.ueberauth_auth.extra.raw_info.user.email
-  end
-
-  @spec get_attrs_from_provided_info(Plug.Conn.t()) :: map()
-  defp get_attrs_from_provided_info(%Plug.Conn{} = _conn) do
-    %{}
-  end
 
   @doc """
   Callback handler for OAuth2 redirects.
@@ -34,47 +27,34 @@ defmodule MargaretWeb.AuthController do
     send_resp(conn, 500, "")
   end
 
-  def callback(%{assigns: %{ueberauth_auth: %{provider: provider, uid: uid}}} = conn, _params) do
-    email = get_email_from_provided_info(conn)
-    attrs = get_attrs_from_provided_info(conn)
+  def callback(conn, _params) do
+    attrs = extract_attrs_from_provided_info(conn)
+    social_credentials = extract_social_credentials_from_provided_info(conn)
 
-    social_credentials = {to_string(provider), to_string(uid)}
-
-    token = get_token(email, social_credentials, attrs)
-
-    json(conn, %{token: token})
-  end
-
-  @spec get_token(String.t(), Accounts.social_credentials(), map()) :: Guardian.Token.token()
-  defp get_token(email, social_credentials, attrs) do
-    get_user_and_get_token!(social_credentials)
-  rescue
-    _ -> insert_user_and_get_token!(email, social_credentials, attrs)
-  end
-
-  defp get_user_and_get_token!(social_credentials) do
-    {:ok, token, _} =
+    {:ok, user} =
       social_credentials
-      |> Accounts.get_user_by_social_login!(include_deactivated: true)
-      |> Accounts.activate_user!()
-      |> MargaretWeb.Guardian.encode_and_sign()
+      |> UserRegistration.get_user_by_social_credentials_or_register_user!(attrs)
+      |> Accounts.activate_user()
 
-    token
+    token = MargaretWeb.Guardian.encode_and_sign(user)
+    response = %{token: token}
+
+    json(conn, response)
   end
 
-  @spec insert_user_and_get_token!(String.t(), Accounts.social_credentials(), map()) ::
-          Guardian.Token.token() | no_return()
-  defp insert_user_and_get_token!(email, social_credentials, attrs) do
-    user =
-      email
-      |> Accounts.get_or_insert_user!(attrs)
-      |> Accounts.activate_user!()
+  @spec extract_attrs_from_provided_info(Plug.Conn.t()) :: map()
+  defp extract_attrs_from_provided_info(%Plug.Conn{} = conn) do
+    %{
+      email: conn.assigns.ueberauth_auth.extra.raw_info.user.email
+    }
+  end
 
-    Accounts.link_social_login_to_user!(user, social_credentials)
+  @spec extract_social_credentials_from_provided_info(Plug.Conn.t()) ::
+          SocialLogins.social_credentials()
+  defp extract_social_credentials_from_provided_info(conn) do
+    %{provider: provider, uid: uid} = conn.assigns.ueberauth_auth
 
-    {:ok, token, _} = MargaretWeb.Guardian.encode_and_sign(user)
-
-    token
+    {to_string(provider), to_string(uid)}
   end
 
   @doc """
@@ -83,11 +63,13 @@ defmodule MargaretWeb.AuthController do
   def refresh(conn, %{token: token}) do
     token
     |> MargaretWeb.Guardian.refresh()
-    |> do_refresh(conn)
+    |> case do
+      {:ok, _old, {new_token, _new_claims}} ->
+        response = %{token: new_token}
+        json(conn, response)
+
+      {:error, reason} ->
+        send_resp(conn, 401, reason)
+    end
   end
-
-  defp do_refresh({:ok, _old, {new_token, _new_claims}}, conn),
-    do: json(conn, %{token: new_token})
-
-  defp do_refresh({:error, reason}, conn), do: send_resp(conn, 401, reason)
 end

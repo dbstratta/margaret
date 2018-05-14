@@ -1,6 +1,6 @@
-defmodule Margaret.Stories.Policy do
+defmodule Margaret.Bookmarks.Policy do
   @moduledoc """
-  Policy module for Stories.
+  Policy module for Bookmarks.
   """
 
   @behaviour Bodyguard.Policy
@@ -12,5 +12,5 @@ defmodule Margaret.Stories.Policy do
   alias Accounts.User
 
   @impl Bodyguard.Policy
-  def authorize(_action, %User{is_admin: true}, _story), do: :ok
+  def authorize(_action, %User{is_admin: true}, _), do: :ok
 end

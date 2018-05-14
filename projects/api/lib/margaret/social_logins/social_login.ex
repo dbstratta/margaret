@@ -1,6 +1,10 @@
-defmodule Margaret.Accounts.SocialLogin do
+defmodule Margaret.SocialLogins.SocialLogin do
   @moduledoc """
   The Social Login schema and changesets.
+
+  Users can sign in through OAuth2 providers,
+  so we need to store those credentials.
+  A social login serves that porpouse.
   """
 
   use Ecto.Schema
@@ -14,7 +18,7 @@ defmodule Margaret.Accounts.SocialLogin do
   schema "social_logins" do
     # The user id from the provider.
     field(:uid, :string)
-    # Providers are Facebook, Google, GitHub, etc.
+    # provider can be "facebook", "google", "github", etc.
     field(:provider, :string)
 
     belongs_to(:user, User)

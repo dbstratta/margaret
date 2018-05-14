@@ -9,17 +9,10 @@ defmodule Margaret.Accounts do
   alias Margaret.{
     Repo,
     Accounts,
-    Publications,
-    Follows,
     Helpers
   }
 
-  alias Accounts.{User, SocialLogin}
-
-  @typedoc """
-  The tuple of `provider` and `uid` from an OAuth2 provider.
-  """
-  @type social_credentials :: {provider :: String.t(), uid :: String.t()}
+  alias Accounts.User
 
   @doc """
   Gets a single user.
@@ -142,29 +135,6 @@ defmodule Margaret.Accounts do
     |> Repo.get_by!(clauses)
   end
 
-  @doc """
-  Gets a user by its social login.
-
-  Raises `Ecto.NoResultsError` if the User does not exist.
-
-  ## Examples
-
-      iex> get_user_by_social_login!(:facebook, 123)
-      %User{}
-
-      iex> get_user_by_social_login!(:google, 456)
-      ** (Ecto.NoResultsError)
-
-  """
-  @spec get_user_by_social_login!(social_credentials(), Keyword.t()) :: User.t() | no_return()
-  def get_user_by_social_login!({provider, uid}, opts \\ []) do
-    User
-    |> maybe_include_deactivated(opts)
-    |> join(:inner, [u], sl in assoc(u, :social_logins))
-    |> where([..., sl], sl.provider == ^provider and sl.uid == ^uid)
-    |> Repo.one!()
-  end
-
   @spec maybe_include_deactivated(Ecto.Queryable.t(), Keyword.t()) :: Ecto.Queryable.t()
   defp maybe_include_deactivated(query, opts) do
     case Keyword.get(opts, :include_deactivated, false) do
@@ -173,20 +143,14 @@ defmodule Margaret.Accounts do
     end
   end
 
+  def admin?(%User{is_admin: true}), do: true
+  def admin?(_user), do: false
+
+  def active?(%User{deactivated_at: nil}), do: true
+  def active?(_user), do: false
+
   @spec member?(User.t()) :: boolean()
   def member?(%User{}), do: false
-
-  def followers(%User{} = user, args \\ %{}) do
-    args
-    |> Map.put(:user, user)
-    |> Follows.followers()
-  end
-
-  def publications(%User{} = user, args) do
-    args
-    |> Map.put(:member, user)
-    |> Publications.publications()
-  end
 
   @doc """
   Returns `true` if the user has enabled notifications for
@@ -205,14 +169,13 @@ defmodule Margaret.Accounts do
 
   @doc """
   Inserts a user.
-  TODO: Refactor to use Ecto.Multi and send email when creating user.
 
   ## Examples
 
       iex> insert_user(attrs)
       {:ok, %User{}}
 
-      iex> insert_user(%{field: bad_value})
+      iex> insert_user(bad_attrs)
       {:error, %Ecto.Changeset{}}
 
   """
@@ -224,91 +187,15 @@ defmodule Margaret.Accounts do
   end
 
   @doc """
-  Inserts a user.
-
-  Raises `Ecto.InvalidChangesetError` if the attributes are invalid.
-
-  ## Examples
-
-      iex> insert_user!(attrs)
-      %User{}
-
-      iex> insert_user!(bad_attrs)
-      ** (Ecto.InvalidChangesetError)
-
-  """
-  @spec insert_user!(map()) :: User.t() | no_return()
-  def insert_user!(attrs) do
-    attrs
-    |> User.changeset()
-    |> Repo.insert!()
-  end
-
-  @spec form_username_from_email(String.t()) :: String.t()
-  defp form_username_from_email(email) do
-    email
-    |> String.split("@")
-    |> List.first()
-  end
-
-  @doc """
-  Gets or inserts a user by given email.
-
-  If there's a user with that email, return it.
-  Otherwise, insert a user with that email.
-
-  When inserting the user, we try to set its username
-  to the part before the `@` in the email.
-  If it's already taken we take a UUID.
-  """
-  @spec get_or_insert_user(String.t(), map()) :: {:ok, User.t()} | {:error, any()}
-  def get_or_insert_user(email, attrs \\ %{}) do
-    email
-    |> get_user_by_email(include_deactivated: true)
-    |> do_get_or_insert_user(email, attrs)
-  end
-
-  @spec do_get_or_insert_user(User.t() | nil, String.t(), map()) ::
-          {:ok, User.t()} | {:error, any()}
-  defp do_get_or_insert_user(%User{} = user, _email, _attrs), do: {:ok, user}
-
-  defp do_get_or_insert_user(nil, email, attrs) do
-    username_from_email = form_username_from_email(email)
-
-    username =
-      if eligible_username?(username_from_email) do
-        username_from_email
-      else
-        UUID.uuid4()
-      end
-
-    attrs
-    |> Map.put(:username, username)
-    |> Map.put(:email, email)
-    |> insert_user()
-  end
-
-  @spec get_or_insert_user!(String.t(), map()) :: User.t() | no_return()
-  def get_or_insert_user!(email, attrs \\ %{}) do
-    case get_or_insert_user(email, attrs) do
-      {:ok, user} ->
-        user
-
-      {:error, reason} ->
-        raise """
-        cannot get or insert user.
-        Reason: #{inspect(reason)}
-        """
-    end
-  end
-
-  @doc """
   Returns `true` if the username is available to use.
   `false` otherwise.
   """
   @spec available_username?(String.t()) :: boolean()
-  def available_username?(username),
-    do: !get_user_by_username(username, include_deactivated: true)
+  def available_username?(username) do
+    %{username: username, active_only: false}
+    |> Accounts.Queries.users()
+    |> Repo.exists?()
+  end
 
   @doc """
   Returns `true` if the username is eligible to use.
@@ -318,14 +205,18 @@ defmodule Margaret.Accounts do
   """
   @spec eligible_username?(String.t()) :: boolean()
   def eligible_username?(username),
-    do: available_username?(username) and User.valid_username?(username)
+    do: User.valid_username?(username) and available_username?(username)
 
   @doc """
   Returns `true` if the email is available to use.
   `false` otherwise.
   """
   @spec available_email?(String.t()) :: boolean()
-  def available_email?(email), do: !get_user_by_email(email, include_deactivated: true)
+  def available_email?(email) do
+    %{email: email, active_only: false}
+    |> Accounts.Queries.users()
+    |> Repo.exists?()
+  end
 
   @doc """
   Updates a user.
@@ -343,7 +234,6 @@ defmodule Margaret.Accounts do
   @spec verify_email(User.t()) :: {:ok, User.t()} | any()
   def verify_email(%User{unverified_email: email} = user) when not is_nil(email) do
     attrs = %{email: email, unverified_email: nil}
-
     update_user(user, attrs)
   end
 
@@ -354,125 +244,15 @@ defmodule Margaret.Accounts do
   """
   @spec activate_user(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def activate_user(%User{} = user) do
-    update_user(user, %{deactivated_at: nil})
-  end
-
-  @doc """
-  Activates a user.
-  """
-  @spec activate_user!(User.t()) :: User.t() | no_return()
-  def activate_user!(%User{} = user) do
-    case activate_user(user) do
-      {:ok, user} ->
-        user
-
-      {:error, reason} ->
-        raise """
-        cannot activate user.
-        Reason: #{inspect(reason)}
-        """
-    end
+    attrs = %{deactivated_at: nil}
+    update_user(user, attrs)
   end
 
   @doc """
   Deletes a user.
   """
-  @spec delete_user(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
-  def delete_user(%User{} = user), do: Repo.delete(user)
-
-  @doc """
-  Marks a user for deletion.
-
-  Enqueues a task that deletes the account and all its content
-  after the specified time has passed.
-  """
-  def mark_user_for_deletion(%User{id: user_id} = user) do
-    user_changeset = User.update_changeset(user, %{})
-
-    # 15 days.
-    seconds_before_deletion = 60 * 60 * 24 * 15
-
-    schedule_deletion = fn _ ->
-      Exq.enqueue_in(
-        Exq,
-        "user_deletion",
-        seconds_before_deletion,
-        Margaret.Workers.DeleteAccount,
-        [user_id]
-      )
-    end
-
-    Multi.new()
-    |> Multi.update(:deactivate_user, user_changeset)
-    |> Multi.run(:schedule_deletion, schedule_deletion)
-    |> Repo.transaction()
-  end
-
-  @doc """
-  Inserts a social login.
-
-  ## Examples
-
-      iex> insert_social_login(attrs)
-      {:ok, %SocialLogin{}}
-
-      iex> insert_social_login(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  @spec insert_social_login(map()) :: {:error, Ecto.Changeset.t()} | {:ok, SocialLogin.t()}
-  def insert_social_login(attrs) do
-    attrs
-    |> SocialLogin.changeset()
-    |> Repo.insert()
-  end
-
-  @doc """
-  Inserts a social login.
-
-  Raises `Ecto.InvalidChangesetError` if the attributes are invalid.
-
-  ## Examples
-
-      iex> insert_social_login!(attrs)
-      {:ok, %SocialLogin{}}
-
-      iex> insert_social_login!(bad_attrs)
-      ** (Ecto.InvalidChangesetError)
-
-  """
-  @spec insert_social_login!(map()) :: SocialLogin.t()
-  def insert_social_login!(attrs) do
-    attrs
-    |> SocialLogin.changeset()
-    |> Repo.insert!()
-  end
-
-  @doc """
-  Links a social login to a user.
-  """
-  @spec link_social_login_to_user(User.t(), social_credentials()) ::
-          {:ok, SocialLogin.t()} | {:error, Ecto.Changeset.t()}
-  def link_social_login_to_user(%User{id: user_id}, {provider, uid}) do
-    attrs = %{user_id: user_id, provider: provider, uid: uid}
-
-    insert_social_login(attrs)
-  end
-
-  @spec link_social_login_to_user!(User.t(), social_credentials()) ::
-          SocialLogin.t() | no_return()
-  def link_social_login_to_user!(%User{} = user, social_info) do
-    case link_social_login_to_user(user, social_info) do
-      {:ok, social_login} ->
-        social_login
-
-      {:error, reason} ->
-        raise """
-        cannot link user to social login.
-        Reason: #{inspect(reason)}
-        """
-    end
-  end
+  @spec delete_user(User.t()) :: User.t()
+  def delete_user(%User{} = user), do: Repo.delete!(user)
 
   @doc """
   """
