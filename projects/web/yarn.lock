@@ -8601,9 +8601,9 @@ react-fuzzy@^0.5.2:
     fuse.js "^3.0.1"
     prop-types "^15.5.9"
 
-react-ga@2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-2.5.0.tgz#fbba2b33d41ce727f7d4cf383d54dbbfbf96c507"
+react-ga@2.5.2:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-2.5.2.tgz#1574b26e30ed668e4e74735527314393b22c55a9"
   optionalDependencies:
     prop-types "^15.6.0"
     react "^15.6.2 || ^16.0"
