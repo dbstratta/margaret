@@ -78,31 +78,6 @@ defmodule Margaret.Helpers do
   end
 
   @doc """
-  Changeset validator that validates the data exported by DraftJS.
-
-  TODO: Refactor this function into a function that takes the
-  changeset as first argument.
-
-  ## Examples
-
-      iex> validate_draftjs_data(:content, data)
-      []
-
-      iex> validate_draftjs_data(:content, invalid_data)
-      [content: "invalid data"]
-
-      iex> validate_change(changeset, :content, &validate_draftjs_data/2)
-      %Ecto.Changeset{}
-
-  """
-  @spec validate_draftjs_data(atom(), map()) :: [any()]
-  def validate_draftjs_data(_, data) when is_map(data) do
-    []
-  end
-
-  def validate_draftjs_data(field, _data), do: [{field, "invalid data"}]
-
-  @doc """
   """
   defmacro lower(a) do
     quote do

@@ -9,25 +9,30 @@ defmodule Margaret.Workers.Notifications.NewStory do
   alias Stories.Story
 
   def perform(story_id, timestamp) do
-    with %Story{published_at: published_at} = story <- Stories.get_story(story_id),
-         actual_timestamp = from_naive_to_unix!(published_at),
-         # We compare that the time of publication of the story is still
-         # the same as the one we enqueued the job with.
-         # If it's not, that means that the `published_at` was updated
-         # after this job was enqueued. And if so, this job becomes useless.
-         true <- actual_timestamp === timestamp,
-         notified_users = Stories.notifiable_users_of_new_story(story),
-         notification_attrs = %{
-           actor_id: story.author_id,
-           action: "added",
-           story_id: story.id,
-           notified_users: notified_users
-         },
-         {:ok, _} <- Notifications.insert_notification(notification_attrs) do
-      {:ok, nil}
+    with %Story{} = story <- Stories.get_story(story_id),
+         true <- published_at_matches?(story, timestamp),
+         notified_users = Stories.Notifications.notifiable_users_of_new_story(story) do
+      insert_notification(story, notified_users)
     else
       _ -> {:error, nil}
     end
+  end
+
+  defp published_at_matches?(story, timestamp) do
+    story.published_at
+    |> from_naive_to_unix!()
+    |> Kernel.===(timestamp)
+  end
+
+  defp insert_notification(story, notified_users) do
+    attrs = %{
+      actor_id: story.author_id,
+      action: "added",
+      story_id: story.id,
+      notified_users: notified_users
+    }
+
+    Notifications.insert_notification(attrs)
   end
 
   @doc """
@@ -40,21 +45,22 @@ defmodule Margaret.Workers.Notifications.NewStory do
 
   """
   @spec enqueue_notification(Multi.t()) :: Multi.t()
-  def enqueue_notification(multi) do
-    Multi.run(multi, :new_story_notification, fn
-      %{story: %Story{id: story_id, published_at: published_at}}
-      when not is_nil(published_at) ->
-        timestamp = from_naive_to_unix!(published_at)
+  def enqueue_notification(multi, opts \\ []) do
+    story_field = get_story_field_from_opts(opts)
 
-        args = [story_id, timestamp]
-        Exq.enqueue_at(Exq, "notifications", timestamp, __MODULE__, args)
+    enqueue_notification_fn = fn changes ->
+      story = Map.fetch!(changes, story_field)
+      timestamp = from_naive_to_unix!(story.published_at)
 
-      _ ->
-        {:error, nil}
-    end)
+      args = [story.id, timestamp]
+      Exq.enqueue_at(Exq, "notifications", timestamp, __MODULE__, args)
+    end
+
+    Multi.run(multi, :new_story_notification, enqueue_notification_fn)
   end
 
-  # Converts a naive datetime to a unix timestamp.
+  defp get_story_field_from_opts(opts), do: Keyword.get(opts, :story_field, :story)
+
   @spec from_naive_to_unix!(NaiveDateTime.t()) :: integer()
   defp from_naive_to_unix!(%NaiveDateTime{} = naive_datetime) do
     naive_datetime

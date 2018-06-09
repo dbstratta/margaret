@@ -2,7 +2,7 @@ defmodule Margaret.Helpers.Connection do
   @moduledoc """
   Helper functions for working with pagination connections.
 
-  See https://facebook.github.io/relay/graphql/connections.htm
+  See https://facebook.github.io/relay/graphql/connections.html
   for more information.
   """
 
@@ -28,17 +28,12 @@ defmodule Margaret.Helpers.Connection do
   """
   @spec from_query(Ecto.Queryable.t(), map(), Keyword.t()) :: {:ok, map()} | {:error, any()}
   def from_query(query, args, opts \\ []) do
-    total_count =
-      if Keyword.get(opts, :total_count, true) do
-        Repo.count(query)
-      else
-        nil
-      end
+    total_count = maybe_get_total_count(opts, query)
 
     case Relay.Connection.from_query(query, &Repo.all/1, args) do
       {:ok, connection} ->
         connection
-        |> put_total_count(total_count)
+        |> maybe_put_total_count(total_count)
         |> transform_edges()
         |> Helpers.ok()
 
@@ -47,13 +42,20 @@ defmodule Margaret.Helpers.Connection do
     end
   end
 
-  # Puts `total_count` in the connection.
-  # If `total_count` is `nil`, doesn't do anything.
-  @spec put_total_count(any, non_neg_integer() | nil) :: any()
-  defp put_total_count(connection, total_count) when not is_nil(total_count),
+  @spec maybe_get_total_count(Keyword.t(), Ecto.Queryable.t()) :: non_neg_integer() | nil
+  defp maybe_get_total_count(opts, query) do
+    if Keyword.get(opts, :total_count, true) do
+      Repo.count(query)
+    else
+      nil
+    end
+  end
+
+  @spec maybe_put_total_count(any, non_neg_integer() | nil) :: any()
+  defp maybe_put_total_count(connection, total_count) when not is_nil(total_count),
     do: Map.put(connection, :total_count, total_count)
 
-  defp put_total_count(connection, nil), do: connection
+  defp maybe_put_total_count(connection, nil), do: connection
 
   @spec transform_edges(map()) :: map()
   defp transform_edges(connection) do

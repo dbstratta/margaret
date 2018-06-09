@@ -1,10 +1,10 @@
-defmodule Margaret.Collections.CollectionStory do
+defmodule Margaret.CollectionStories.CollectionStory do
   @moduledoc """
   The Collection Story schema and changesets.
   """
 
   use Ecto.Schema
-  import Ecto.{Changeset, Query}
+  import Ecto.Changeset
 
   alias __MODULE__
 
@@ -63,11 +63,4 @@ defmodule Margaret.Collections.CollectionStory do
     |> cast(attrs, permitted_attrs)
     |> validate_number(:part, greater_than_or_equal_to: 1)
   end
-
-  @doc """
-  Filters the collection stories by collection.
-  """
-  @spec by_collection(Ecto.Queryable.t(), Collection.t()) :: Ecto.Query.t()
-  def by_collection(query \\ CollectionStory, %Collection{id: collection_id}),
-    do: where(query, [..., cs], cs.collection_id == ^collection_id)
 end

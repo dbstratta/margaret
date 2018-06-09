@@ -1,13 +1,10 @@
 defmodule Margaret.Stories.Story do
   @moduledoc """
   The Story schema and changesets.
-
-  TODO: In the future, it would be a good idea to validate
-  the format of the `content` field.
   """
 
   use Ecto.Schema
-  import Ecto.{Changeset, Query}
+  import Ecto.Changeset
   import EctoEnum, only: [defenum: 3]
 
   alias __MODULE__
@@ -18,7 +15,7 @@ defmodule Margaret.Stories.Story do
     Stars.Star,
     Comments.Comment,
     Publications.Publication,
-    Collections.CollectionStory,
+    CollectionStories.CollectionStory,
     Tags.Tag,
     Helpers
   }
@@ -85,7 +82,7 @@ defmodule Margaret.Stories.Story do
     %Story{}
     |> cast(attrs, permitted_attrs)
     |> validate_required(required_attrs)
-    |> validate_change(:content, &Helpers.validate_draftjs_data/2)
+    |> Helpers.DraftJS.validate_draftjs_data(field: :content)
     |> assoc_constraint(:author)
     |> assoc_constraint(:publication)
     |> Helpers.maybe_put_tags_assoc(attrs)
@@ -114,7 +111,7 @@ defmodule Margaret.Stories.Story do
     story
     |> cast(attrs, permitted_attrs)
     |> validate_published_at()
-    |> validate_change(:content, &Helpers.validate_draftjs_data/2)
+    |> Helpers.DraftJS.validate_draftjs_data(field: :content)
     |> assoc_constraint(:publication)
     |> Helpers.maybe_put_tags_assoc(attrs)
   end

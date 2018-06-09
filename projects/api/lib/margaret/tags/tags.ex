@@ -3,9 +3,12 @@ defmodule Margaret.Tags do
   The Tags context.
   """
 
+  alias Ecto.Multi
+
   alias Margaret.{
     Repo,
-    Tags
+    Tags,
+    Helpers
   }
 
   alias Tags.Tag
@@ -64,6 +67,18 @@ defmodule Margaret.Tags do
     attrs
     |> Tag.changeset()
     |> Repo.insert()
+  end
+
+  def insert_and_get_all_tags_multi(multi, tag_titles, opts \\ []) do
+    multi_key = Keyword.get(opts, :key, :tags)
+
+    insert_and_get_all_tags_fn = fn _ ->
+      tag_titles
+      |> Tags.insert_and_get_all_tags()
+      |> Helpers.ok()
+    end
+
+    Multi.run(multi, multi_key, insert_and_get_all_tags_fn)
   end
 
   @doc """

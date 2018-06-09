@@ -148,9 +148,11 @@ defmodule Margaret.Notifications do
       {:ok, %UserNotification{}}
 
   """
-  @spec read(UserNotification.t()) :: {:ok, UserNotification.t()} | {:error, Ecto.Changeset.t()}
-  def read(%UserNotification{} = user_notification) do
-    update_user_notification(user_notification, %{read_at: NaiveDateTime.utc_now()})
+  @spec read_notification(UserNotification.t()) ::
+          {:ok, UserNotification.t()} | {:error, Ecto.Changeset.t()}
+  def read_notification(%UserNotification{} = user_notification) do
+    attrs = %{read_at: NaiveDateTime.utc_now()}
+    update_user_notification(user_notification, attrs)
   end
 
   defp update_user_notification(%UserNotification{} = user_notification, attrs) do

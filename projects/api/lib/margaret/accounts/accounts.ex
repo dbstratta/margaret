@@ -4,7 +4,6 @@ defmodule Margaret.Accounts do
   """
 
   import Ecto.Query
-  alias Ecto.Multi
 
   alias Margaret.{
     Repo,

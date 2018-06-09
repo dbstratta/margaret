@@ -12,13 +12,15 @@ defmodule Margaret.Collections do
     Stories,
     Publications,
     Collections,
+    CollectionStories,
     Tags
   }
 
   alias Accounts.User
   alias Stories.Story
   alias Publications.Publication
-  alias Collections.{Collection, CollectionStory}
+  alias Collections.Collection
+  alias CollectionStories.CollectionStory
   alias Tags.Tag
 
   @doc """
@@ -111,7 +113,7 @@ defmodule Margaret.Collections do
   """
   @spec story_part(Story.t()) :: non_neg_integer() | nil
   def story_part(%Story{} = story) do
-    case get_collection_story(story) do
+    case CollectionStories.get_collection_story(story) do
       %CollectionStory{part: part} -> part
       nil -> nil
     end
@@ -226,46 +228,13 @@ defmodule Margaret.Collections do
     |> Repo.count()
   end
 
-  @doc """
-  Gets the part number of the next story of the collection.
+  def add_story(%Collection{id: collection_id} = collection, %Story{id: story_id}) do
+    part = next_part_number(collection)
+    attrs = %{collection_id: collection_id, story_id: story_id, part: part}
 
-  ## Examples
+    CollectionStories.insert_collection_story(attrs)
+  end
 
-      iex> next_part_number(%Collection{})
-      3
-
-  """
   @spec next_part_number(Collection.t()) :: pos_integer()
-  def next_part_number(%Collection{} = collection), do: story_count(collection) + 1
-
-  @doc """
-  Gets a collection story by a story id.
-  Returns `nil` if the story isn't in a collection.
-  """
-  @spec get_collection_story(Story.t()) :: CollectionStory.t() | nil
-  def get_collection_story(%Story{id: story_id}) do
-    Repo.get_by(CollectionStory, story_id: story_id)
-  end
-
-  @doc """
-  Inserts a collection story.
-  """
-  @spec insert_collection_story(map()) ::
-          {:ok, CollectionStory.t()} | {:error, Ecto.Changeset.t()}
-  def insert_collection_story(attrs) do
-    attrs
-    |> CollectionStory.changeset()
-    |> Repo.insert()
-  end
-
-  @doc """
-  Updates a collection story.
-  """
-  @spec update_collection_story(CollectionStory.t(), map()) ::
-          {:ok, CollectionStory.t()} | {:error, Ecto.Changeset.t()}
-  def update_collection_story(%CollectionStory{} = collection_story, attrs) do
-    collection_story
-    |> CollectionStory.update_changeset(attrs)
-    |> Repo.update()
-  end
+  defp next_part_number(%Collection{} = collection), do: story_count(collection) + 1
 end
