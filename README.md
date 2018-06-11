@@ -1,4 +1,4 @@
-# Margaret
+<p align="center"><img src="logo/horizontal.png" alt="margaret" height="150px"></p>
 
 [![Travis branch](https://img.shields.io/travis/strattadb/margaret/develop.svg?style=flat-square)](https://travis-ci.org/strattadb/margaret)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
