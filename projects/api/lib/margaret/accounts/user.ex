@@ -12,6 +12,7 @@ defmodule Margaret.Accounts.User do
   alias Margaret.{
     Repo,
     Accounts,
+    SocialLogins,
     Publications,
     Collections.Collection,
     Stories.Story,
@@ -21,7 +22,7 @@ defmodule Margaret.Accounts.User do
     Follows
   }
 
-  alias Accounts.SocialLogin
+  alias SocialLogins.SocialLogin
   alias Publications.{Publication, PublicationMembership}
   alias Follows.Follow
 

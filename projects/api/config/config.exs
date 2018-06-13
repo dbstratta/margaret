@@ -15,10 +15,10 @@ config :margaret, MargaretWeb.Endpoint,
   render_errors: [view: MargaretWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Margaret.PubSub, adapter: Phoenix.PubSub.PG2]
 
-# Configures CORSPlug
+# CORSPlug
 config :cors_plug, methods: ["GET", "POST"]
 
-# Configures Ueberauth
+# Ueberauth
 config :ueberauth, Ueberauth,
   providers: [
     github: {Ueberauth.Strategy.Github, []},
@@ -26,38 +26,42 @@ config :ueberauth, Ueberauth,
     facebook: {Ueberauth.Strategy.Facebook, []}
   ]
 
-# Configures Github's Oauth2
+# Github's Oauth2
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
   client_id: System.get_env("GITHUB_CLIENT_ID"),
   client_secret: System.get_env("GITHUB_CLIENT_SECRET")
 
-# Configures Google's Oauth2
+# Google's Oauth2
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_id: System.get_env("GOOGLE_CLIENT_ID"),
   client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
 
-# Configures Facebook's Oauth2
+# Facebook's Oauth2
 config :ueberauth, Ueberauth.Strategy.Facebook.OAuth,
   client_id: System.get_env("FACEBOOK_CLIENT_ID"),
   client_secret: System.get_env("FACEBOOK_CLIENT_SECRET")
 
-# Configures Guardian
+# Guardian
 config :margaret, MargaretWeb.Guardian,
   issuer: "Margaret",
   secret_key: "Cs+SatzTr/4GlMDYRn+lHQCu+iP7b0hIhr71xDT62J3G+gDb5wlma/UMuxJWOdea"
 
-# Configures Swoosh
+# Stripe
+config :stripity_stripe,
+  api_key: System.get_env("STRIPE_API_KEY")
+
+# Swoosh
 config :margaret, Margaret.Mailer, adapter: Swoosh.Adapters.Local
 
-# Configures Sentry
+# Sentry
 config :sentry,
-  dsn: System.get_env("API__SENRTY_DSN"),
+  dsn: System.get_env("SENRTY_DSN"),
   included_environments: [:prod],
   environment_name: Mix.env(),
   enable_source_code_context: true,
   root_source_code_path: File.cwd!()
 
-# Configures Exq
+# Exq
 config :exq,
   name: Exq,
   host: "redis",
@@ -68,7 +72,7 @@ config :exq,
   scheduler_enable: true,
   max_retries: 0
 
-# Configures Elixir's Logger
+# Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]

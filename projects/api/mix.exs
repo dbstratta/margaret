@@ -52,6 +52,7 @@ defmodule Margaret.MixProject do
       {:absinthe_plug, "~> 1.4.3", override: true},
       {:absinthe_relay, "~> 1.4.2"},
       {:absinthe_phoenix, "~> 1.4.2"},
+      {:stripity_stripe, "~> 2.0.0"},
       {:swoosh, "~> 0.13.0"},
       {:phoenix_swoosh, "~> 0.2.0"},
       {:sentry, "~> 6.2.0"},

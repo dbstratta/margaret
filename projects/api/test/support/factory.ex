@@ -13,26 +13,32 @@ defmodule Margaret.Factory do
 
   alias Margaret.{
     Accounts,
+    SocialLogins,
     Stories,
     Comments,
     Publications,
     Collections,
+    CollectionStories,
     Notifications,
     Stars,
     Bookmarks,
     Follows,
+    StoryViews,
     Tags
   }
 
-  alias Accounts.{User, SocialLogin}
-  alias Stories.{Story, StoryView}
+  alias Accounts.User
+  alias SocialLogins.SocialLogin
+  alias Stories.Story
   alias Comments.Comment
   alias Publications.{Publication, PublicationInvitation, PublicationMembership}
-  alias Collections.{Collection, CollectionStory}
+  alias Collections.Collection
+  alias CollectionStories.CollectionStory
   alias Notifications.{Notification, UserNotification}
   alias Stars.Star
   alias Bookmarks.Bookmark
   alias Follows.Follow
+  alias StoryViews.StoryView
   alias Tags.Tag
 
   def notification_settings_factory do

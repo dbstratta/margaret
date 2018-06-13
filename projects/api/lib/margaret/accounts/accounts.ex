@@ -148,9 +148,6 @@ defmodule Margaret.Accounts do
   def active?(%User{deactivated_at: nil}), do: true
   def active?(_user), do: false
 
-  @spec member?(User.t()) :: boolean()
-  def member?(%User{}), do: false
-
   @doc """
   Returns `true` if the user has enabled notifications for
   when one of their stories is starred.

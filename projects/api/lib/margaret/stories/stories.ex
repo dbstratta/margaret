@@ -6,6 +6,7 @@ defmodule Margaret.Stories do
   alias Margaret.{
     Repo,
     Accounts,
+    Memberships,
     Stories,
     Publications,
     Collections,
@@ -308,7 +309,7 @@ defmodule Margaret.Stories do
   end
 
   def can_see_story?(%Story{audience: :members} = story, %User{} = user) do
-    is_member = Accounts.member?(user)
+    is_member = Memberships.member?(user)
     has_been_published = has_been_published?(story)
 
     is_member and has_been_published
