@@ -37,7 +37,7 @@ services:
 
 
   postgres:
-    image: postgres:10.3@sha256:453e3be1cecf030a4ee04225352e618bcacf822276a17a79a9b0f990cb8b4aef
+    image: postgres:10.3@sha256:4bee009f05db292e794d4c288b587be60c3a526cc3bf669100be981ef0551284
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
