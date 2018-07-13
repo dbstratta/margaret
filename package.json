@@ -22,7 +22,7 @@
     "eslint-plugin-prettier": "2.6.0",
     "eslint-plugin-react": "7.8.2",
     "husky": "0.14.3",
-    "jest": "23.0.0",
+    "jest": "23.4.1",
     "lint-staged": "7.2.0",
     "prettier": "1.13.7",
     "prettier-eslint": "8.8.2",
