@@ -1,5 +1,5 @@
 # Build stage
-FROM elixir:1.6.6-alpine@sha256:c0a05d44cb462175421cbfe4c8aaf3df7dec9a7ef586766463e56b43c442661d AS builder
+FROM elixir:1.6.6-alpine@sha256:9e4dcb5fc4785c7c46def1163ffe3ad05685ea118eb21cd450097f740015ede9 AS builder
 
 LABEL name="margaret_api"
 LABEL version="1.0.0"
@@ -32,7 +32,7 @@ RUN mix do compile \
     && mv /opt/release/bin/${APP_NAME} /opt/release/bin/start_server
 
 # Final stage
-FROM alpine:3.7@sha256:8c03bb07a531c53ad7d0f6e7041b64d81f99c6e493cb39abba56d956b40eacbc
+FROM alpine:3.7@sha256:5ce5f501c457015c4b91f91a15ac69157d9b06f1a75cf9107bf2b62e0843983a
 
 ENV MIX_ENV=${MIX_ENV:-prod} REPLACE_OS_VARS=true
 
