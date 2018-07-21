@@ -5,7 +5,7 @@ defmodule Margaret.Publications.Publication do
 
   use Ecto.Schema
   use Arc.Ecto.Schema
-  import Ecto.{Changeset, Query}
+  import Ecto.Changeset
 
   alias __MODULE__
 

@@ -3,7 +3,6 @@ defmodule Margaret.Stars do
   The Stars context.
   """
 
-  import Ecto.Query
   alias Ecto.Multi
 
   alias Margaret.{
@@ -116,6 +115,12 @@ defmodule Margaret.Stars do
     |> Helpers.Connection.from_query(args)
   end
 
+  def stargazer_count(args) do
+    args
+    |> Stars.Queries.stargazers()
+    |> Repo.count()
+  end
+
   @doc """
   Inserts a star.
   """
@@ -167,33 +172,6 @@ defmodule Margaret.Stars do
   Deletes a star.
   """
   def delete_star(%Star{} = star), do: Repo.delete(star)
-
-  @doc """
-  Gets the star count of a starrable.
-
-  ## Examples
-
-      iex> star_count(story: %Story{})
-      42
-
-      iex> star_count(comment: %Comment{})
-      0
-
-  """
-  def star_count(clauses) do
-    query =
-      clauses
-      |> get_starrable_from_clauses()
-      |> case do
-        %Story{} = story -> Star.by_story(story)
-        %Comment{} = comment -> Star.by_comment(comment)
-      end
-
-    query
-    |> join(:inner, [star], u in assoc(star, :user))
-    |> User.active()
-    |> Repo.aggregate(:count, :id)
-  end
 
   @spec get_starrable_from_clauses(Keyword.t()) :: starrable()
   defp get_starrable_from_clauses(clauses) do

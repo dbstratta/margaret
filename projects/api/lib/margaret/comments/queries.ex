@@ -29,10 +29,8 @@ defmodule Margaret.Comments.Queries do
   defp maybe_filter_by_author(query, args) do
     case Map.get(args, :author) do
       %User{id: author_id} ->
-        from(
-          c in query,
+        from c in query,
           where: c.author_id == ^author_id
-        )
 
       nil ->
         query

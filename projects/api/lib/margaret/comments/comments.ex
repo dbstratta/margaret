@@ -3,7 +3,6 @@ defmodule Margaret.Comments do
   The Comments context.
   """
 
-  import Ecto.Query
   alias Margaret.Repo
 
   alias Margaret.{
@@ -82,42 +81,6 @@ defmodule Margaret.Comments do
   end
 
   @doc """
-  Gets the comment count of a commentable.
-
-  ## Examples
-
-      iex> comment_count([story: %Story{}])
-      815
-
-      iex> comment_count([comment: %Comment{}])
-      42
-
-  """
-  @spec comment_count(Keyword.t()) :: non_neg_integer()
-  def comment_count(clauses) do
-    query =
-      clauses
-      |> get_commentable_from_clauses()
-      |> case do
-        %Story{} = story -> Comment.by_story(story)
-        %Comment{} = comment -> Comment.by_parent(comment)
-      end
-
-    query
-    |> join(:inner, [c], u in assoc(c, :author))
-    |> User.active()
-    |> Repo.count()
-  end
-
-  @spec get_commentable_from_clauses(Keyword.t()) :: commentable()
-  defp get_commentable_from_clauses(clauses) do
-    cond do
-      Keyword.has_key?(clauses, :story) -> Keyword.get(clauses, :story)
-      Keyword.has_key?(clauses, :comment) -> Keyword.get(clauses, :comment)
-    end
-  end
-
-  @doc """
   Returns `true` if the user can see the comment.
   `false` otherwise.
   """
@@ -138,6 +101,15 @@ defmodule Margaret.Comments do
     args
     |> Comments.Queries.comments()
     |> Helpers.Connection.from_query(args)
+  end
+
+  @doc """
+  """
+  @spec comment_count(map()) :: non_neg_integer()
+  def comment_count(args \\ %{}) do
+    args
+    |> Comments.Queries.comments()
+    |> Repo.count()
   end
 
   @doc """

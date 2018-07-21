@@ -48,7 +48,9 @@ defmodule MargaretWeb.Resolvers.Accounts do
   Resolves the connection of followees of a user.
   """
   def resolve_followers(followee, args, _) do
-    Accounts.followers(followee, args)
+    args
+    |> Map.put(:user, followee)
+    |> Follows.followers()
   end
 
   @doc """
@@ -74,21 +76,21 @@ defmodule MargaretWeb.Resolvers.Accounts do
 
   Bookmarks are only visible to the user who bookmarked.
   """
-  def resolve_bookmarked(user, args, %{context: %{viewer: viewer}}) do
-    if user.id === viewer.id do
-      args
-      |> Map.put(:user, user)
-      |> Bookmarks.bookmarked()
-    else
-      Helpers.GraphQLErrors.unauthorized()
-    end
+  def resolve_bookmarked(%{id: user_id} = user, args, %{context: %{viewer: %{id: user_id}}}) do
+    args
+    |> Map.put(:user, user)
+    |> Bookmarks.bookmarked()
+  end
+
+  def resolve_bookmarked(_, _, _) do
+    Helpers.GraphQLErrors.unauthorized()
   end
 
   @doc """
   Resolves the publications of the user.
   """
   def resolve_publications(member, args, _) do
-    Accounts.publications(member, args)
+    Publications.publications(member, args)
   end
 
   @doc """

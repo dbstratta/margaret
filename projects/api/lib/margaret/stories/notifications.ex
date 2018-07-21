@@ -8,13 +8,14 @@ defmodule Margaret.Stories.Notifications do
   alias Margaret.{
     Repo,
     Accounts,
-    Stories
+    Stories,
+    UserSettings
   }
 
   alias Accounts.User
   alias Stories.Story
 
-  import User
+  import UserSettings
 
   @doc """
   Returns the list of notifiable users for a new story.

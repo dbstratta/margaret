@@ -1,7 +1,6 @@
 [
   inputs: [
-    "{lib,test}/**/*.{ex,exs}",
-    "priv/repo/**/*.{ex,exs}",
+    "{lib,test,priv}/**/*.{ex,exs}",
     "mix.exs",
     ".formatter.exs",
     ".iex.exs",

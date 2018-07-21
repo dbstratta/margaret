@@ -15,12 +15,10 @@ defmodule Margaret.Follows.Queries do
   @spec followers(map()) :: Ecto.Query.t()
   def followers(args \\ %{}) do
     query =
-      from(
-        u in User,
+      from u in User,
         join: f in Follow,
         on: f.follower_id == u.id,
         select: {u, %{followed_at: f.inserted_at}}
-      )
 
     query
     |> filter_by_followee(args)

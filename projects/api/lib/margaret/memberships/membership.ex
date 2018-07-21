@@ -17,7 +17,7 @@ defmodule Margaret.Memberships.Membership do
   @type t :: %Membership{}
 
   schema "membership" do
-    belongs_to :customer, Customer
+    belongs_to :customer, Customer, references: :user_id
     field :stripe_subscription_id, :string
 
     field :ended_at, :naive_datetime

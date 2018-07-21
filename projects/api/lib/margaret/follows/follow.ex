@@ -4,7 +4,7 @@ defmodule Margaret.Follows.Follow do
   """
 
   use Ecto.Schema
-  import Ecto.{Changeset, Query}
+  import Ecto.Changeset
 
   alias __MODULE__
 

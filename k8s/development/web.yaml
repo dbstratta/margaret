@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: web
-  name: development
+  namespace: development
 data:
   REACT_APP_API_URL: 'http://api.dev.margaret.com/graphql'
   REACT_GITHUB_CLIENT_ID: 'd9400d2b53d5f0469ede'

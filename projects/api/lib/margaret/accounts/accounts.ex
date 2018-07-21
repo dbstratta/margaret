@@ -3,8 +3,6 @@ defmodule Margaret.Accounts do
   The Accounts context.
   """
 
-  import Ecto.Query
-
   alias Margaret.{
     Repo,
     Accounts,
@@ -14,7 +12,7 @@ defmodule Margaret.Accounts do
   alias Accounts.User
 
   @doc """
-  Gets a single user.
+  Gets a user by its id.
 
   ## Examples
 
@@ -25,17 +23,15 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user(String.t() | non_neg_integer(), Keyword.t()) :: User.t() | nil
-  def get_user(id, opts \\ []) do
-    User
-    |> maybe_include_deactivated(opts)
-    |> Repo.get(id)
+  @spec get_user(String.t() | non_neg_integer()) :: User.t() | nil
+  def get_user(id) do
+    Repo.get(User, id)
   end
 
   @doc """
   Gets a single user.
 
-  Raises `Ecto.NoResultsError` if the User does not exist.
+  Raises `Ecto.NoResultsError` if the user does not exist.
 
   ## Examples
 
@@ -46,11 +42,9 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user!(String.t() | non_neg_integer, Keyword.t()) :: User.t() | no_return()
-  def get_user!(id, opts \\ []) do
-    User
-    |> maybe_include_deactivated(opts)
-    |> Repo.get!(id)
+  @spec get_user!(String.t() | non_neg_integer()) :: User.t() | no_return()
+  def get_user!(id) do
+    Repo.get!(User, id)
   end
 
   @doc """
@@ -65,8 +59,8 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user_by_username(String.t(), Keyword.t()) :: User.t() | nil
-  def get_user_by_username(username, opts \\ []), do: get_user_by([username: username], opts)
+  @spec get_user_by_username(String.t()) :: User.t() | nil
+  def get_user_by_username(username), do: get_user_by(username: username)
 
   @doc """
   Gets a user by its username.
@@ -82,8 +76,8 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_username!(String.t(), Keyword.t()) :: User.t() | no_return()
-  def get_user_by_username!(username, opts \\ []), do: get_user_by!([username: username], opts)
+  @spec get_user_by_username!(String.t()) :: User.t() | no_return()
+  def get_user_by_username!(username), do: get_user_by!(username: username)
 
   @doc """
   Gets a user by its email.
@@ -97,8 +91,8 @@ defmodule Margaret.Accounts do
       nil
 
   """
-  @spec get_user_by_email(String.t(), Keyword.t()) :: User.t() | nil
-  def get_user_by_email(email, opts \\ []), do: get_user_by([email: email], opts)
+  @spec get_user_by_email(String.t()) :: User.t() | nil
+  def get_user_by_email(email), do: get_user_by(email: email)
 
   @doc """
   Gets a user by its email.
@@ -114,54 +108,37 @@ defmodule Margaret.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_user_by_email!(String.t(), Keyword.t()) :: User.t() | no_return()
-  def get_user_by_email!(email, opts \\ []), do: get_user_by!([email: email], opts)
+  @spec get_user_by_email!(String.t()) :: User.t() | no_return()
+  def get_user_by_email!(email), do: get_user_by!(email: email)
 
   @doc """
   Gets a user by given clauses.
   """
-  @spec get_user_by(Keyword.t(), Keyword.t()) :: User.t() | nil
-  def get_user_by(clauses, opts \\ []) do
-    User
-    |> maybe_include_deactivated(opts)
-    |> Repo.get_by(clauses)
+  @spec get_user_by(Keyword.t()) :: User.t() | nil
+  def get_user_by(clauses) do
+    Repo.get_by(User, clauses)
   end
 
-  @spec get_user_by!(Keyword.t(), Keyword.t()) :: User.t() | no_return()
-  def get_user_by!(clauses, opts \\ []) do
-    User
-    |> maybe_include_deactivated(opts)
-    |> Repo.get_by!(clauses)
+  @doc """
+  Gets a user by given clauses.
+
+  Raises `Ecto.NoResultsError` if the User does not exist.
+  """
+  @spec get_user_by!(Keyword.t()) :: User.t() | no_return()
+  def get_user_by!(clauses) do
+    Repo.get_by!(User, clauses)
   end
 
-  @spec maybe_include_deactivated(Ecto.Queryable.t(), Keyword.t()) :: Ecto.Queryable.t()
-  defp maybe_include_deactivated(query, opts) do
-    case Keyword.get(opts, :include_deactivated, false) do
-      true -> query
-      false -> from(u in query, where: is_nil(u.deactivated_at))
-    end
-  end
-
+  @doc """
+  Returns `true` if the user is an admin.
+  """
+  @spec admin?(User.t()) :: boolean()
   def admin?(%User{is_admin: true}), do: true
   def admin?(_user), do: false
 
+  @spec active?(User.t()) :: boolean()
   def active?(%User{deactivated_at: nil}), do: true
   def active?(_user), do: false
-
-  @doc """
-  Returns `true` if the user has enabled notifications for
-  when one of their stories is starred.
-
-  ## Examples
-
-      iex> starred_story_notifications_enabled(%User{})
-      true
-
-  """
-  @spec starred_story_notifications_enabled?(User.t()) :: boolean()
-  def starred_story_notifications_enabled?(%User{settings: settings}) do
-    settings.notifications.starred_story
-  end
 
   @doc """
   Inserts a user.
@@ -215,6 +192,34 @@ defmodule Margaret.Accounts do
   end
 
   @doc """
+  """
+  @spec users(map()) :: any()
+  def users(args) do
+    args
+    |> Accounts.Queries.users()
+    |> Helpers.Connection.from_query(args)
+  end
+
+  @doc """
+  Returns the user count.
+
+  ## Examples
+
+      iex> user_count()
+      1000
+
+      iex> user_count(%{active_only: false})
+      2000
+
+  """
+  @spec user_count(map()) :: non_neg_integer()
+  def user_count(args) do
+    args
+    |> Accounts.Queries.users()
+    |> Repo.count()
+  end
+
+  @doc """
   Updates a user.
   """
   @spec update_user(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
@@ -249,32 +254,4 @@ defmodule Margaret.Accounts do
   """
   @spec delete_user(User.t()) :: User.t()
   def delete_user(%User{} = user), do: Repo.delete!(user)
-
-  @doc """
-  """
-  @spec users(map()) :: any()
-  def users(args) do
-    args
-    |> Accounts.Queries.users()
-    |> Helpers.Connection.from_query(args)
-  end
-
-  @doc """
-  Returns the user count.
-
-  ## Examples
-
-      iex> user_count()
-      1000
-
-      iex> user_count(%{active_only: false})
-      2000
-
-  """
-  @spec user_count(map()) :: non_neg_integer()
-  def user_count(args) do
-    args
-    |> Accounts.Queries.users()
-    |> Repo.count()
-  end
 end

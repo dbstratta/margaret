@@ -1,5 +1,10 @@
 {
-  "automerge": "minor",
+  "extends": ["config:base"],
+  "automerge": true,
+  "major": {
+    "automerge": false
+  },
+  "bumpVersion": "patch",
   "semanticCommits": true,
   "labels": ["renovate"],
   "assignees": ["@strattadb"],

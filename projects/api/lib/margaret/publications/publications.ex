@@ -656,12 +656,10 @@ defmodule Margaret.Publications do
       PublicationInvitation.update_changeset(invitation, %{status: :accepted})
 
     reject_others_invitations =
-      from(
-        i in PublicationInvitation,
+      from i in PublicationInvitation,
         where: i.invitee_id == ^invitation.invitee_id and i.id != ^invitation.id,
         where: i.status == ^:pending,
         update: [set: [status: ^:rejected]]
-      )
 
     membership_attrs = %{
       role: invitation.role,
@@ -728,22 +726,6 @@ defmodule Margaret.Publications do
     |> case do
       %PublicationMembership{} = membership -> delete_membership(membership)
       nil -> {:error, "User is not a member of the publication"}
-    end
-  end
-
-  @doc """
-  Kicks a member out of a publication.
-  """
-  def kick_member!(publication, user) do
-    case kick_member(publication, user) do
-      {:ok, membership} ->
-        membership
-
-      {:error, reason} ->
-        raise """
-        cannot kick member from the publication.
-        Reason: #{inspect(reason)}
-        """
     end
   end
 end

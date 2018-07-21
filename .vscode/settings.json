@@ -5,8 +5,18 @@
     "editor.quickSuggestions": true
   },
   "jest.autoEnable": false,
+  "javascript.suggestionActions.enabled": false,
   "elixirLS.dialyzerEnabled": false,
   "python.formatting.yapfArgs": [],
   "python.formatting.provider": "yapf",
-  "python.pythonPath": "/usr/bin/python3"
+  "python.pythonPath": "/usr/bin/python3",
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/_build/**": true,
+    "**/build/**": true,
+    "**/deps/**": true,
+    "**/dist/**": true,
+    "**/node_modules/**": true
+  }
 }

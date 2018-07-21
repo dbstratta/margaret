@@ -4,7 +4,7 @@ defmodule Margaret.Tags.Tag do
   """
 
   use Ecto.Schema
-  import Ecto.{Changeset, Query}
+  import Ecto.Changeset
 
   alias __MODULE__
 

@@ -5,13 +5,14 @@ defmodule Margaret.Accounts.User do
 
   use Ecto.Schema
   use Arc.Ecto.Schema
-  import Ecto.{Query, Changeset}
+  import Ecto.Changeset
 
   alias __MODULE__
 
   alias Margaret.{
     Repo,
     Accounts,
+    UserSettings,
     SocialLogins,
     Publications,
     Collections.Collection,
@@ -137,7 +138,7 @@ defmodule Margaret.Accounts.User do
 
     user
     |> cast(attrs, permitted_attrs)
-    |> cast_embed(:settings, with: &Accounts.Settings.update_changeset/2)
+    |> cast_embed(:settings, with: &UserSettings.Settings.update_changeset/2)
     |> validate_format(:username, @username_regex)
     |> validate_format(:email, @email_regex)
     |> validate_format(:unverified_email, @email_regex)
@@ -154,41 +155,6 @@ defmodule Margaret.Accounts.User do
   @doc """
   Preloads the social logins of a user.
   """
-  @spec preload_social_logins(Ecto.Queryable.t() | t()) :: Ecto.Query.t() | t()
+  @spec preload_social_logins(t()) :: t()
   def preload_social_logins(%User{} = user), do: Repo.preload(user, :social_logins)
-  def preload_social_logins(%Ecto.Query{} = query), do: preload(query, [..., u], :social_logins)
-
-  @doc """
-  Ecto query helper to filter user settings that have enabled
-  notifications for new stories.
-
-  ## Examples
-
-      iex> from u in User, where: new_story_notifications_enabled(u.settings)
-      #Ecto.Query<...>
-
-  """
-  @spec new_story_notifications_enabled(any()) :: Macro.t()
-  defmacro new_story_notifications_enabled(settings) do
-    quote do
-      fragment("(?->'notifications'->>'new_stories')::boolean = true", unquote(settings))
-    end
-  end
-
-  @doc """
-  Ecto query helper to filter user settings that have enabled
-  notifications for new followers.
-
-  ## Examples
-
-      iex> from u in User, where: new_story_notifications_enabled(u.settings)
-      #Ecto.Query<...>
-
-  """
-  @spec new_follower_notifications_enabled(any()) :: Macro.t()
-  defmacro new_follower_notifications_enabled(settings) do
-    quote do
-      fragment("(?->'notifications'->>'new_followers')::boolean = true", unquote(settings))
-    end
-  end
 end

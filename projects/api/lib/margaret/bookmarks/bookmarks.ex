@@ -49,7 +49,7 @@ defmodule Margaret.Bookmarks do
   def user(%Bookmark{} = bookmark) do
     bookmark
     |> Bookmark.preload_user()
-    |> Map.get(:user)
+    |> Map.fetch!(:user)
   end
 
   @doc """

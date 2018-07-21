@@ -3,7 +3,6 @@ defmodule Margaret.Collections do
   The Collections context.
   """
 
-  import Ecto.Query
   alias Ecto.Multi
 
   alias Margaret.{
@@ -201,10 +200,7 @@ defmodule Margaret.Collections do
   """
   @spec delete_collection(Collection.t()) :: {:ok, Collection.t()} | {:error, Ecto.Changeset.t()}
   def delete_collection(%Collection{} = collection) do
-    stories_query =
-      Story
-      |> join(:inner, [..., s], cs in assoc(s, :collection_story))
-      |> CollectionStory.by_collection(collection)
+    stories_query = Collections.Queries.stories(%{collection_id: collection.id})
 
     Multi.new()
     |> Multi.delete(:collection, collection)
@@ -217,14 +213,14 @@ defmodule Margaret.Collections do
 
   ## Examples
 
-      iex> story_count(%Collection{})
+      iex> story_count(%{collection_id: 1})
       2
 
   """
   @spec story_count(Collection.t()) :: non_neg_integer()
-  def story_count(%Collection{} = collection) do
-    collection
-    |> CollectionStory.by_collection()
+  def story_count(args) do
+    args
+    |> Collections.Queries.stories()
     |> Repo.count()
   end
 
