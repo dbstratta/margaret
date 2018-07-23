@@ -6,18 +6,13 @@ defmodule Margaret.Stories do
   alias Margaret.{
     Repo,
     Accounts,
-    Memberships,
     Stories,
-    Publications,
-    Collections,
     RichEditor,
     Helpers
   }
 
   alias Accounts.User
   alias Stories.Story
-  alias Publications.Publication
-  alias Collections.Collection
 
   @doc """
   Gets a single story by its id.
@@ -66,9 +61,14 @@ defmodule Margaret.Stories do
   @spec get_story_by_slug(String.t()) :: Story.t() | nil
   def get_story_by_slug(slug) do
     slug
+    |> unique_hash_from_slug()
+    |> get_story_by_unique_hash()
+  end
+
+  defp unique_hash_from_slug(slug) do
+    slug
     |> String.split("-")
     |> List.last()
-    |> get_story_by_unique_hash()
   end
 
   @doc """
@@ -167,44 +167,6 @@ defmodule Margaret.Stories do
   end
 
   @doc """
-  Gets the publication of a story.
-
-  ## Examples
-
-      iex> publication(%Story{})
-      %Publication{}
-
-      iex> publication(%Story{})
-      nil
-
-  """
-  @spec publication(Story.t()) :: Publication.t() | nil
-  def publication(%Story{} = story) do
-    story
-    |> Story.preload_publication()
-    |> Map.fetch!(:publication)
-  end
-
-  @doc """
-  Gets the collection of a story.
-
-  ## Examples
-
-      iex> collection(%Story{})
-      %Collection{}
-
-      iex> collection(%Story{})
-      nil
-
-  """
-  @spec collection(Story.t()) :: Collection.t() | nil
-  def collection(%Story{} = story) do
-    story
-    |> Story.preload_collection()
-    |> Map.fetch!(:collection)
-  end
-
-  @doc """
   Gets the word count of a story.
 
   ## Examples
@@ -241,19 +203,6 @@ defmodule Margaret.Stories do
   end
 
   @doc """
-  Returns `true` if the story is under a publication.
-  """
-  @spec under_publication?(Story.t()) :: boolean()
-  def under_publication?(%Story{publication_id: nil}), do: false
-  def under_publication?(%Story{}), do: true
-
-  @doc """
-  Returns `true` if the story is in a collection.
-  """
-  @spec in_collection?(Story.t()) :: boolean()
-  def in_collection?(%Story{} = story), do: !!collection(story)
-
-  @doc """
   Returns `true` if the story has been published.
   `false` otherwise.
 
@@ -286,56 +235,7 @@ defmodule Margaret.Stories do
   """
   @spec public?(Story.t()) :: boolean()
   def public?(%Story{audience: :all} = story), do: has_been_published?(story)
-  def public?(_), do: false
-
-  @doc """
-  Returns `true` if the user can see the story.
-  `false` otherwise.
-
-  ## Examples
-
-      iex> can_see_story?(%Story{}, %User{})
-      true
-
-  """
-  @spec can_see_story?(Story.t(), User.t()) :: boolean()
-  def can_see_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
-
-  def can_see_story?(%Story{publication_id: publication_id}, %User{} = user)
-      when not is_nil(publication_id) do
-    publication_id
-    |> Publications.get_publication()
-    |> Publications.can_edit_stories?(user)
-  end
-
-  def can_see_story?(%Story{audience: :members} = story, %User{} = user) do
-    is_member = Memberships.member?(user)
-    has_been_published = has_been_published?(story)
-
-    is_member and has_been_published
-  end
-
-  def can_see_story?(%Story{} = story, _user), do: public?(story)
-
-  @doc """
-  Returns `true` if the user can update the story,
-  `false` otherwise.
-
-  ## Examples
-
-      iex> can_update_story?(%Story{}, %User{})
-      true
-
-  """
-  @spec can_update_story?(Story.t(), User.t()) :: boolean()
-  def can_update_story?(%Story{author_id: author_id}, %User{id: author_id}), do: true
-
-  def can_update_story?(%Story{publication_id: publication_id}, %User{id: user_id})
-      when not is_nil(publication_id) do
-    Publications.can_edit_stories?(publication_id, user_id)
-  end
-
-  def can_update_story?(_, _), do: false
+  def public?(_story), do: false
 
   @doc """
   """
@@ -361,9 +261,9 @@ defmodule Margaret.Stories do
   ## Examples
 
       iex> delete_story(%Story{})
-      {:ok, %Story{}}
+      %Story{}
 
   """
-  @spec delete_story(Story.t()) :: {:ok, Story.t()} | {:error, Ecto.Changeset.t()}
-  def delete_story(%Story{} = story), do: Repo.delete(story)
+  @spec delete_story(Story.t()) :: Story.t()
+  def delete_story(%Story{} = story), do: Repo.delete!(story)
 end

@@ -9,6 +9,7 @@ defmodule Margaret.Messages.Message do
   alias __MODULE__
 
   alias Margaret.{
+    Repo,
     Accounts.User,
     Helpers
   }
@@ -54,5 +55,9 @@ defmodule Margaret.Messages.Message do
     |> Helpers.DraftJS.validate_draftjs_data(field: :content)
     |> assoc_constraint(:sender)
     |> assoc_constraint(:recipient)
+  end
+
+  def preload_recipient(%Message{} = message) do
+    Repo.preload(message, :recipient)
   end
 end

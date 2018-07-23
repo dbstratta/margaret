@@ -7,6 +7,7 @@ defmodule Margaret.Messages do
 
   alias Margaret.{
     Repo,
+    Notifications,
     Messages
   }
 
@@ -14,7 +15,15 @@ defmodule Margaret.Messages do
 
   @doc """
   """
-  def get_message(id), do: Repo.get(Message, id)
+  def get_message(id) do
+    Repo.get(Message, id)
+  end
+
+  def recipient(%Message{} = message) do
+    message
+    |> Message.preload_recipient()
+    |> Map.fetch!(:recipient)
+  end
 
   @doc """
   """
@@ -31,6 +40,19 @@ defmodule Margaret.Messages do
   end
 
   defp notify_recipient(multi, _attrs) do
-    multi
+    insert_notification_fn = fn %{message: message} ->
+      recipient = Messages.recipient(message)
+
+      notification_attrs = %{
+        actor_id: message.sender_id,
+        action: "added",
+        message_id: message.id,
+        notified_users: [recipient]
+      }
+
+      Notifications.insert_notification(notification_attrs)
+    end
+
+    Multi.run(multi, :notify_recipient, insert_notification_fn)
   end
 end

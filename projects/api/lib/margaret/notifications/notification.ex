@@ -15,6 +15,7 @@ defmodule Margaret.Notifications.Notification do
     Notifications.UserNotification,
     Stories.Story,
     Publications.Publication,
+    Messages.Message,
     Comments.Comment,
     Helpers
   }
@@ -42,6 +43,7 @@ defmodule Margaret.Notifications.Notification do
     belongs_to(:comment, Comment)
     belongs_to(:publication, Publication)
     belongs_to(:user, User)
+    belongs_to(:message, Message)
 
     timestamps()
   end
