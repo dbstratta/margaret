@@ -1,6 +1,6 @@
 {
   "name": "margaret_web",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",
@@ -23,7 +23,7 @@
     "graphql": "0.13.2",
     "graphql-tag": "2.9.2",
     "history": "4.7.2",
-    "polished": "1.9.2",
+    "polished": "1.9.3",
     "prop-types": "15.6.1",
     "ramda": "0.25.0",
     "react": "16.4.1",
