@@ -1,6 +1,6 @@
 {
   "name": "margaret_web",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",
@@ -19,7 +19,7 @@
     "apollo-link-http": "1.5.4",
     "date-fns": "1.29.0",
     "draft-js": "0.10.5",
-    "final-form": "4.6.1",
+    "final-form": "4.12.0",
     "graphql": "0.13.2",
     "graphql-tag": "2.9.2",
     "history": "4.7.2",
