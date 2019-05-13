@@ -2,7 +2,7 @@
   "name": "margaret",
   "description": "An open-source publishing platform",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "scripts": {
     "test": "exit 0",
     "commit": "commit"
@@ -20,10 +20,10 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@commitlint/cli": "7.5.2",
-    "@commitlint/config-conventional": "7.5.0",
-    "@commitlint/prompt-cli": "7.5.0",
-    "@commitlint/travis-cli": "7.5.2",
+    "@commitlint/cli": "7.6.1",
+    "@commitlint/config-conventional": "7.6.0",
+    "@commitlint/prompt-cli": "7.6.1",
+    "@commitlint/travis-cli": "7.6.1",
     "@playlyfe/gql": "2.6.0",
     "babel-eslint": "8.2.6",
     "codecov": "3.1.0",
