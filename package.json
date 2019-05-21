@@ -2,7 +2,7 @@
   "name": "margaret",
   "description": "An open-source publishing platform",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "scripts": {
     "test": "exit 0",
     "commit": "commit"
@@ -33,7 +33,7 @@
     "eslint-config-prettier": "2.9.0",
     "eslint-plugin-graphql": "2.1.1",
     "eslint-plugin-import": "2.13.0",
-    "eslint-plugin-jest": "21.18.0",
+    "eslint-plugin-jest": "21.27.2",
     "eslint-plugin-jsx-a11y": "6.1.1",
     "eslint-plugin-prettier": "2.6.2",
     "eslint-plugin-react": "7.10.0",
