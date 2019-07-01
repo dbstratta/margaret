@@ -1,6 +1,6 @@
 {
   "name": "margaret_web",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",
@@ -63,7 +63,7 @@
     "eslint-config-prettier": "2.9.0",
     "eslint-plugin-graphql": "2.1.1",
     "eslint-plugin-import": "2.11.0",
-    "eslint-plugin-jsx-a11y": "6.0.3",
+    "eslint-plugin-jsx-a11y": "6.2.3",
     "eslint-plugin-prettier": "2.6.0",
     "eslint-plugin-react": "7.8.2",
     "jest": "23.0.0",
