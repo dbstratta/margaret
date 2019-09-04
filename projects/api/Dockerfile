@@ -32,7 +32,7 @@ RUN mix do compile \
     && mv /opt/release/bin/${APP_NAME} /opt/release/bin/start_server
 
 # Final stage
-FROM alpine:3.7@sha256:a52b4edb6240d1534d54ee488d7cf15b3778a5cfd0e4161d426c550487cddc5d
+FROM alpine:3.7@sha256:92251458088c638061cda8fd8b403b76d661a4dc6b7ee71b6affcf1872557b2b
 
 ENV MIX_ENV=${MIX_ENV:-prod} REPLACE_OS_VARS=true
 
