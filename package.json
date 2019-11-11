@@ -2,7 +2,7 @@
   "name": "margaret",
   "description": "An open-source publishing platform",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "scripts": {
     "test": "exit 0",
     "commit": "commit"
@@ -42,7 +42,7 @@
     "husky": "1.0.0-rc.13",
     "jest": "23.4.1",
     "lint-staged": "7.2.0",
-    "prettier": "1.13.7",
+    "prettier": "1.19.1",
     "prettier-eslint": "8.8.2",
     "prettier-eslint-cli": "4.7.1",
     "puppeteer": "1.6.0",
