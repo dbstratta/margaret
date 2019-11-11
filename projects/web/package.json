@@ -1,6 +1,6 @@
 {
   "name": "margaret_web",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",
@@ -70,7 +70,7 @@
     "jest-enzyme": "6.0.2",
     "jest-styled-components": "5.0.1",
     "prettier": "1.13.7",
-    "react-app-rewire-hot-loader": "1.0.1",
+    "react-app-rewire-hot-loader": "1.0.3",
     "react-app-rewire-polished": "1.0.3",
     "react-app-rewire-styled-components": "3.0.2",
     "react-app-rewired": "1.5.2",
