@@ -1,7 +1,7 @@
 version: '3'
 services:
   nginx-proxy:
-    image: jwilder/nginx-proxy:latest@sha256:e869d7aea7c5d4bae95c42267d22c913c46afd2dd8113ebe2a24423926ba1fff
+    image: jwilder/nginx-proxy:latest@sha256:dfc0666b9747a6fc851f5fb9b03e65e957b34c95d9635b4b5d1d6b01104bde28
     ports:
       - "80:80"
     volumes:
