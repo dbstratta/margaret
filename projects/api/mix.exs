@@ -59,7 +59,7 @@ defmodule Margaret.MixProject do
       {:exq, "~> 0.12.1"},
       {:cors_plug, "~> 1.5.2"},
       {:arc, "~> 0.10.0"},
-      {:arc_ecto, "~> 0.10.0"},
+      {:arc_ecto, "~> 0.11.0"},
       {:elixir_uuid, "~> 1.2.0"},
       {:slugger, "~> 0.3.0"},
       {:distillery, "~> 1.5.3", runtime: false},
