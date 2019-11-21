@@ -58,7 +58,7 @@ defmodule Margaret.MixProject do
       {:sentry, "~> 6.4.0"},
       {:exq, "~> 0.12.1"},
       {:cors_plug, "~> 1.5.2"},
-      {:arc, "~> 0.10.0"},
+      {:arc, "~> 0.11.0"},
       {:arc_ecto, "~> 0.10.0"},
       {:elixir_uuid, "~> 1.2.0"},
       {:slugger, "~> 0.3.0"},
