@@ -65,7 +65,7 @@ defmodule Margaret.MixProject do
       {:distillery, "~> 1.5.3", runtime: false},
       {:ex_machina, "~> 2.2.0", only: [:test]},
       {:faker, "~> 0.10.0", only: [:test], override: true},
-      {:credo, "~> 0.9.3", only: [:dev, :test], runtime: false},
+      {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5.1", only: [:dev], runtime: false}
     ]
   end
