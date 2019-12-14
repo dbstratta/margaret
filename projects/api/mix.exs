@@ -37,7 +37,7 @@ defmodule Margaret.MixProject do
       {:phoenix_pubsub, "~> 1.0.2"},
       {:phoenix_ecto, "~> 3.3.0"},
       {:ecto, "~> 2.2.10", override: true},
-      {:ecto_enum, "~> 1.1.0"},
+      {:ecto_enum, "~> 1.4.0"},
       {:postgrex, "~> 0.13.5"},
       {:gettext, "~> 0.15.0"},
       {:cowboy, "~> 1.0"},
