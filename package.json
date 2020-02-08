@@ -2,7 +2,7 @@
   "name": "margaret",
   "description": "An open-source publishing platform",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "scripts": {
     "test": "exit 0",
     "commit": "commit"
@@ -26,7 +26,7 @@
     "@commitlint/travis-cli": "7.6.1",
     "@playlyfe/gql": "2.6.0",
     "babel-eslint": "8.2.6",
-    "codecov": "3.1.0",
+    "codecov": "3.6.5",
     "danger": "3.7.20",
     "eslint": "5.1.0",
     "eslint-config-airbnb": "17.0.0",
